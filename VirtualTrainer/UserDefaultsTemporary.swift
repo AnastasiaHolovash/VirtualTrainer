@@ -19,15 +19,15 @@ class Defaults {
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
 
-    func setExerciseFrames(_ frames: Frames) {
+    func setExerciseTargetFrames(_ frames: Frames) {
         guard let encoded = try? encoder.encode(frames) else {
             return
         }
-        defaults.set(encoded, forKey: Key.exerciseFrames.rawValue)
+        defaults.set(encoded, forKey: Key.exerciseTargetFrames.rawValue)
     }
 
-    func getExerciseFrames() -> Frames {
-        guard let framesData = defaults.object(forKey: Key.exerciseFrames.rawValue) as? Data,
+    func getExerciseTargetFrames() -> Frames {
+        guard let framesData = defaults.object(forKey: Key.exerciseTargetFrames.rawValue) as? Data,
               let frames = try? decoder.decode(Frames.self, from: framesData)
         else {
             return []
@@ -36,6 +36,6 @@ class Defaults {
     }
 
     enum Key: String {
-        case exerciseFrames
+        case exerciseTargetFrames
     }
 }

@@ -58,7 +58,7 @@ struct ContentView : View {
                     .cornerRadius(10)
 
                     Button {
-                        let frames = Defaults.shared.getExerciseFrames()
+                        let frames = Defaults.shared.getExerciseTargetFrames()
                         print("--- First 5 ---")
                         print(frames[0..<5])
                         print("--- Last 5 ---")
@@ -226,7 +226,10 @@ struct ARViewContainer: UIViewRepresentable {
                 if !isTrainingInProgress && isRecording {
                     print("--- STOP Recording ---")
                     isRecording.toggle()
-                    Defaults.shared.setExerciseFrames(exerciseFrames)
+
+                    if GlobalConstants.mode == .recording {
+                        cropOneIteration()
+                    }
                 }
 
                 let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
@@ -241,7 +244,7 @@ struct ARViewContainer: UIViewRepresentable {
 
         func cropOneIteration() {
             var previousChecked = exerciseFrames.last
-            let (lastFrameIndex, _) = exerciseFrames.reversed().enumerated().first { index, frame in
+            let (frameIndex, _) = exerciseFrames.reversed().enumerated().first { index, frame in
                 guard index < exerciseFrames.count - 1,
                       let previous = previousChecked
                 else {
@@ -255,22 +258,25 @@ struct ARViewContainer: UIViewRepresentable {
 
                 previousChecked = frame
 
-                return true
+                return result
             } ?? (exerciseFrames.count - 1, exerciseFrames.last)
 
-            let croppedFrames = exerciseFrames[0...lastFrameIndex]
+            let lastFrameIndex = frameIndex > 0 ? exerciseFrames.count - frameIndex : exerciseFrames.count
+            let croppedFrames: Frames = Array(exerciseFrames[0...lastFrameIndex])
+
+            Defaults.shared.setExerciseTargetFrames(croppedFrames)
         }
     }
 
 }
 
 enum GlobalConstants {
-    static let mode: Mode = .record
+    static let mode: Mode = .recording
     static let startStopMovementRange: ClosedRange<Float> = 0...0.95
     static let characterOffset: SIMD3<Float> = [-0.5, 0, 0]
 
     enum Mode {
-        case record
+        case recording
         case training
     }
 }
