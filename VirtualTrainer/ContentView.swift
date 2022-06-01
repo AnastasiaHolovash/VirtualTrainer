@@ -16,7 +16,7 @@ struct ContentView : View {
         static let timetStartTime = 2
     }
 
-    @State var jointModelTransforms: [simd_float4x4] = []
+    @State var jointModelTransforms: Frame = []
     @State var timerValue: Int = Constants.timetStartTime
 
     @State var timerCancellable: AnyCancellable? = nil
@@ -33,31 +33,50 @@ struct ContentView : View {
 
             Text(timerValue < Constants.timetStartTime + 1 ? "\(timerValue)" : "")
                 .font(.system(size: 100))
-                .foregroundColor(.white)
-//                .animation(.easeInOut(duration: 1).speed(1), value: timerValue)
 
             VStack {
                 Spacer()
 
-                Button {
-                    switch buttonState {
-                    case .start:
-                        startTimer()
+                HStack {
+                    Button {
+                        switch buttonState {
+                        case .start:
+                            startTimer()
 
-                    case .stop:
-                        isRecording.toggle()
-                        stopTimer()
+                        case .stop:
+                            isRecording.toggle()
+                            stopTimer()
+                        }
+                        buttonState.toggle()
+                    } label: {
+                        Text(buttonState.rawValue.capitalized)
+                            .font(.system(size: 20, weight: .bold))
                     }
-                    buttonState.toggle()
-                } label: {
-                    Text(buttonState.rawValue)
-                        .font(.system(size: 20, weight: .bold))
+                    .padding()
+                    .background(.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+
+                    Button {
+                        let frames = Defaults.shared.getExerciseFrames()
+                        print("--- First 5 ---")
+                        print(frames[0..<5])
+                        print("--- Last 5 ---")
+                        print(frames[(frames.count - 5)..<frames.count])
+                    } label: {
+                        Text("Show")
+                            .font(.system(size: 20, weight: .bold))
+                    }
+                    .padding()
+                    .background(.purple)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
                 }
-                .padding()
-                .background(.green)
-                .foregroundColor(.white)
-                .cornerRadius(10)
             }
+        }
+        // FOR debug
+        .onAppear {
+//            startTimer()
         }
     }
 
@@ -87,7 +106,7 @@ struct ContentView : View {
 
 struct ARViewContainer: UIViewRepresentable {
 
-    @Binding var jointModelTransforms: [simd_float4x4]
+    @Binding var jointModelTransforms: Frame
     @Binding var isRecording: Bool
 
     func makeUIView(context: Context) -> ARView {
@@ -119,25 +138,25 @@ struct ARViewContainer: UIViewRepresentable {
 
     class Coordinator: NSObject, ARSessionDelegate {
 
-        let characterOffset: SIMD3<Float> = [-0.5, 0, 0]
         let characterAnchor = AnchorEntity()
         var character: BodyTrackedEntity?
 
         var cancellable: AnyCancellable? = nil
         var cancellables: Set<AnyCancellable> = Set()
 
-        @Binding var jointModelTransformsCurrent: [simd_float4x4]
-        @Binding var isRecording: Bool
+        @Binding var jointModelTransformsCurrent: Frame
+        @Binding var isTrainingInProgress: Bool
+        var isRecording: Bool = false
 
-        var exerciseFrames: [[simd_float4x4]] = []
-        var comparisonValue: [simd_float4x4] = []
+        var exerciseFrames: Frames = []
+        var comparisonValue: Frame = []
 
         init(
             jointModelTransforms: Binding<[simd_float4x4]>,
             isRecording: Binding<Bool>
         ) {
             _jointModelTransformsCurrent = jointModelTransforms
-            _isRecording = isRecording
+            _isTrainingInProgress = isRecording
             super.init()
 
             cancellable = Entity.loadBodyTrackedAsync(named: "robot").sink(
@@ -161,73 +180,126 @@ struct ARViewContainer: UIViewRepresentable {
                 .receive(on: DispatchQueue.main)
                 .sink(receiveValue: { [weak self] _ in
                     guard let self = self,
-                          self.isRecording else {
+                          self.isTrainingInProgress,
+                          !self.isRecording else {
                         return
                     }
-                    self.compare()
-                    self.comparisonValue = self.jointModelTransformsCurrent
+
+                    _ = self.checkIfExerciseStarted()
                 })
                 .store(in: &cancellables)
         }
 
-        func compare() {
+        func checkIfExerciseStarted() -> Bool {
             guard !self.comparisonValue.isEmpty else {
                 self.comparisonValue = self.jointModelTransformsCurrent
-                return
+                return false
             }
 
-            let resultArray = self.jointModelTransformsCurrent.enumerated().map { index, simd4x4 -> Bool in
-//                print("\(index) - ", simd4x4.debugDescription, "\n")
-                return simd_almost_equal_elements(simd4x4, self.comparisonValue[index], 0.1)
+            let resultValue = self.jointModelTransformsCurrent.compare(to: self.comparisonValue)
+
+            let result = resultValue.isStartStopMovement
+            print("\n---- Compare ---- \(resultValue * 100)% ----- \(result)")
+
+            self.comparisonValue = self.jointModelTransformsCurrent
+
+            if result {
+                exerciseFrames.append(self.comparisonValue)
+                exerciseFrames.append(self.jointModelTransformsCurrent)
             }
 
-            let resultResents = Float(resultArray.filter { $0 }.count) / Float(resultArray.count) * 100
-            print("\n--- Compare with previous ---")
-            print("\(resultResents) %")
+            self.isRecording = result
+
+            return result
         }
 
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
             for anchor in anchors {
                 guard let bodyAnchor = anchor as? ARBodyAnchor else { continue }
 
-            jointModelTransformsCurrent = bodyAnchor.skeleton.jointModelTransforms
-                // Update the position of the character anchor's position.
+                jointModelTransformsCurrent = bodyAnchor.skeleton.jointModelTransforms
+
+                if isTrainingInProgress && isRecording {
+                    print("--- Recording ---")
+                    exerciseFrames.append(bodyAnchor.skeleton.jointModelTransforms)
+                }
+                if !isTrainingInProgress && isRecording {
+                    print("--- STOP Recording ---")
+                    isRecording.toggle()
+                    Defaults.shared.setExerciseFrames(exerciseFrames)
+                }
+
                 let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
-                characterAnchor.position = bodyPosition + characterOffset
-                // Also copy over the rotation of the body anchor, because the skeleton's pose
-                // in the world is relative to the body anchor's rotation.
+                characterAnchor.position = bodyPosition + GlobalConstants.characterOffset
                 characterAnchor.orientation = Transform(matrix: bodyAnchor.transform).rotation
 
                 if let character = character, character.parent == nil {
-                    // Attach the character to its anchor as soon as
-                    // 1. the body anchor was detected and
-                    // 2. the character was loaded.
                     characterAnchor.addChild(character)
                 }
             }
         }
 
+        func cropOneIteration() {
+            var previousChecked = exerciseFrames.last
+            let (lastFrameIndex, _) = exerciseFrames.reversed().enumerated().first { index, frame in
+                guard index < exerciseFrames.count - 1,
+                      let previous = previousChecked
+                else {
+                    return false
+                }
+
+                let resultValue = frame.compare(to: previous)
+                let result = resultValue.isStartStopMovement
+
+                print("\n---- Compare ---- \(resultValue * 100)% ----- \(result)")
+
+                previousChecked = frame
+
+                return true
+            } ?? (exerciseFrames.count - 1, exerciseFrames.last)
+
+            let croppedFrames = exerciseFrames[0...lastFrameIndex]
+        }
+    }
+
+}
+
+enum GlobalConstants {
+    static let mode: Mode = .record
+    static let startStopMovementRange: ClosedRange<Float> = 0...0.95
+    static let characterOffset: SIMD3<Float> = [-0.5, 0, 0]
+
+    enum Mode {
+        case record
+        case training
+    }
+}
+
+extension Float {
+
+    var isStartStopMovement: Bool {
+        GlobalConstants.startStopMovementRange.contains(self)
     }
 
 }
 
 extension Array where Element == simd_float4x4 {
 
-    func compare(to array: [simd_float4x4]) -> Float {
+    func compare(to array: Frame) -> Float {
         let resultArray = self.enumerated().map { index, simd4x4 -> Bool in
             return simd_almost_equal_elements(simd4x4, array[index], 0.1)
         }
 
         return Float(resultArray.filter { $0 }.count) / Float(resultArray.count)
     }
-    
+
 }
 
 extension ContentView {
 
     enum ButtonState: String {
-        case start = "Start"
-        case stop = "Stop"
+        case start
+        case stop
 
         mutating func toggle() {
             switch self {
