@@ -184,7 +184,7 @@ struct ARViewContainer: UIViewRepresentable {
                     }
                 )
 
-            setupFramesCheckingTimer()
+//            setupFramesCheckingTimer()
 
             if GlobalConstants.mode == .training {
                 exerciseFramesLoaded = Defaults.shared.getExerciseTargetFrames()
@@ -193,21 +193,21 @@ struct ARViewContainer: UIViewRepresentable {
             exerciseFramesCount = exerciseFramesLoaded.count
         }
 
-        func setupFramesCheckingTimer() {
-            Timer.publish(every: 0.1, on: .main, in: .default)
-                .autoconnect()
-                .receive(on: DispatchQueue.main)
-                .sink(receiveValue: { [weak self] _ in
-                    guard let self = self,
-                          self.isTrainingInProgress,
-                          !self.isRecording else {
-                        return
-                    }
-
-                    _ = self.checkIfExerciseStarted()
-                })
-                .store(in: &cancellables)
-        }
+//        func setupFramesCheckingTimer() {
+//            Timer.publish(every: 0.1, on: .main, in: .default)
+//                .autoconnect()
+//                .receive(on: DispatchQueue.main)
+//                .sink(receiveValue: { [weak self] _ in
+//                    guard let self = self,
+//                          self.isTrainingInProgress,
+//                          !self.isRecording else {
+//                        return
+//                    }
+//
+//                    _ = self.checkIfExerciseStarted()
+//                })
+//                .store(in: &cancellables)
+//        }
 
         // MARK: - Delegate method
 
@@ -217,15 +217,18 @@ struct ARViewContainer: UIViewRepresentable {
 
                 jointModelTransformsCurrent = bodyAnchor.skeleton.jointModelTransforms
 
-//                print("\(Date())")
+//                if GlobalConstants.mode == .recording && isTrainingInProgress {
+//                    exerciseFrames.append(jointModelTransformsCurrent)
+//                }
 
-                if GlobalConstants.mode == .recording && isTrainingInProgress {
-                    exerciseFrames.append(jointModelTransformsCurrent)
+                if isTrainingInProgress && !isRecording {
+                    _ = self.checkIfExerciseStarted()
                 }
 
                 if isTrainingInProgress && isRecording {
                     switch GlobalConstants.mode {
                     case .recording:
+                        exerciseFrames.append(jointModelTransformsCurrent)
                         print(exerciseFrames.count)
 
                     case .training:
@@ -263,14 +266,13 @@ struct ARViewContainer: UIViewRepresentable {
             let result = resultValue.isStartStopMovement
             print("\n---- Compare ---- \(resultValue * 100)% ----- \(result)")
 
-            self.isRecording = result
-
-            if GlobalConstants.mode == .recording,
-               isTrainingInProgress && !isRecording {
+            if GlobalConstants.mode == .recording && result {
 //                print("Clear exerciseFrames   from: \(exerciseFrames.count)")
-                exerciseFrames = [self.jointModelTransformsCurrent]
+                exerciseFrames = [self.comparisonFrameValue]
 //                print("                       to: \(exerciseFrames.count)")
             }
+
+            self.isRecording = result
 
             self.comparisonFrameValue = self.jointModelTransformsCurrent
 
@@ -369,7 +371,7 @@ struct ARViewContainer: UIViewRepresentable {
 
 enum GlobalConstants {
     static let mode: Mode = .training
-    static let startStopMovementRange: ClosedRange<Float> = 0...0.95
+    static let startStopMovementRange: ClosedRange<Float> = 0...0.97
     static let closeToEqualRange: ClosedRange<Float> = 0.9...1
     static let characterOffset: SIMD3<Float> = [-0.5, 0, 0]
     static let characterScale: SIMD3<Float> = [1.0, 1.0, 1.0]
@@ -378,7 +380,7 @@ enum GlobalConstants {
     /// Number of frames in static position
     static let staticPositionIndicator: Int = 6
     /// Based on difference between moment of detection and recorded frames
-    static let exerciseFramesFirstIndex: Int = 4
+    static let exerciseFramesFirstIndex: Int = 1
 
     enum Mode {
         case recording
