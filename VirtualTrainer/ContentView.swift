@@ -193,22 +193,6 @@ struct ARViewContainer: UIViewRepresentable {
             exerciseFramesCount = exerciseFramesLoaded.count
         }
 
-//        func setupFramesCheckingTimer() {
-//            Timer.publish(every: 0.1, on: .main, in: .default)
-//                .autoconnect()
-//                .receive(on: DispatchQueue.main)
-//                .sink(receiveValue: { [weak self] _ in
-//                    guard let self = self,
-//                          self.isTrainingInProgress,
-//                          !self.isRecording else {
-//                        return
-//                    }
-//
-//                    _ = self.checkIfExerciseStarted()
-//                })
-//                .store(in: &cancellables)
-//        }
-
         // MARK: - Delegate method
 
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
@@ -217,11 +201,8 @@ struct ARViewContainer: UIViewRepresentable {
 
                 jointModelTransformsCurrent = bodyAnchor.skeleton.jointModelTransforms
 
-//                if GlobalConstants.mode == .recording && isTrainingInProgress {
-//                    exerciseFrames.append(jointModelTransformsCurrent)
-//                }
-
                 if isTrainingInProgress && !isRecording {
+                    print("***** Check If STARTED *****")
                     _ = self.checkIfExerciseStarted()
                 }
 
@@ -256,30 +237,31 @@ struct ARViewContainer: UIViewRepresentable {
         }
 
         func checkIfExerciseStarted() -> Bool {
-            guard !self.comparisonFrameValue.isEmpty else {
-                self.comparisonFrameValue = self.jointModelTransformsCurrent
+            guard !comparisonFrameValue.isEmpty else {
+                comparisonFrameValue = jointModelTransformsCurrent
                 return false
             }
 
-            let resultValue = self.jointModelTransformsCurrent.compare(to: self.comparisonFrameValue)
+            let resultValue = jointModelTransformsCurrent.compare(to: comparisonFrameValue)
 
             let result = resultValue.isStartStopMovement
             print("\n---- Compare ---- \(resultValue * 100)% ----- \(result)")
 
             if GlobalConstants.mode == .recording && result {
 //                print("Clear exerciseFrames   from: \(exerciseFrames.count)")
-                exerciseFrames = [self.comparisonFrameValue]
+                exerciseFrames = [comparisonFrameValue]
 //                print("                       to: \(exerciseFrames.count)")
             }
 
-            self.isRecording = result
+            isRecording = result
 
-            self.comparisonFrameValue = self.jointModelTransformsCurrent
+            comparisonFrameValue = jointModelTransformsCurrent
 
             return result
         }
 
-        // MARK: Compare Training WithTarget
+        // MARK: - Compare Training With Target
+
         var exerciseFramesIndex = GlobalConstants.exerciseFramesFirstIndex
         var couldDetectEndOfIteration: Bool {
             let couldDetectEndOfIterationIndex = Float(exerciseFramesCount) * GlobalConstants.couldDetectEndOfIterationIndicator
@@ -291,6 +273,8 @@ struct ARViewContainer: UIViewRepresentable {
         var currentNumberOfStaticFrames = 0
         var previousValueOfStaticFrame: Float = 0.0
 
+        var previous: Frame = []
+
         func compareTrainingWithTarget() {
             let lastTargetFrame = exerciseFramesLoaded.last
 
@@ -298,26 +282,36 @@ struct ARViewContainer: UIViewRepresentable {
             if couldDetectEndOfIteration,
                let last = lastTargetFrame {
                 let resultValue = jointModelTransformsCurrent.compare(to: last)
+                print("\ncouldDetectEndOfIteration with resultValue: \(resultValue)")
+
+                // --------------------
+
+                if previous.isEmpty {
+                    previous = jointModelTransformsCurrent
+                } else {
+                    let resultValue2 = jointModelTransformsCurrent.compare(to: previous)
+                    print("\n---- Compare ---- \(resultValue2 * 100)% -----")
+                    previous = jointModelTransformsCurrent
+                }
+
+                // --------------------
 
                 if previousValueOfStaticFrame == resultValue {
+                    print("    if block:")
                     currentNumberOfStaticFrames += 1
                 } else if resultValue.isCloseToEqual {
+                    print("    else block:")
                     previousValueOfStaticFrame = resultValue
                     currentNumberOfStaticFrames = 1
                 }
+                print("    previousValueOfStaticFrame = \(previousValueOfStaticFrame)")
+                print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
             }
 
             // Start detection of start of iteration
             if currentNumberOfStaticFrames == GlobalConstants.staticPositionIndicator {
-                iterationsResults.append([])
-                numberOfIterations += 1
-
-                exerciseFramesIndex = GlobalConstants.exerciseFramesFirstIndex
-
-                currentNumberOfStaticFrames = 0
-                previousValueOfStaticFrame = 0.0
-
-                isRecording = false
+                print("\nNew iteration initiated by User")
+                startDetectionOfStartOfIteration()
             }
 
             // Recording results
@@ -327,13 +321,26 @@ struct ARViewContainer: UIViewRepresentable {
             print("---- Compare With Target ---- \(resultValue * 100)% ----- \(exerciseFramesIndex)")
             iterationsResults[numberOfIterations].append(resultValue)
 
-            exerciseFramesIndex = exerciseFramesIndex < exerciseFramesLoaded.count - 1
-                ? exerciseFramesIndex + 1
-                : 0
-
-            if exerciseFramesIndex == 0 {
-                print("\nNew target iteration")
+            if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
+                exerciseFramesIndex += 1
+            } else {
+//                print("\nNew iteration initiated by Target")
+//                startDetectionOfStartOfIteration()
             }
+        }
+
+        func startDetectionOfStartOfIteration() {
+            iterationsResults.append([])
+            numberOfIterations += 1
+
+            exerciseFramesIndex = GlobalConstants.exerciseFramesFirstIndex
+
+            currentNumberOfStaticFrames = 0
+            previousValueOfStaticFrame = 0.0
+
+            comparisonFrameValue = jointModelTransformsCurrent
+
+            isRecording = false
         }
 
         /// For exercise recording process
@@ -356,7 +363,7 @@ struct ARViewContainer: UIViewRepresentable {
                 return result
             } ?? (exerciseFrames.count - 1, exerciseFrames.last)
 
-            let lastFrameIndex = frameIndex > 0 ? exerciseFrames.count - frameIndex : exerciseFrames.count
+            let lastFrameIndex = frameIndex > 0 ? exerciseFrames.count - (frameIndex - 1) : exerciseFrames.count - 1
             let croppedFrames: Frames = Array(exerciseFrames[0...lastFrameIndex])
 
             print("Size: \(croppedFrames.count)")
