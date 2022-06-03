@@ -145,11 +145,15 @@ struct ARViewContainer: UIViewRepresentable {
         var cancellables: Set<AnyCancellable> = Set()
 
         @Binding var jointModelTransformsCurrent: Frame
+
+        /// True if timer is out
         @Binding var isTrainingInProgress: Bool
+        /// True if recording training/exercise data is started
         var isRecording: Bool = false
 
         var exerciseFrames: Frames = []
-        var comparisonValue: Frame = []
+        var exerciseFramesLoaded: Frames = []
+        var comparisonFrameValue: Frame = []
 
         init(
             jointModelTransforms: Binding<[simd_float4x4]>,
@@ -159,19 +163,28 @@ struct ARViewContainer: UIViewRepresentable {
             _isTrainingInProgress = isRecording
             super.init()
 
-            cancellable = Entity.loadBodyTrackedAsync(named: "robot").sink(
-                receiveCompletion: { completion in
-                    if case let .failure(error) = completion {
-                        print("Error: Unable to load model: \(error.localizedDescription)")
+            cancellable = Entity.loadBodyTrackedAsync(named: "robot")
+                .sink(
+                    receiveCompletion: { completion in
+                        if case let .failure(error) = completion {
+                            print("Error: Unable to load model: \(error.localizedDescription)")
+                        }
+                        self.cancellable?.cancel()
+                    },
+                    receiveValue: { character in
+                        character.scale = GlobalConstants.characterScale
+                        self.character = character
+//                        character.characterControllerState?.
+//                        character.motion = .init
+                        self.cancellable?.cancel()
                     }
-                    self.cancellable?.cancel()
-                }, receiveValue: { character in
-                    character.scale = [1.0, 1.0, 1.0]
-                    self.character = character
-                    self.cancellable?.cancel()
-                })
+                )
 
             setupFramesCheckingTimer()
+
+            if GlobalConstants.mode == .training {
+                exerciseFramesLoaded = Defaults.shared.getExerciseTargetFrames()
+            }
         }
 
         func setupFramesCheckingTimer() {
@@ -190,28 +203,7 @@ struct ARViewContainer: UIViewRepresentable {
                 .store(in: &cancellables)
         }
 
-        func checkIfExerciseStarted() -> Bool {
-            guard !self.comparisonValue.isEmpty else {
-                self.comparisonValue = self.jointModelTransformsCurrent
-                return false
-            }
-
-            let resultValue = self.jointModelTransformsCurrent.compare(to: self.comparisonValue)
-
-            let result = resultValue.isStartStopMovement
-            print("\n---- Compare ---- \(resultValue * 100)% ----- \(result)")
-
-            self.comparisonValue = self.jointModelTransformsCurrent
-
-            if result {
-                exerciseFrames.append(self.comparisonValue)
-                exerciseFrames.append(self.jointModelTransformsCurrent)
-            }
-
-            self.isRecording = result
-
-            return result
-        }
+        // MARK: - Delegate method
 
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
             for anchor in anchors {
@@ -219,9 +211,20 @@ struct ARViewContainer: UIViewRepresentable {
 
                 jointModelTransformsCurrent = bodyAnchor.skeleton.jointModelTransforms
 
+//                print("\(Date())")
+
+                if GlobalConstants.mode == .recording && isTrainingInProgress {
+                    exerciseFrames.append(jointModelTransformsCurrent)
+                }
+
                 if isTrainingInProgress && isRecording {
-                    print("--- Recording ---")
-                    exerciseFrames.append(bodyAnchor.skeleton.jointModelTransforms)
+                    switch GlobalConstants.mode {
+                    case .recording:
+                        print(exerciseFrames.count)
+
+                    case .training:
+                        compareTrainingWithTarget()
+                    }
                 }
                 if !isTrainingInProgress && isRecording {
                     print("--- STOP Recording ---")
@@ -229,6 +232,7 @@ struct ARViewContainer: UIViewRepresentable {
 
                     if GlobalConstants.mode == .recording {
                         cropOneIteration()
+                        exerciseFrames = []
                     }
                 }
 
@@ -242,6 +246,52 @@ struct ARViewContainer: UIViewRepresentable {
             }
         }
 
+        func checkIfExerciseStarted() -> Bool {
+            guard !self.comparisonFrameValue.isEmpty else {
+                self.comparisonFrameValue = self.jointModelTransformsCurrent
+                return false
+            }
+
+            let resultValue = self.jointModelTransformsCurrent.compare(to: self.comparisonFrameValue)
+
+            let result = resultValue.isStartStopMovement
+            print("\n---- Compare ---- \(resultValue * 100)% ----- \(result)")
+
+//            if result && GlobalConstants.mode == .recording {
+//                exerciseFrames.append(self.comparisonFrameValue)
+//                exerciseFrames.append(self.jointModelTransformsCurrent)
+//            }
+
+            self.isRecording = result
+
+            if isTrainingInProgress && !isRecording {
+//                print("Clear exerciseFrames   from: \(exerciseFrames.count)")
+                exerciseFrames = [self.jointModelTransformsCurrent]
+//                print("                       to: \(exerciseFrames.count)")
+            }
+
+            self.comparisonFrameValue = self.jointModelTransformsCurrent
+
+            return result
+        }
+
+        var exerciseFramesIndex = 4
+        func compareTrainingWithTarget() {
+            let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
+
+            let resultValue = jointModelTransformsCurrent.compare(to: targetFrame)
+            print("---- Compare With Target ---- \(resultValue * 100)% ----- \(exerciseFramesIndex)")
+
+            exerciseFramesIndex = exerciseFramesIndex < exerciseFramesLoaded.count - 1
+                ? exerciseFramesIndex + 1
+                : 0
+
+            if exerciseFramesIndex == 0 {
+                print("\nNew target iteration")
+            }
+        }
+
+        /// For exercise recording process
         func cropOneIteration() {
             var previousChecked = exerciseFrames.last
             let (frameIndex, _) = exerciseFrames.reversed().enumerated().first { index, frame in
@@ -264,16 +314,21 @@ struct ARViewContainer: UIViewRepresentable {
             let lastFrameIndex = frameIndex > 0 ? exerciseFrames.count - frameIndex : exerciseFrames.count
             let croppedFrames: Frames = Array(exerciseFrames[0...lastFrameIndex])
 
+            print("Size: \(croppedFrames.count)")
+
             Defaults.shared.setExerciseTargetFrames(croppedFrames)
         }
+
+
     }
 
 }
 
 enum GlobalConstants {
-    static let mode: Mode = .recording
+    static let mode: Mode = .training
     static let startStopMovementRange: ClosedRange<Float> = 0...0.95
     static let characterOffset: SIMD3<Float> = [-0.5, 0, 0]
+    static let characterScale: SIMD3<Float> = [1.0, 1.0, 1.0]
 
     enum Mode {
         case recording
@@ -319,38 +374,6 @@ extension ContentView {
     }
 
 }
-
-/**
- Timer.publish(every: 3, on: .main, in: .default)
-     .autoconnect()
-     .receive(on: DispatchQueue.main)
-     .sink(receiveValue: { [weak self] _ in
-         guard let self = self else {
-             return
-         }
-         guard !self.jointModelTransformsPrevious.isEmpty else {
-             self.jointModelTransformsPrevious = self.jointModelTransforms
-             return
-         }
-
-         print("--- Body Position ---\n")
-         let resultArray = self.jointModelTransforms.enumerated().map { index, simd4x4 -> Bool in
-             print("\(index) - ", simd4x4.debugDescription, "\n")
-             return simd_almost_equal_elements(simd4x4, self.jointModelTransformsPrevious[index], 0.1)
-         }
-
-         let resultResents = Float(resultArray.filter { $0 }.count) / Float(resultArray.count) * 100
-         print("\n--- Result ---")
-         print("\(resultResents)")
-         print("Result array - \(resultArray)")
-         print("Filtered array - \(resultArray.filter { $0 })")
-
-
-         self.jointModelTransformsPrevious = self.jointModelTransforms
-     })
- //                .assign(to: \.lastUpdated, on: myDataModel)
-     .store(in: &cancellable)
- */
 
 #if DEBUG
 //struct ContentView_Previews : PreviewProvider {
