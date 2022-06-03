@@ -223,6 +223,9 @@ struct ARViewContainer: UIViewRepresentable {
                     if GlobalConstants.mode == .recording {
                         cropOneIteration()
                         exerciseFrames = []
+                    } else {
+                        print("\n ---- Iterations Results ----")
+                        print(iterationsResults)
                     }
                 }
 
@@ -278,40 +281,50 @@ struct ARViewContainer: UIViewRepresentable {
         func compareTrainingWithTarget() {
             let lastTargetFrame = exerciseFramesLoaded.last
 
-            // Detection of end of iteration
+            // Detection end of iteration
             if couldDetectEndOfIteration,
                let last = lastTargetFrame {
                 let resultValue = jointModelTransformsCurrent.compare(to: last)
-                print("\ncouldDetectEndOfIteration with resultValue: \(resultValue)")
 
-                // --------------------
+                if resultValue.isCloseToEqual {
+                    print("\ncouldDetectEndOfIteration with --- resultValue: \(resultValue) --- CloseToEqual")
 
-                if previous.isEmpty {
-                    previous = jointModelTransformsCurrent
-                } else {
-                    let resultValue2 = jointModelTransformsCurrent.compare(to: previous)
-                    print("\n---- Compare ---- \(resultValue2 * 100)% -----")
-                    previous = jointModelTransformsCurrent
+                    if previous.isEmpty {
+                        previous = jointModelTransformsCurrent
+                        currentNumberOfStaticFrames = 1
+                    } else {
+                        let resultValue2 = jointModelTransformsCurrent.compare(to: previous)
+                        print("---- Compare ---- \(resultValue2 * 100)% -----")
+                        previous = jointModelTransformsCurrent
+
+                        if resultValue2.isVeryCloseToEqual {
+//                            previousValueOfStaticFrame = resultValue
+                            currentNumberOfStaticFrames += 1
+                        }
+                    }
+
+                    print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
                 }
 
                 // --------------------
 
-                if previousValueOfStaticFrame == resultValue {
-                    print("    if block:")
-                    currentNumberOfStaticFrames += 1
-                } else if resultValue.isCloseToEqual {
-                    print("    else block:")
-                    previousValueOfStaticFrame = resultValue
-                    currentNumberOfStaticFrames = 1
-                }
-                print("    previousValueOfStaticFrame = \(previousValueOfStaticFrame)")
-                print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
+//                if previousValueOfStaticFrame == resultValue {
+//                    print("    if block:")
+//                    currentNumberOfStaticFrames += 1
+//                } else
+//                if resultValue.isCloseToEqual {
+//                    print("    else block:")
+//                    previousValueOfStaticFrame = resultValue
+//                    currentNumberOfStaticFrames = 1
+//                }
+//                print("    previousValueOfStaticFrame = \(previousValueOfStaticFrame)")
+//                print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
             }
 
-            // Start detection of start of iteration
+            // Start detection start of iteration
             if currentNumberOfStaticFrames == GlobalConstants.staticPositionIndicator {
                 print("\nNew iteration initiated by User")
-                startDetectionOfStartOfIteration()
+                startDetectionStartOfIteration()
             }
 
             // Recording results
@@ -329,7 +342,7 @@ struct ARViewContainer: UIViewRepresentable {
             }
         }
 
-        func startDetectionOfStartOfIteration() {
+        func startDetectionStartOfIteration() {
             iterationsResults.append([])
             numberOfIterations += 1
 
@@ -339,6 +352,7 @@ struct ARViewContainer: UIViewRepresentable {
             previousValueOfStaticFrame = 0.0
 
             comparisonFrameValue = jointModelTransformsCurrent
+            previous = []
 
             isRecording = false
         }
@@ -380,12 +394,13 @@ enum GlobalConstants {
     static let mode: Mode = .training
     static let startStopMovementRange: ClosedRange<Float> = 0...0.97
     static let closeToEqualRange: ClosedRange<Float> = 0.9...1
+    static let veryCloseToEqualRange: ClosedRange<Float> = 0.98...1
     static let characterOffset: SIMD3<Float> = [-0.5, 0, 0]
     static let characterScale: SIMD3<Float> = [1.0, 1.0, 1.0]
     static let framesComparisonAccuracy: Float = 0.1
     static let couldDetectEndOfIterationIndicator: Float = 0.5
     /// Number of frames in static position
-    static let staticPositionIndicator: Int = 6
+    static let staticPositionIndicator: Int = 4
     /// Based on difference between moment of detection and recorded frames
     static let exerciseFramesFirstIndex: Int = 1
 
@@ -403,6 +418,10 @@ extension Float {
 
     var isCloseToEqual: Bool {
         GlobalConstants.closeToEqualRange.contains(self)
+    }
+
+    var isVeryCloseToEqual: Bool {
+        GlobalConstants.veryCloseToEqualRange.contains(self)
     }
 
 }
