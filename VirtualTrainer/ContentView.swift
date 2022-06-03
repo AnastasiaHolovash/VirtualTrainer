@@ -58,11 +58,12 @@ struct ContentView : View {
                     .cornerRadius(10)
 
                     Button {
-                        let frames = Defaults.shared.getExerciseTargetFrames()
-                        print("--- First 5 ---")
-                        print(frames[0..<5])
-                        print("--- Last 5 ---")
-                        print(frames[(frames.count - 5)..<frames.count])
+//                        let frames = Defaults.shared.getExerciseTargetFrames()
+//                        print("--- First 5 ---")
+//                        print(frames[0..<5])
+//                        print("--- Last 5 ---")
+//                        print(frames[(frames.count - 5)..<frames.count])
+                        print("\nShow")
                     } label: {
                         Text("Show")
                             .font(.system(size: 20, weight: .bold))
@@ -151,9 +152,12 @@ struct ARViewContainer: UIViewRepresentable {
         /// True if recording training/exercise data is started
         var isRecording: Bool = false
 
+        // Recording
         var exerciseFrames: Frames = []
-        var exerciseFramesLoaded: Frames = []
         var comparisonFrameValue: Frame = []
+        // Training
+        var exerciseFramesLoaded: Frames = []
+        var exerciseFramesCount: Int = 0
 
         init(
             jointModelTransforms: Binding<[simd_float4x4]>,
@@ -185,6 +189,8 @@ struct ARViewContainer: UIViewRepresentable {
             if GlobalConstants.mode == .training {
                 exerciseFramesLoaded = Defaults.shared.getExerciseTargetFrames()
             }
+
+            exerciseFramesCount = exerciseFramesLoaded.count
         }
 
         func setupFramesCheckingTimer() {
@@ -257,14 +263,10 @@ struct ARViewContainer: UIViewRepresentable {
             let result = resultValue.isStartStopMovement
             print("\n---- Compare ---- \(resultValue * 100)% ----- \(result)")
 
-//            if result && GlobalConstants.mode == .recording {
-//                exerciseFrames.append(self.comparisonFrameValue)
-//                exerciseFrames.append(self.jointModelTransformsCurrent)
-//            }
-
             self.isRecording = result
 
-            if isTrainingInProgress && !isRecording {
+            if GlobalConstants.mode == .recording,
+               isTrainingInProgress && !isRecording {
 //                print("Clear exerciseFrames   from: \(exerciseFrames.count)")
                 exerciseFrames = [self.jointModelTransformsCurrent]
 //                print("                       to: \(exerciseFrames.count)")
@@ -275,12 +277,53 @@ struct ARViewContainer: UIViewRepresentable {
             return result
         }
 
-        var exerciseFramesIndex = 4
+        // MARK: Compare Training WithTarget
+        var exerciseFramesIndex = GlobalConstants.exerciseFramesFirstIndex
+        var couldDetectEndOfIteration: Bool {
+            let couldDetectEndOfIterationIndex = Float(exerciseFramesCount) * GlobalConstants.couldDetectEndOfIterationIndicator
+            return Float(exerciseFramesIndex) >= couldDetectEndOfIterationIndex
+        }
+        var iterationsResults: [[Float]] = [[]]
+        var numberOfIterations = 0
+
+        var currentNumberOfStaticFrames = 0
+        var previousValueOfStaticFrame: Float = 0.0
+
         func compareTrainingWithTarget() {
+            let lastTargetFrame = exerciseFramesLoaded.last
+
+            // Detection of end of iteration
+            if couldDetectEndOfIteration,
+               let last = lastTargetFrame {
+                let resultValue = jointModelTransformsCurrent.compare(to: last)
+
+                if previousValueOfStaticFrame == resultValue {
+                    currentNumberOfStaticFrames += 1
+                } else if resultValue.isCloseToEqual {
+                    previousValueOfStaticFrame = resultValue
+                    currentNumberOfStaticFrames = 1
+                }
+            }
+
+            // Start detection of start of iteration
+            if currentNumberOfStaticFrames == GlobalConstants.staticPositionIndicator {
+                iterationsResults.append([])
+                numberOfIterations += 1
+
+                exerciseFramesIndex = GlobalConstants.exerciseFramesFirstIndex
+
+                currentNumberOfStaticFrames = 0
+                previousValueOfStaticFrame = 0.0
+
+                isRecording = false
+            }
+
+            // Recording results
             let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
 
             let resultValue = jointModelTransformsCurrent.compare(to: targetFrame)
             print("---- Compare With Target ---- \(resultValue * 100)% ----- \(exerciseFramesIndex)")
+            iterationsResults[numberOfIterations].append(resultValue)
 
             exerciseFramesIndex = exerciseFramesIndex < exerciseFramesLoaded.count - 1
                 ? exerciseFramesIndex + 1
@@ -327,8 +370,15 @@ struct ARViewContainer: UIViewRepresentable {
 enum GlobalConstants {
     static let mode: Mode = .training
     static let startStopMovementRange: ClosedRange<Float> = 0...0.95
+    static let closeToEqualRange: ClosedRange<Float> = 0.9...1
     static let characterOffset: SIMD3<Float> = [-0.5, 0, 0]
     static let characterScale: SIMD3<Float> = [1.0, 1.0, 1.0]
+    static let framesComparisonAccuracy: Float = 0.1
+    static let couldDetectEndOfIterationIndicator: Float = 0.5
+    /// Number of frames in static position
+    static let staticPositionIndicator: Int = 6
+    /// Based on difference between moment of detection and recorded frames
+    static let exerciseFramesFirstIndex: Int = 4
 
     enum Mode {
         case recording
@@ -342,13 +392,17 @@ extension Float {
         GlobalConstants.startStopMovementRange.contains(self)
     }
 
+    var isCloseToEqual: Bool {
+        GlobalConstants.closeToEqualRange.contains(self)
+    }
+
 }
 
 extension Array where Element == simd_float4x4 {
 
     func compare(to array: Frame) -> Float {
         let resultArray = self.enumerated().map { index, simd4x4 -> Bool in
-            return simd_almost_equal_elements(simd4x4, array[index], 0.1)
+            return simd_almost_equal_elements(simd4x4, array[index], GlobalConstants.framesComparisonAccuracy)
         }
 
         return Float(resultArray.filter { $0 }.count) / Float(resultArray.count)
