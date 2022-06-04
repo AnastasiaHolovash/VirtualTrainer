@@ -178,13 +178,9 @@ struct ARViewContainer: UIViewRepresentable {
                     receiveValue: { character in
                         character.scale = GlobalConstants.characterScale
                         self.character = character
-//                        character.characterControllerState?.
-//                        character.motion = .init
                         self.cancellable?.cancel()
                     }
                 )
-
-//            setupFramesCheckingTimer()
 
             if GlobalConstants.mode == .training {
                 exerciseFramesLoaded = Defaults.shared.getExerciseTargetFrames()
@@ -225,7 +221,7 @@ struct ARViewContainer: UIViewRepresentable {
                         exerciseFrames = []
                     } else {
                         print("\n ---- Iterations Results ----")
-                        print(iterationsResults)
+                        makeTrainingDescription(from: iterationsResults)
                     }
                 }
 
@@ -298,27 +294,12 @@ struct ARViewContainer: UIViewRepresentable {
                         previous = jointModelTransformsCurrent
 
                         if resultValue2.isVeryCloseToEqual {
-//                            previousValueOfStaticFrame = resultValue
                             currentNumberOfStaticFrames += 1
                         }
                     }
 
                     print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
                 }
-
-                // --------------------
-
-//                if previousValueOfStaticFrame == resultValue {
-//                    print("    if block:")
-//                    currentNumberOfStaticFrames += 1
-//                } else
-//                if resultValue.isCloseToEqual {
-//                    print("    else block:")
-//                    previousValueOfStaticFrame = resultValue
-//                    currentNumberOfStaticFrames = 1
-//                }
-//                print("    previousValueOfStaticFrame = \(previousValueOfStaticFrame)")
-//                print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
             }
 
             // Start detection start of iteration
@@ -336,9 +317,6 @@ struct ARViewContainer: UIViewRepresentable {
 
             if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
                 exerciseFramesIndex += 1
-            } else {
-//                print("\nNew iteration initiated by Target")
-//                startDetectionOfStartOfIteration()
             }
         }
 
@@ -385,6 +363,22 @@ struct ARViewContainer: UIViewRepresentable {
             Defaults.shared.setExerciseTargetFrames(croppedFrames)
         }
 
+        func makeTrainingDescription(from results: [[Float]]) {
+            let numberOfIterations = results.count
+            print("Number Of Iterations: \(numberOfIterations)\n")
+
+            var iterationsScores: [Float] = []
+
+            results.enumerated().forEach { index, iteration in
+                let score = iteration.reduce(0.0, +) / Float(iteration.count)
+                iterationsScores.append(score)
+                print("Score of \(index + 1) Iteration: \(Int(score * 100))%")
+            }
+
+            let score = iterationsScores.reduce(0.0, +) / Float(numberOfIterations)
+            print("\nGeneral score: \(Int(score * 100))%")
+
+        }
 
     }
 
