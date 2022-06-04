@@ -254,7 +254,7 @@ struct ARViewContainer: UIViewRepresentable {
 
             isRecording = result
 
-            comparisonFrameValue = jointModelTransformsCurrent
+//            comparisonFrameValue = jointModelTransformsCurrent
 
             return result
         }
@@ -350,7 +350,7 @@ struct ARViewContainer: UIViewRepresentable {
 
                 print("\n---- Compare ---- \(resultValue * 100)% ----- \(result)")
 
-                previousChecked = frame
+//                previousChecked = frame
 
                 return result
             } ?? (exerciseFrames.count - 1, exerciseFrames.last)
@@ -385,7 +385,7 @@ struct ARViewContainer: UIViewRepresentable {
 }
 
 enum GlobalConstants {
-    static let mode: Mode = .training
+    static let mode: Mode = .recording
     static let startStopMovementRange: ClosedRange<Float> = 0...0.97
     static let closeToEqualRange: ClosedRange<Float> = 0.9...1
     static let veryCloseToEqualRange: ClosedRange<Float> = 0.98...1
