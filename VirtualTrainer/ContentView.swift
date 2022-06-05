@@ -71,14 +71,14 @@ struct ContentView : View {
                     .cornerRadius(10)
 
                     Button {
-//                        let frames = Defaults.shared.getExerciseTargetFrames()
-//                        print("--- First 5 ---")
-//                        print(frames[0..<5])
-//                        print("--- Last 5 ---")
-//                        print(frames[(frames.count - 5)..<frames.count])
-                        print("\nFix")
-                        print(jointModelTransforms, "\n")
-                        comparisonFrameValue = jointModelTransforms
+//                        print("\nFix")
+//                        print(jointModelTransforms, "\n")
+//                        comparisonFrameValue = jointModelTransforms
+                        let frames = Defaults.shared.getExerciseTargetFrames()
+                        frames.enumerated().forEach { i, value in
+                            print("i")
+                            value.printf()
+                        }
                     } label: {
                         Text("Fix")
                             .font(.system(size: 20, weight: .bold))
@@ -226,10 +226,6 @@ struct ARViewContainer: UIViewRepresentable {
                 let transforms = bodyAnchor.skeleton.jointModelTransforms
                 jointModelTransformsCurrent = trackingJointNamesRawValues.map {  transforms[$0] }
 
-//                jointModelTransformsCurrent = []
-//                jointModelTransformsCurrent.append(bodyAnchor.skeleton.modelTransform(for: .leftHand) ?? simd_float4x4())
-//                jointModelTransformsCurrent.append(bodyAnchor.skeleton.modelTransform(for: .leftShoulder) ?? simd_float4x4())
-
                 if isTrainingInProgress && !isRecording {
                     print("\n***** Check If STARTED *****")
                     _ = self.checkIfExerciseStarted()
@@ -280,17 +276,19 @@ struct ARViewContainer: UIViewRepresentable {
 
             let result = resultValue.isStartStopMovement
             print("---- Compare ---- \(resultValue * 100)% ----- \(result)")
-            some = "\(resultValue * 100)%"
+            some = "\(round(resultValue * 10000) / 100)%"
 
+            // ------ Matrix Printing  ------
 //            print("\nComparison Value:")
 //            comparisonFrameValue.printf()
 //            print("\nCurrent Value:")
 //            jointModelTransformsCurrent.printf()
-            print("\nDifference:")
-            let diff = jointModelTransformsCurrent.enumerated().map { index, simd_4x4 in
-                simd_4x4 - comparisonFrameValue[index]
-            }
-            diff.printf()
+//            print("\nDifference:")
+//            let diff = jointModelTransformsCurrent.enumerated().map { index, simd_4x4 in
+//                simd_4x4 - comparisonFrameValue[index]
+//            }
+//            diff.printf()
+            // ------------------------------
 
             if GlobalConstants.mode == .recording && result {
 //                print("Clear exerciseFrames   from: \(exerciseFrames.count)")
@@ -298,7 +296,7 @@ struct ARViewContainer: UIViewRepresentable {
 //                print("                       to: \(exerciseFrames.count)")
             }
 
-//            isRecording = result
+            isRecording = result
 
             return result
         }
@@ -320,21 +318,22 @@ struct ARViewContainer: UIViewRepresentable {
 
         func compareTrainingWithTarget() {
             let lastTargetFrame = exerciseFramesLoaded.last
-
+/**
             // Detection end of iteration
             if couldDetectEndOfIteration,
                let last = lastTargetFrame {
                 let resultValue = jointModelTransformsCurrent.compare(to: last)
+//                print("Could Detect End Of Iteration with --- resultValue: \(resultValue)")
 
                 if resultValue.isCloseToEqual {
-                    print("\ncouldDetectEndOfIteration with --- resultValue: \(resultValue) --- CloseToEqual")
+//                    print("Could Detect End Of Iteration with --- resultValue: \(resultValue)")
 
                     if previous.isEmpty {
                         previous = jointModelTransformsCurrent
                         currentNumberOfStaticFrames = 1
                     } else {
                         let resultValue2 = jointModelTransformsCurrent.compare(to: previous)
-                        print("---- Compare ---- \(resultValue2 * 100)% -----")
+                        print("---- Compare with previous ---- \(resultValue2 * 100)% -----")
                         previous = jointModelTransformsCurrent
 
                         if resultValue2.isVeryCloseToEqual {
@@ -351,6 +350,7 @@ struct ARViewContainer: UIViewRepresentable {
                 print("\nNew iteration initiated by User")
                 startDetectionStartOfIteration()
             }
+ */
 
             // Recording results
             let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
@@ -445,34 +445,29 @@ extension Float {
 
 extension Array where Element == simd_float4x4 {
 
-//    func compare(to array: Frame) -> Float {
-//        let resultArray = self.enumerated().map { index, simd4x4 -> Bool in
-//            return simd_almost_equal_elements(simd4x4, array[index], GlobalConstants.framesComparisonAccuracy)
-//        }
-//
-//        return Float(resultArray.filter { $0 }.count) / Float(resultArray.count)
-//    }
-
     func compare(to arraySimd4x4: Frame) -> Float {
         let resultArray = self.enumerated().map { index, simd4x4 -> Float in
             let difference = simd4x4 - arraySimd4x4[index]
             let simd4x4ResultArray = difference.allValues.map { value in
                 1 - abs(value) / 2
             }
+
+            // ------ Matrix Printing  ------
+//            print("\nComparison Value:")
+//            comparisonFrameValue.printf()
+//            print("\nCurrent Value:")
+//            jointModelTransformsCurrent.printf()
+//            print("\nDifference:")
+//            difference.printf()
+            // ------------------------------
+
             return simd4x4ResultArray.averageValue
         }
         return resultArray.averageValue
     }
 
     func printf() {
-        self.forEach { element in
-            print("\n")
-            print(round(element.columns.0 * 100) / 100.0)
-            print(round(element.columns.1 * 100) / 100.0)
-            print(round(element.columns.2 * 100) / 100.0)
-            print(round(element.columns.3 * 100) / 100.0)
-        }
-//        print(result)
+        self.forEach { $0.printf() }
     }
 
 }
@@ -528,6 +523,13 @@ extension simd_float4x4 {
             self.columns.3.z,
 //            self.columns.3.w
         ]
+    }
+
+    func printf() {
+        print(round(self.columns.0 * 100) / 100.0)
+        print(round(self.columns.1 * 100) / 100.0)
+        print(round(self.columns.2 * 100) / 100.0)
+        print(round(self.columns.3 * 100) / 100.0)
     }
 
 }

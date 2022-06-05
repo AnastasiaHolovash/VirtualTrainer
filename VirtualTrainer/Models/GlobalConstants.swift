@@ -10,9 +10,9 @@ import Foundation
 enum GlobalConstants {
     static let mode: Mode = .training
 
-    static let startStopMovementRange: ClosedRange<Float> = 0...0.97
+    static let startStopMovementRange: ClosedRange<Float> = 0...0.995
     static let closeToEqualRange: ClosedRange<Float> = 0.9...1
-    static let veryCloseToEqualRange: ClosedRange<Float> = 0.98...1
+    static let veryCloseToEqualRange: ClosedRange<Float> = 0.999...1
     static let characterOffset: SIMD3<Float> = [-0.5, 0, 0]
     static let characterScale: SIMD3<Float> = [1.0, 1.0, 1.0]
     static let framesComparisonAccuracy: Float = 0.2
@@ -22,8 +22,8 @@ enum GlobalConstants {
     /// Based on difference between moment of detection and recorded frames
     static let exerciseFramesFirstIndex: Int = 1
 
-    static let trackingJointNames : Set<ARSkeletonJoint> = [
-        .root,
+    static let trackingJointNames : [ARSkeletonJoint] = [
+//        .root,
         .hips_joint,
         .left_upLeg_joint,
         .left_leg_joint,
@@ -32,11 +32,11 @@ enum GlobalConstants {
         .right_leg_joint,
         .right_foot_joint,
         .spine_1_joint,
-        .spine_2_joint,
-        .spine_3_joint,
+//        .spine_2_joint,
+//        .spine_3_joint,
         .spine_4_joint,
-        .spine_5_joint,
-        .spine_6_joint,
+//        .spine_5_joint,
+//        .spine_6_joint,
         .spine_7_joint,
         .left_shoulder_1_joint,
         .left_arm_joint,
