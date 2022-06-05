@@ -9,6 +9,7 @@ import SwiftUI
 import RealityKit
 import ARKit
 import Combine
+import Vision
 
 struct ContentView : View {
 
@@ -22,20 +23,32 @@ struct ContentView : View {
     @State var timerCancellable: AnyCancellable? = nil
     @State var isRecording: Bool = false
     @State var buttonState: ButtonState = .start
+    @State var some: String = ""
+    @State var comparisonFrameValue: Frame = []
+
 
     var body: some View {
         ZStack {
             ARViewContainer(
                 jointModelTransforms: $jointModelTransforms,
-                isRecording: $isRecording
+                isRecording: $isRecording,
+                some: $some,
+                comparisonFrameValue: $comparisonFrameValue
             )
             .edgesIgnoringSafeArea(.all)
 
             Text(timerValue < Constants.timetStartTime + 1 ? "\(timerValue)" : "")
                 .font(.system(size: 100))
 
-            VStack {
+            VStack(spacing: 16) {
                 Spacer()
+
+                Text("\(some)")
+                    .font(.system(size: 20, weight: .bold))
+                .padding()
+                .background(.purple)
+                .foregroundColor(.white)
+                .cornerRadius(10)
 
                 HStack {
                     Button {
@@ -63,9 +76,11 @@ struct ContentView : View {
 //                        print(frames[0..<5])
 //                        print("--- Last 5 ---")
 //                        print(frames[(frames.count - 5)..<frames.count])
-                        print("\nShow")
+                        print("\nFix")
+                        print(jointModelTransforms, "\n")
+                        comparisonFrameValue = jointModelTransforms
                     } label: {
-                        Text("Show")
+                        Text("Fix")
                             .font(.system(size: 20, weight: .bold))
                     }
                     .padding()
@@ -109,6 +124,8 @@ struct ARViewContainer: UIViewRepresentable {
 
     @Binding var jointModelTransforms: Frame
     @Binding var isRecording: Bool
+    @Binding var some: String
+    @Binding var comparisonFrameValue: Frame
 
     func makeUIView(context: Context) -> ARView {
         
@@ -127,7 +144,9 @@ struct ARViewContainer: UIViewRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(
             jointModelTransforms: $jointModelTransforms,
-            isRecording: $isRecording
+            isRecording: $isRecording,
+            some: $some,
+            comparisonFrameValue: $comparisonFrameValue
         )
     }
     
@@ -146,6 +165,7 @@ struct ARViewContainer: UIViewRepresentable {
         var cancellables: Set<AnyCancellable> = Set()
 
         @Binding var jointModelTransformsCurrent: Frame
+        @Binding var some: String
 
         /// True if timer is out
         @Binding var isTrainingInProgress: Bool
@@ -154,17 +174,21 @@ struct ARViewContainer: UIViewRepresentable {
 
         // Recording
         var exerciseFrames: Frames = []
-        var comparisonFrameValue: Frame = []
+        @Binding var comparisonFrameValue: Frame
         // Training
         var exerciseFramesLoaded: Frames = []
         var exerciseFramesCount: Int = 0
 
         init(
             jointModelTransforms: Binding<[simd_float4x4]>,
-            isRecording: Binding<Bool>
+            isRecording: Binding<Bool>,
+            some: Binding<String>,
+            comparisonFrameValue: Binding<Frame>
         ) {
             _jointModelTransformsCurrent = jointModelTransforms
             _isTrainingInProgress = isRecording
+            _some = some
+            _comparisonFrameValue = comparisonFrameValue
             super.init()
 
             cancellable = Entity.loadBodyTrackedAsync(named: "robot")
@@ -191,14 +215,23 @@ struct ARViewContainer: UIViewRepresentable {
 
         // MARK: - Delegate method
 
+        let trackingJointNamesRawValues: [Int] = {
+            GlobalConstants.trackingJointNames.map { $0.rawValue }
+        }()
+
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
             for anchor in anchors {
                 guard let bodyAnchor = anchor as? ARBodyAnchor else { continue }
 
-                jointModelTransformsCurrent = bodyAnchor.skeleton.jointModelTransforms
+                let transforms = bodyAnchor.skeleton.jointModelTransforms
+                jointModelTransformsCurrent = trackingJointNamesRawValues.map {  transforms[$0] }
+
+//                jointModelTransformsCurrent = []
+//                jointModelTransformsCurrent.append(bodyAnchor.skeleton.modelTransform(for: .leftHand) ?? simd_float4x4())
+//                jointModelTransformsCurrent.append(bodyAnchor.skeleton.modelTransform(for: .leftShoulder) ?? simd_float4x4())
 
                 if isTrainingInProgress && !isRecording {
-                    print("***** Check If STARTED *****")
+                    print("\n***** Check If STARTED *****")
                     _ = self.checkIfExerciseStarted()
                 }
 
@@ -235,6 +268,8 @@ struct ARViewContainer: UIViewRepresentable {
             }
         }
 
+        // MARK: - Check If Started
+
         func checkIfExerciseStarted() -> Bool {
             guard !comparisonFrameValue.isEmpty else {
                 comparisonFrameValue = jointModelTransformsCurrent
@@ -244,7 +279,18 @@ struct ARViewContainer: UIViewRepresentable {
             let resultValue = jointModelTransformsCurrent.compare(to: comparisonFrameValue)
 
             let result = resultValue.isStartStopMovement
-            print("\n---- Compare ---- \(resultValue * 100)% ----- \(result)")
+            print("---- Compare ---- \(resultValue * 100)% ----- \(result)")
+            some = "\(resultValue * 100)%"
+
+//            print("\nComparison Value:")
+//            comparisonFrameValue.printf()
+//            print("\nCurrent Value:")
+//            jointModelTransformsCurrent.printf()
+            print("\nDifference:")
+            let diff = jointModelTransformsCurrent.enumerated().map { index, simd_4x4 in
+                simd_4x4 - comparisonFrameValue[index]
+            }
+            diff.printf()
 
             if GlobalConstants.mode == .recording && result {
 //                print("Clear exerciseFrames   from: \(exerciseFrames.count)")
@@ -252,9 +298,7 @@ struct ARViewContainer: UIViewRepresentable {
 //                print("                       to: \(exerciseFrames.count)")
             }
 
-            isRecording = result
-
-//            comparisonFrameValue = jointModelTransformsCurrent
+//            isRecording = result
 
             return result
         }
@@ -337,7 +381,7 @@ struct ARViewContainer: UIViewRepresentable {
 
         /// For exercise recording process
         func cropOneIteration() {
-            var previousChecked = exerciseFrames.last
+            let previousChecked = exerciseFrames.last
             let (frameIndex, _) = exerciseFrames.reversed().enumerated().first { index, frame in
                 guard index < exerciseFrames.count - 1,
                       let previous = previousChecked
@@ -349,8 +393,6 @@ struct ARViewContainer: UIViewRepresentable {
                 let result = resultValue.isStartStopMovement
 
                 print("\n---- Compare ---- \(resultValue * 100)% ----- \(result)")
-
-//                previousChecked = frame
 
                 return result
             } ?? (exerciseFrames.count - 1, exerciseFrames.last)
@@ -384,26 +426,6 @@ struct ARViewContainer: UIViewRepresentable {
 
 }
 
-enum GlobalConstants {
-    static let mode: Mode = .recording
-    static let startStopMovementRange: ClosedRange<Float> = 0...0.97
-    static let closeToEqualRange: ClosedRange<Float> = 0.9...1
-    static let veryCloseToEqualRange: ClosedRange<Float> = 0.98...1
-    static let characterOffset: SIMD3<Float> = [-0.5, 0, 0]
-    static let characterScale: SIMD3<Float> = [1.0, 1.0, 1.0]
-    static let framesComparisonAccuracy: Float = 0.1
-    static let couldDetectEndOfIterationIndicator: Float = 0.5
-    /// Number of frames in static position
-    static let staticPositionIndicator: Int = 4
-    /// Based on difference between moment of detection and recorded frames
-    static let exerciseFramesFirstIndex: Int = 1
-
-    enum Mode {
-        case recording
-        case training
-    }
-}
-
 extension Float {
 
     var isStartStopMovement: Bool {
@@ -420,14 +442,45 @@ extension Float {
 
 }
 
+
 extension Array where Element == simd_float4x4 {
 
-    func compare(to array: Frame) -> Float {
-        let resultArray = self.enumerated().map { index, simd4x4 -> Bool in
-            return simd_almost_equal_elements(simd4x4, array[index], GlobalConstants.framesComparisonAccuracy)
-        }
+//    func compare(to array: Frame) -> Float {
+//        let resultArray = self.enumerated().map { index, simd4x4 -> Bool in
+//            return simd_almost_equal_elements(simd4x4, array[index], GlobalConstants.framesComparisonAccuracy)
+//        }
+//
+//        return Float(resultArray.filter { $0 }.count) / Float(resultArray.count)
+//    }
 
-        return Float(resultArray.filter { $0 }.count) / Float(resultArray.count)
+    func compare(to arraySimd4x4: Frame) -> Float {
+        let resultArray = self.enumerated().map { index, simd4x4 -> Float in
+            let difference = simd4x4 - arraySimd4x4[index]
+            let simd4x4ResultArray = difference.allValues.map { value in
+                1 - abs(value) / 2
+            }
+            return simd4x4ResultArray.averageValue
+        }
+        return resultArray.averageValue
+    }
+
+    func printf() {
+        self.forEach { element in
+            print("\n")
+            print(round(element.columns.0 * 100) / 100.0)
+            print(round(element.columns.1 * 100) / 100.0)
+            print(round(element.columns.2 * 100) / 100.0)
+            print(round(element.columns.3 * 100) / 100.0)
+        }
+//        print(result)
+    }
+
+}
+
+extension Array where Element == Float {
+
+    var averageValue: Float {
+        self.reduce(0, +) / Float(self.count)
     }
 
 }
@@ -450,6 +503,35 @@ extension ContentView {
     }
 
 }
+
+extension simd_float4x4 {
+
+    var allValues: [Float] {
+        [
+            self.columns.0.x,
+            self.columns.0.y,
+            self.columns.0.z,
+//            self.columns.0.w,
+
+            self.columns.1.x,
+            self.columns.1.y,
+            self.columns.1.z,
+//            self.columns.1.w,
+
+            self.columns.2.x,
+            self.columns.2.y,
+            self.columns.2.z,
+//            self.columns.2.w,
+
+            self.columns.3.x,
+            self.columns.3.y,
+            self.columns.3.z,
+//            self.columns.3.w
+        ]
+    }
+
+}
+
 
 #if DEBUG
 //struct ContentView_Previews : PreviewProvider {

@@ -16,6 +16,8 @@
 		5D23E6412846D4900003BAD3 /* UserDefaultsTemporary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E6402846D4900003BAD3 /* UserDefaultsTemporary.swift */; };
 		5D23E643284800C40003BAD3 /* Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E642284800C40003BAD3 /* Frame.swift */; };
 		5D23E647284A67CF0003BAD3 /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E646284A67CF0003BAD3 /* Exercise.swift */; };
+		5D23E64A284CDCD70003BAD3 /* ARSkeletonJoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E649284CDCD70003BAD3 /* ARSkeletonJoint.swift */; };
+		5D23E64C284CDD630003BAD3 /* GlobalConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E64B284CDD630003BAD3 /* GlobalConstants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +33,9 @@
 		5D23E6402846D4900003BAD3 /* UserDefaultsTemporary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTemporary.swift; sourceTree = "<group>"; };
 		5D23E642284800C40003BAD3 /* Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
 		5D23E646284A67CF0003BAD3 /* Exercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exercise.swift; sourceTree = "<group>"; };
+		5D23E648284C08650003BAD3 /* AR Session 3.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 3.mov"; sourceTree = "<group>"; };
+		5D23E649284CDCD70003BAD3 /* ARSkeletonJoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSkeletonJoint.swift; sourceTree = "<group>"; };
+		5D23E64B284CDD630003BAD3 /* GlobalConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalConstants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +52,7 @@
 		5D23E61E284421AB0003BAD3 = {
 			isa = PBXGroup;
 			children = (
+				5D23E648284C08650003BAD3 /* AR Session 3.mov */,
 				5D23E63F2846C4D20003BAD3 /* AR Session 2.mov */,
 				5D23E63E2846A5B20003BAD3 /* AR Session 1.mov */,
 				5D23E629284421AB0003BAD3 /* VirtualTrainer */,
@@ -98,6 +104,8 @@
 			children = (
 				5D23E642284800C40003BAD3 /* Frame.swift */,
 				5D23E646284A67CF0003BAD3 /* Exercise.swift */,
+				5D23E649284CDCD70003BAD3 /* ARSkeletonJoint.swift */,
+				5D23E64B284CDD630003BAD3 /* GlobalConstants.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -186,6 +194,8 @@
 				5D23E62B284421AB0003BAD3 /* AppDelegate.swift in Sources */,
 				5D23E62F284421AB0003BAD3 /* Experience.rcproject in Sources */,
 				5D23E643284800C40003BAD3 /* Frame.swift in Sources */,
+				5D23E64A284CDCD70003BAD3 /* ARSkeletonJoint.swift in Sources */,
+				5D23E64C284CDD630003BAD3 /* GlobalConstants.swift in Sources */,
 				5D23E647284A67CF0003BAD3 /* Exercise.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
