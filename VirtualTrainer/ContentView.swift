@@ -208,9 +208,8 @@ struct ARViewContainer: UIViewRepresentable {
 
             if GlobalConstants.mode == .training {
                 exerciseFramesLoaded = Defaults.shared.getExerciseTargetFrames()
+                exerciseFramesCount = exerciseFramesLoaded.count
             }
-
-            exerciseFramesCount = exerciseFramesLoaded.count
         }
 
         // MARK: - Delegate method
@@ -218,6 +217,8 @@ struct ARViewContainer: UIViewRepresentable {
         let trackingJointNamesRawValues: [Int] = {
             GlobalConstants.trackingJointNames.map { $0.rawValue }
         }()
+
+        var wasRecorded = false
 
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
             for anchor in anchors {
@@ -232,6 +233,7 @@ struct ARViewContainer: UIViewRepresentable {
                 }
 
                 if isTrainingInProgress && isRecording {
+                    wasRecorded = true
                     switch GlobalConstants.mode {
                     case .recording:
                         exerciseFrames.append(jointModelTransformsCurrent)
@@ -248,10 +250,11 @@ struct ARViewContainer: UIViewRepresentable {
                     if GlobalConstants.mode == .recording {
                         cropOneIteration()
                         exerciseFrames = []
-                    } else {
-                        print("\n ---- Iterations Results ----")
-                        makeTrainingDescription(from: iterationsResults)
                     }
+                }
+                if GlobalConstants.mode == .training && !isTrainingInProgress && wasRecorded {
+                    print("\n ---- Iterations Results ----")
+                    makeTrainingDescription(from: iterationsResults)
                 }
 
                 let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
@@ -342,7 +345,6 @@ struct ARViewContainer: UIViewRepresentable {
                     }
 
                     print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
-                    some = "\(currentNumberOfStaticFrames)"
                 }
             }
 
@@ -350,6 +352,7 @@ struct ARViewContainer: UIViewRepresentable {
             if currentNumberOfStaticFrames == GlobalConstants.staticPositionIndicator {
                 // Start detection start of iteration
                 print("\nNew iteration initiated by User")
+                iterationsResults[numberOfIterations].removeLast(GlobalConstants.staticPositionIndicator - 1)
                 startDetectionStartOfIteration()
             } else {
                 // Recording results
@@ -358,6 +361,8 @@ struct ARViewContainer: UIViewRepresentable {
                 let resultValue = jointModelTransformsCurrent.compare(to: targetFrame)
                 print("---- Compare With Target ---- \(resultValue * 100)% ----- \(exerciseFramesIndex)")
                 iterationsResults[numberOfIterations].append(resultValue)
+
+                some = "-\(currentNumberOfStaticFrames)- \(iterationsResults.count): \(iterationsResults[numberOfIterations].count)"
 
                 if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
                     exerciseFramesIndex += 1
@@ -407,20 +412,27 @@ struct ARViewContainer: UIViewRepresentable {
         }
 
         func makeTrainingDescription(from results: [[Float]]) {
-            let numberOfIterations = results.count
-            print("Number Of Iterations: \(numberOfIterations)\n")
-
-            var iterationsScores: [Float] = []
+            var iterations: [IterationResults] = []
 
             results.enumerated().forEach { index, iteration in
-                let score = iteration.reduce(0.0, +) / Float(iteration.count)
-                iterationsScores.append(score)
-                print("Score of \(index + 1) Iteration: \(Int(score * 100))%")
+                if iteration.count > exerciseFramesCount / 3 * 2 {
+                    let score = iteration.reduce(0.0, +) / Float(iteration.count)
+                    iterations.append(IterationResults(
+                        score: score,
+                        speed: Float(iteration.count) / Float(exerciseFramesCount)
+                    ))
+
+                    print("Score of \(index + 1) Iteration: \(Int(score * 100))%")
+                    print(iterations.last!.speedDescription)
+//                    print(iteration)
+                }
             }
 
-            let score = iterationsScores.reduce(0.0, +) / Float(numberOfIterations)
-            print("\nGeneral score: \(Int(score * 100))%")
+            let numberOfIterations = iterations.count
+            print("Number Of Iterations: \(numberOfIterations)\n")
 
+            let score = iterations.reduce(0.0) { $0 + $1.score } / Float(numberOfIterations)
+            print("\nGeneral score: \(Int(score * 100))%")
         }
 
     }
