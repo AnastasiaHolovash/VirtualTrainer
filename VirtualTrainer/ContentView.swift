@@ -318,7 +318,7 @@ struct ARViewContainer: UIViewRepresentable {
 
         func compareTrainingWithTarget() {
             let lastTargetFrame = exerciseFramesLoaded.last
-/**
+
             // Detection end of iteration
             if couldDetectEndOfIteration,
                let last = lastTargetFrame {
@@ -342,25 +342,26 @@ struct ARViewContainer: UIViewRepresentable {
                     }
 
                     print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
+                    some = "\(currentNumberOfStaticFrames)"
                 }
             }
 
-            // Start detection start of iteration
+
             if currentNumberOfStaticFrames == GlobalConstants.staticPositionIndicator {
+                // Start detection start of iteration
                 print("\nNew iteration initiated by User")
                 startDetectionStartOfIteration()
-            }
- */
+            } else {
+                // Recording results
+                let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
 
-            // Recording results
-            let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
+                let resultValue = jointModelTransformsCurrent.compare(to: targetFrame)
+                print("---- Compare With Target ---- \(resultValue * 100)% ----- \(exerciseFramesIndex)")
+                iterationsResults[numberOfIterations].append(resultValue)
 
-            let resultValue = jointModelTransformsCurrent.compare(to: targetFrame)
-            print("---- Compare With Target ---- \(resultValue * 100)% ----- \(exerciseFramesIndex)")
-            iterationsResults[numberOfIterations].append(resultValue)
-
-            if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
-                exerciseFramesIndex += 1
+                if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
+                    exerciseFramesIndex += 1
+                }
             }
         }
 
