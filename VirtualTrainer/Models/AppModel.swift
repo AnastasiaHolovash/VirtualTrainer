@@ -9,20 +9,20 @@ import SwiftUI
 import Combine
 
 class AppModel: ObservableObject {
-    // Tab Bar
-//    @Published var showTab: Bool = true
 
-    // Navigation Bar
     @Published var showNav: Bool = true
 
-    // Add Exercise
-//    @Published var selectedModal: Modal = .signUp
-//    @Published var showAddExercise: Bool = false
-//    @Published var dismissAddExercise: Bool = false
+    @Published var showAddExercise: Bool = false
 
-    // Detail View
     @Published var showDetail: Bool = false
     @Published var selectedExercise: Int = 0
+
+    @Published var showResults: Bool = false
+    @Published var currentTraining: Training = Training(
+        exercise: exerciseMock,
+        iterations: [iterationResultsMock, iterationResultsMock,iterationResultsMock],
+        duration: 4855
+    )
 
     @Published var exercises: [Exercise] = [
         Exercise(

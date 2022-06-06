@@ -15,12 +15,32 @@ struct Exercise: Identifiable {
     let recommendations: String
     let image: String
     let frames: Frames
+}
 
-    enum Complexity {
-        case easy
-        case normal
-        case hard
+enum Complexity {
+    case easy
+    case normal
+    case hard
+
+    var description: String {
+        switch self {
+        case .easy:
+            return "♦ Легко"
+        case .normal:
+            return "♦♦ Нормально"
+        case .hard:
+            return "♦♦♦ Важко"
+        }
     }
+}
+
+struct NewExercise: Identifiable {
+    let id = UUID()
+    var name: String = ""
+    var complexity: Complexity?
+    var recommendations: String = ""
+    var image: String?
+    var frames: Frames = []
 }
 
 let exerciseMock = Exercise(

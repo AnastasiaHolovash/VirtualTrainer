@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CourseItem: View {
+struct ExerciseItem: View {
     var namespace: Namespace.ID
     var exercise: Exercise
 
@@ -80,7 +80,7 @@ struct CardItem_Previews: PreviewProvider {
     @Namespace static var namespace
 
     static var previews: some View {
-        CourseItem(namespace: namespace, exercise: exerciseMock)
+        ExerciseItem(namespace: namespace, exercise: exerciseMock)
             .environmentObject(AppModel())
     }
 }

@@ -15,6 +15,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var model: AppModel
+    @State var newExercise = NewExercise()
 
     var body: some View {
         ZStack {
@@ -23,15 +24,12 @@ struct ContentView: View {
                     VStack {}.frame(height: 44)
                 }
 
-//            if model.showModal {
-//                ModalView()
-//                    .accessibilityIdentifier("Identifier")
-//            }
+            if model.showAddExercise {
+                AddExerciseView(exercise: $newExercise)
+                    .accessibilityIdentifier("Identifier")
+            }
         }
         .dynamicTypeSize(.large ... .xxLarge)
-//        .sheet(isPresented: $showAccount) {
-//            AccountView()
-//        }
     }
 }
 

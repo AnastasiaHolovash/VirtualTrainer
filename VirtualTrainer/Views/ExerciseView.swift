@@ -17,6 +17,10 @@ struct ExerciseView: View {
 
     var body: some View {
         ZStack {
+            if model.showResults {
+                TrainingResultView(training: $model.currentTraining)
+            }
+
             ScrollView {
                 cover
                     .overlay(PlayButton())
@@ -72,8 +76,6 @@ struct ExerciseView: View {
                         .font(.title3)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary.opacity(0.5))
-
-
                 }
                 .padding(20)
                 .background(
@@ -84,22 +86,37 @@ struct ExerciseView: View {
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .padding(20)
 
+                ZStack {
+                    angularGradient
+                    LinearGradient(gradient: Gradient(
+                        colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(0.6)]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .cornerRadius(20)
+                    .blendMode(.softLight)
 
-                Button {
+                    Button {
+                        model.showResults = true
+                    } label: {
+                        Text("Почати")
+                            .font(.title2).bold()
+                            .frame(maxWidth: .infinity)
 
-                } label: {
-                    Text("Почати")
-                        .font(.title2).bold()
+                    }
+                    .padding()
+                    .foregroundColor(.white)
+                    .background(.ultraThinMaterial)
+                    .background(
+                        ZStack {
+                            Image("Background 4")
+                                .resizable()
+                        }
+                    )
+                    .cornerRadius(20)
                 }
-                .padding()
-                .frame(width: 340)
-                .foregroundColor(.white)
-                .background(.ultraThinMaterial)
-                .background(
-                    Image("Background 4")
-                        .resizable()
-                )
-                .cornerRadius(20)
+                .frame(height: 60, alignment: .center)
+                .padding(.horizontal, 20)
             }
             .offset(y: 100)
         )
@@ -121,6 +138,21 @@ struct ExerciseView: View {
         }
         .padding(20)
     }
+}
+
+var angularGradient: some View {
+    RoundedRectangle(cornerRadius: 20)
+        .fill(.clear)
+        .overlay(AngularGradient(
+            gradient: Gradient(stops: [
+                .init(color: Color(#colorLiteral(red: 0, green: 0.5199999809265137, blue: 1, alpha: 1)), location: 0.0),
+                .init(color: Color(#colorLiteral(red: 0.2156862745, green: 1, blue: 0.8588235294, alpha: 1)), location: 0.4),
+                .init(color: Color(#colorLiteral(red: 1, green: 0.4196078431, blue: 0.4196078431, alpha: 1)), location: 0.5),
+                .init(color: Color(#colorLiteral(red: 1, green: 0.1843137255, blue: 0.6745098039, alpha: 1)), location: 0.8)]),
+            center: .center
+        ))
+        .padding(6)
+        .blur(radius: 20)
 }
 
 #if DEBUG

@@ -8,22 +8,45 @@
 import Foundation
 
 struct IterationResults {
+    let number: Int
     let score: Float
     let speed: Float
 
     var speedDescription: String {
         switch speed {
         case 0.9...1.1:
-            return "Good"
+            return "Нормальна швидкість"
 
         case ...0.9:
-            return "Faster on \(round(1 / speed * 100) / 100) times"
+            return "Швидше у \((1 / speed).roundedToTwoDigits) разів"
 
         case 1.1...:
-            return "Slower on \(round(speed * 100) / 100) times"
+            return "Повільніше у \(speed.roundedToTwoDigits) разів"
 
         default:
             return ""
         }
     }
+
+    var normalisedScore: Float {
+        (score - 0.5) / 0.5
+    }
+
+    var scoreDescription: String {
+        return "\(Int(normalisedScore * 100))%"
+    }
+
+    var quality: String {
+        return "Хороша якість"
+    }
 }
+
+extension Float {
+
+    var roundedToTwoDigits: Float {
+        (self * 100).rounded() / 100
+    }
+
+}
+
+let iterationResultsMock = IterationResults(number: 3, score: 0.9, speed: 0.9)

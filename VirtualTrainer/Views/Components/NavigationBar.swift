@@ -36,7 +36,7 @@ struct NavigationBar: View {
             HStack(spacing: 16) {
                 Button {
                     withAnimation {
-
+                        model.showAddExercise = true
                     }
                 } label: {
                     LogoView(image: "plus")

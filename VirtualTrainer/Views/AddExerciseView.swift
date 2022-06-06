@@ -12,8 +12,7 @@ struct AddExerciseView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var model: AppModel
 
-    var namespace: Namespace.ID
-    var exercise: Exercise
+    @Binding var exercise: NewExercise
 
     var body: some View {
         ZStack {
@@ -21,7 +20,7 @@ struct AddExerciseView: View {
                 cover
                     .overlay(AddButton())
                 content
-                    .padding(.vertical, 80)
+                    .padding(.vertical, 30)
             }
             .coordinateSpace(name: "scroll")
             .background(Color("Background"))
@@ -34,7 +33,6 @@ struct AddExerciseView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .padding(20)
-            .ignoresSafeArea()
         }
         .zIndex(1)
     }
@@ -46,7 +44,7 @@ struct AddExerciseView: View {
         .frame(maxWidth: .infinity)
         .frame(height: 500)
         .background(
-            Image(exercise.image)
+            Image("Background 2")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .accessibility(hidden: true)
@@ -63,16 +61,34 @@ struct AddExerciseView: View {
             VStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 8) {
 
-                    Text(exercise.name)
-                        .font(.title).bold()
+                    TextField("Назва", text: $exercise.name)
+                        .font(.title.bold())
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary)
 
-                    Text("Complexity ♦ Low")
-                        .font(.title3)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(.primary.opacity(0.5))
+                    HStack {
+                        Text("Складність")
 
+                        Menu {
+                            Button(
+                                action: { exercise.complexity = .hard },
+                                label: { Text(Complexity.hard.description) }
+                            )
+                            Button(
+                                action: { exercise.complexity = .normal },
+                                label: { Text(Complexity.normal.description) }
+                            )
+                            Button(
+                                action: { exercise.complexity = .easy },
+                                label: { Text(Complexity.easy.description) }
+                            )
+                        } label: {
+                            Text((exercise.complexity == nil ? "♦ Обрати" : exercise.complexity?.description) ?? "")
+                        }
+                    }
+                    .font(.title3)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .foregroundColor(.primary.opacity(0.5))
 
                 }
                 .padding(20)
@@ -84,31 +100,15 @@ struct AddExerciseView: View {
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .padding(20)
 
-                Button {
-
-                } label: {
-                    Text("Готово")
-                        .font(.title2).bold()
-                }
-                .padding()
-                .frame(width: 340)
-                .foregroundColor(.white)
-                .background(.ultraThinMaterial)
-                .background(
-                    Image("Background 4")
-                        .resizable()
-                )
-                .cornerRadius(20)
             }
-            .offset(y: 100)
+            .offset(y: 50)
         )
 
     }
 
     func close() {
         withAnimation(.closeCard.delay(0.2)) {
-            model.showDetail = false
-            model.selectedExercise = 0
+            model.showAddExercise = false
         }
     }
 
@@ -116,9 +116,58 @@ struct AddExerciseView: View {
         VStack(alignment: .leading, spacing: 30) {
             Text("Рекомендації")
                 .font(.title).bold()
-            Text(exercise.recommendations)
+
+            TextEditor(text: $exercise.recommendations)
+                .frame(height: 100)
+                .cornerRadius(20)
+
+            ZStack {
+                angularGradient
+                LinearGradient(gradient: Gradient(
+                    colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(0.6)]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .cornerRadius(20)
+                .blendMode(.softLight)
+
+                Button {
+
+                } label: {
+                    Text("Готово")
+                        .font(.title2).bold()
+                        .frame(maxWidth: .infinity)
+
+                }
+                .padding()
+                .foregroundColor(.white)
+                .background(.ultraThinMaterial)
+                .background(
+                    ZStack {
+                        Image("Background 4")
+                            .resizable()
+                    }
+                )
+                .cornerRadius(20)
+            }
+            .frame(height: 60, alignment: .center)
         }
         .padding(20)
+    }
+
+    var angularGradient: some View {
+        RoundedRectangle(cornerRadius: 20)
+            .fill(.clear)
+            .overlay(AngularGradient(
+                gradient: Gradient(stops: [
+                    .init(color: Color(#colorLiteral(red: 0, green: 0.5199999809265137, blue: 1, alpha: 1)), location: 0.0),
+                    .init(color: Color(#colorLiteral(red: 0.2156862745, green: 1, blue: 0.8588235294, alpha: 1)), location: 0.4),
+                    .init(color: Color(#colorLiteral(red: 1, green: 0.4196078431, blue: 0.4196078431, alpha: 1)), location: 0.5),
+                    .init(color: Color(#colorLiteral(red: 1, green: 0.1843137255, blue: 0.6745098039, alpha: 1)), location: 0.8)]),
+                center: .center
+            ))
+            .padding(6)
+            .blur(radius: 20)
     }
 }
 
@@ -127,7 +176,7 @@ struct AddExerciseView_Previews: PreviewProvider {
     @Namespace static var namespace
 
     static var previews: some View {
-        AddExerciseView(namespace: namespace, exercise: exerciseMock)
+        AddExerciseView(exercise: .constant(NewExercise(name: "", complexity: .easy, recommendations: "", image: "", frames: [])))
     }
 }
 #endif
