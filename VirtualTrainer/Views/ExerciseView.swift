@@ -14,6 +14,7 @@ struct ExerciseView: View {
 
     var namespace: Namespace.ID
     var exercise: Exercise
+    @State var isPresented: Bool = false
 
     var body: some View {
         ZStack {
@@ -96,13 +97,13 @@ struct ExerciseView: View {
                     .cornerRadius(20)
                     .blendMode(.softLight)
 
-                    Button {
-                        model.showResults = true
+                    NavigationLink {
+                        ARTrainingView(currentResults: CurrentResults())
+                            .navigationBarHidden(true)
                     } label: {
                         Text("Почати")
                             .font(.title2).bold()
                             .frame(maxWidth: .infinity)
-
                     }
                     .padding()
                     .foregroundColor(.white)

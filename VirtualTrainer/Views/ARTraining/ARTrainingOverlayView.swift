@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct ARTrainingOverlayView: View {
-    @State var model: CurrentResults
+    @Binding var model: CurrentResults
 
     var body: some View {
         ZStack {
-            if model.timer > 0 {
+            if model.timer < GlobalConstants.timerStartTime + 1 {
                 Text("\(model.timer)")
                     .animatableFont(size: 100, weight: .semibold)
                     .background(
@@ -83,7 +83,10 @@ struct ARTrainingOverlayView: View {
                             .backgroundStyle(cornerRadius: 20)
                     )
 
-                    PlayPauseButton(state: model.playPauseButtonState)
+                    PlayPauseButton(state: $model.playPauseButtonState)
+                        .onTapGesture {
+                            model.playPauseButtonState = model.playPauseButtonState.toggle()
+                        }
 
                     VStack(spacing: 6) {
                         Text("\(model.iterationCount) разів")
@@ -104,17 +107,8 @@ struct ARTrainingOverlayView: View {
     }
 }
 
-struct CurrentResults {
-    var quality: String
-    var speed: Float
-    var iterationCount: Int
-    var seconds: Int
-    var timer: Int
-    var playPauseButtonState: PlayPauseButtonState
-}
-
-struct ARTrainingOverlayView_Previews: PreviewProvider {
-    static var previews: some View {
-        ARTrainingOverlayView(model: .init(quality: "Нормально", speed: 0.9, iterationCount: 5, seconds: 1990028, timer: 0, playPauseButtonState: .play))
-    }
-}
+//struct ARTrainingOverlayView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ARTrainingOverlayView(model: .constant(.init(quality: "Нормально", speed: 0.9, iterationCount: 5, seconds: 1990028, timer: 0, playPauseButtonState: .play)))
+//    }
+//}

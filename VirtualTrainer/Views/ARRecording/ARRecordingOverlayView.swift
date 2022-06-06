@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct ARRecordingOverlayView: View {
-    @State var model: RecordingData
+    @Binding var model: RecordingData
+    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         ZStack {
-            if model.timer > 0 {
+            if model.timer < GlobalConstants.timerStartTime + 1 {
                 Text("\(model.timer)")
                     .animatableFont(size: 100, weight: .semibold)
                     .background(
@@ -44,7 +45,7 @@ struct ARRecordingOverlayView: View {
                             .blendMode(.softLight)
 
                             Button {
-
+                                presentationMode.wrappedValue.dismiss()
                             } label: {
                                 Text("Готово")
                                     .font(.body).bold()
@@ -61,19 +62,17 @@ struct ARRecordingOverlayView: View {
 
                 Spacer()
 
-                PlayPauseButton()
+                PlayPauseButton(state: $model.playPauseButtonState)
+                    .onTapGesture {
+                        model.playPauseButtonState = model.playPauseButtonState.toggle()
+                    }
             }
         }
     }
 }
 
-struct RecordingData {
-    var playPauseButtonState: PlayPauseButtonState
-    var timer: Int
-}
-
 struct ARRecordingOverlayView_Previews: PreviewProvider {
     static var previews: some View {
-        ARRecordingOverlayView(model: .init(playPauseButtonState: .pause, timer: 2))
+        ARRecordingOverlayView(model: .constant(.init(playPauseButtonState: .pause, timer: 2)))
     }
 }

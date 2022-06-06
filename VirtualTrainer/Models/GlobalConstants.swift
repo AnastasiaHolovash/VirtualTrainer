@@ -8,8 +8,7 @@
 import Foundation
 
 enum GlobalConstants {
-    static let mode: Mode = .training
-
+    static let timerStartTime: Int = 5
     static let startStopMovementRange: ClosedRange<Float> = 0...0.995
     static let closeToEqualRange: ClosedRange<Float> = 0.9...1
     static let veryCloseToEqualRange: ClosedRange<Float> = 0.999...1
@@ -23,7 +22,6 @@ enum GlobalConstants {
     static let exerciseFramesFirstIndex: Int = 1
 
     static let trackingJointNames : [ARSkeletonJoint] = [
-//        .root,
         .hips_joint,
         .left_upLeg_joint,
         .left_leg_joint,
@@ -32,21 +30,12 @@ enum GlobalConstants {
         .right_leg_joint,
         .right_foot_joint,
         .spine_1_joint,
-//        .spine_2_joint,
-//        .spine_3_joint,
         .spine_4_joint,
-//        .spine_5_joint,
-//        .spine_6_joint,
         .spine_7_joint,
         .left_shoulder_1_joint,
         .left_arm_joint,
         .left_forearm_joint,
         .left_hand_joint,
-//        .neck_1_joint,
-//        .neck_2_joint,
-//        .neck_3_joint,
-//        .neck_4_joint,
-//        .head_joint,
         .right_shoulder_1_joint,
         .right_arm_joint,
         .right_forearm_joint,
