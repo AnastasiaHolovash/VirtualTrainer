@@ -41,6 +41,12 @@
 		5D23E67D284E2FBA0003BAD3 /* ARTrainingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E67C284E2FBA0003BAD3 /* ARTrainingOverlayView.swift */; };
 		5D23E67F284E30210003BAD3 /* PlayPauseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E67E284E30210003BAD3 /* PlayPauseButton.swift */; };
 		5D23E681284E3EAD0003BAD3 /* ARRecordingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E680284E3EAD0003BAD3 /* ARRecordingOverlayView.swift */; };
+		5D23E685284E41940003BAD3 /* ARTrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E684284E41940003BAD3 /* ARTrainingView.swift */; };
+		5D23E687284E41A30003BAD3 /* ARRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E686284E41A30003BAD3 /* ARRecordingView.swift */; };
+		5D23E689284E42E30003BAD3 /* ProcessingARDataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E688284E42E30003BAD3 /* ProcessingARDataExtension.swift */; };
+		5D23E68C284E46C10003BAD3 /* ARTrackingViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E68B284E46C10003BAD3 /* ARTrackingViewContainer.swift */; };
+		5D23E68E284E482E0003BAD3 /* CurrentResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E68D284E482E0003BAD3 /* CurrentResults.swift */; };
+		5D23E690284E4B260003BAD3 /* UINavigationControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E68F284E4B260003BAD3 /* UINavigationControllerExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -85,6 +91,12 @@
 		5D23E67C284E2FBA0003BAD3 /* ARTrainingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrainingOverlayView.swift; sourceTree = "<group>"; };
 		5D23E67E284E30210003BAD3 /* PlayPauseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayPauseButton.swift; sourceTree = "<group>"; };
 		5D23E680284E3EAD0003BAD3 /* ARRecordingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARRecordingOverlayView.swift; sourceTree = "<group>"; };
+		5D23E684284E41940003BAD3 /* ARTrainingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrainingView.swift; sourceTree = "<group>"; };
+		5D23E686284E41A30003BAD3 /* ARRecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARRecordingView.swift; sourceTree = "<group>"; };
+		5D23E688284E42E30003BAD3 /* ProcessingARDataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessingARDataExtension.swift; sourceTree = "<group>"; };
+		5D23E68B284E46C10003BAD3 /* ARTrackingViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrackingViewContainer.swift; sourceTree = "<group>"; };
+		5D23E68D284E482E0003BAD3 /* CurrentResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentResults.swift; sourceTree = "<group>"; };
+		5D23E68F284E4B260003BAD3 /* UINavigationControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationControllerExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +175,7 @@
 				5D23E650284D2E040003BAD3 /* IterationResults.swift */,
 				5D23E659284D530E0003BAD3 /* PreferenceKey.swift */,
 				5D23E677284E0DC50003BAD3 /* Training.swift */,
+				5D23E68D284E482E0003BAD3 /* CurrentResults.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -178,13 +191,14 @@
 		5D23E658284D4E0F0003BAD3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5D23E67B284E2F240003BAD3 /* ARRecording */,
+				5D23E68A284E46990003BAD3 /* ARTraining */,
 				5D23E669284D59970003BAD3 /* Components */,
+				5D23E673284D795B0003BAD3 /* AddExerciseView.swift */,
 				5D23E62C284421AB0003BAD3 /* ContentView.swift */,
+				5D23E663284D58200003BAD3 /* ExerciseView.swift */,
 				5D23E652284D4AF90003BAD3 /* HomeView.swift */,
 				5D23E675284E0D700003BAD3 /* TrainingResultView.swift */,
-				5D23E663284D58200003BAD3 /* ExerciseView.swift */,
-				5D23E673284D795B0003BAD3 /* AddExerciseView.swift */,
-				5D23E67B284E2F240003BAD3 /* AROverlayViews */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -192,18 +206,14 @@
 		5D23E669284D59970003BAD3 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				5D23E661284D56660003BAD3 /* Modifiers.swift */,
-				5D23E65D284D55350003BAD3 /* Animations.swift */,
-				5D23E665284D59130003BAD3 /* CloseButton.swift */,
-				5D23E667284D593B0003BAD3 /* PlayButton.swift */,
-				5D23E66A284D59D20003BAD3 /* CircularView.swift */,
+				5D23E682284E40930003BAD3 /* Buttons */,
+				5D23E683284E40CE0003BAD3 /* Cells */,
 				5D23E66F284D5FC20003BAD3 /* AnimatableFontModifier.swift */,
-				5D23E65F284D561B0003BAD3 /* SportHumanView.swift */,
-				5D23E671284D77FB0003BAD3 /* AddButton.swift */,
-				5D23E679284E13260003BAD3 /* IterationRow.swift */,
+				5D23E65D284D55350003BAD3 /* Animations.swift */,
+				5D23E66A284D59D20003BAD3 /* CircularView.swift */,
+				5D23E661284D56660003BAD3 /* Modifiers.swift */,
 				5D23E654284D4D2D0003BAD3 /* NavigationBar.swift */,
-				5D23E65B284D54780003BAD3 /* ExerciseItem.swift */,
-				5D23E67E284E30210003BAD3 /* PlayPauseButton.swift */,
+				5D23E65F284D561B0003BAD3 /* SportHumanView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -212,17 +222,49 @@
 			isa = PBXGroup;
 			children = (
 				5D23E66D284D5A200003BAD3 /* ColorExtension.swift */,
+				5D23E688284E42E30003BAD3 /* ProcessingARDataExtension.swift */,
+				5D23E68F284E4B260003BAD3 /* UINavigationControllerExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		5D23E67B284E2F240003BAD3 /* AROverlayViews */ = {
+		5D23E67B284E2F240003BAD3 /* ARRecording */ = {
+			isa = PBXGroup;
+			children = (
+				5D23E680284E3EAD0003BAD3 /* ARRecordingOverlayView.swift */,
+				5D23E686284E41A30003BAD3 /* ARRecordingView.swift */,
+			);
+			path = ARRecording;
+			sourceTree = "<group>";
+		};
+		5D23E682284E40930003BAD3 /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				5D23E671284D77FB0003BAD3 /* AddButton.swift */,
+				5D23E67E284E30210003BAD3 /* PlayPauseButton.swift */,
+				5D23E667284D593B0003BAD3 /* PlayButton.swift */,
+				5D23E665284D59130003BAD3 /* CloseButton.swift */,
+			);
+			path = Buttons;
+			sourceTree = "<group>";
+		};
+		5D23E683284E40CE0003BAD3 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				5D23E679284E13260003BAD3 /* IterationRow.swift */,
+				5D23E65B284D54780003BAD3 /* ExerciseItem.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		5D23E68A284E46990003BAD3 /* ARTraining */ = {
 			isa = PBXGroup;
 			children = (
 				5D23E67C284E2FBA0003BAD3 /* ARTrainingOverlayView.swift */,
-				5D23E680284E3EAD0003BAD3 /* ARRecordingOverlayView.swift */,
+				5D23E684284E41940003BAD3 /* ARTrainingView.swift */,
+				5D23E68B284E46C10003BAD3 /* ARTrackingViewContainer.swift */,
 			);
-			path = AROverlayViews;
+			path = ARTraining;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -304,12 +346,14 @@
 				5D23E65C284D54780003BAD3 /* ExerciseItem.swift in Sources */,
 				5D23E653284D4AF90003BAD3 /* HomeView.swift in Sources */,
 				5D23E651284D2E050003BAD3 /* IterationResults.swift in Sources */,
+				5D23E68E284E482E0003BAD3 /* CurrentResults.swift in Sources */,
 				5D23E670284D5FC20003BAD3 /* AnimatableFontModifier.swift in Sources */,
 				5D23E655284D4D2D0003BAD3 /* NavigationBar.swift in Sources */,
 				5D23E66E284D5A200003BAD3 /* ColorExtension.swift in Sources */,
 				5D23E676284E0D700003BAD3 /* TrainingResultView.swift in Sources */,
 				5D23E62F284421AB0003BAD3 /* Experience.rcproject in Sources */,
 				5D23E657284D4D780003BAD3 /* AppModel.swift in Sources */,
+				5D23E687284E41A30003BAD3 /* ARRecordingView.swift in Sources */,
 				5D23E674284D795B0003BAD3 /* AddExerciseView.swift in Sources */,
 				5D23E681284E3EAD0003BAD3 /* ARRecordingOverlayView.swift in Sources */,
 				5D23E666284D59130003BAD3 /* CloseButton.swift in Sources */,
@@ -319,10 +363,14 @@
 				5D23E662284D56660003BAD3 /* Modifiers.swift in Sources */,
 				5D23E66B284D59D20003BAD3 /* CircularView.swift in Sources */,
 				5D23E65E284D55350003BAD3 /* Animations.swift in Sources */,
+				5D23E68C284E46C10003BAD3 /* ARTrackingViewContainer.swift in Sources */,
 				5D23E67D284E2FBA0003BAD3 /* ARTrainingOverlayView.swift in Sources */,
 				5D23E64C284CDD630003BAD3 /* GlobalConstants.swift in Sources */,
+				5D23E685284E41940003BAD3 /* ARTrainingView.swift in Sources */,
 				5D23E65A284D530E0003BAD3 /* PreferenceKey.swift in Sources */,
+				5D23E690284E4B260003BAD3 /* UINavigationControllerExtension.swift in Sources */,
 				5D23E67A284E13260003BAD3 /* IterationRow.swift in Sources */,
+				5D23E689284E42E30003BAD3 /* ProcessingARDataExtension.swift in Sources */,
 				5D23E647284A67CF0003BAD3 /* Exercise.swift in Sources */,
 				5D23E678284E0DC50003BAD3 /* Training.swift in Sources */,
 				5D23E67F284E30210003BAD3 /* PlayPauseButton.swift in Sources */,

@@ -18,6 +18,7 @@ class AppModel: ObservableObject {
     @Published var selectedExercise: Int = 0
 
     @Published var showResults: Bool = false
+    @Published var startTraining: Bool = false
     @Published var currentTraining: Training = Training(
         exercise: exerciseMock,
         iterations: [iterationResultsMock, iterationResultsMock,iterationResultsMock],

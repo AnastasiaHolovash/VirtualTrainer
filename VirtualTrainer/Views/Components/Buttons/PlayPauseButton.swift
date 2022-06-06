@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PlayPauseButton: View {
-    @State var state: PlayPauseButtonState = .pause
+    @Binding var state: PlayPauseButtonState
 
     var body: some View {
         VStack {
@@ -43,7 +43,6 @@ struct PlayPauseButton: View {
         .background(.ultraThinMaterial)
         .cornerRadius(60)
         .modifier(OutlineOverlay(cornerRadius: 60))
-        //        .overlay(CircularView(value: 0.25, lineWidth: 8))
         .shadow(color: Color("Shadow").opacity(0.2), radius: 30, x: 0, y: 30)
     }
 }
@@ -51,12 +50,22 @@ struct PlayPauseButton: View {
 enum PlayPauseButtonState {
     case play
     case pause
+
+    func toggle() -> Self {
+        switch self {
+        case .play:
+            return .pause
+
+        case .pause:
+            return .play
+        }
+    }
 }
 
 #if DEBUG
 struct PlayPauseButton_Previews: PreviewProvider {
     static var previews: some View {
-        PlayPauseButton(state: .play)
+        PlayPauseButton(state: .constant(.play))
     }
 }
 #endif

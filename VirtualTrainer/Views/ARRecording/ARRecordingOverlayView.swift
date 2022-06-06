@@ -1,5 +1,5 @@
 //
-//  ARTrainingOverlayView.swift
+//  ARRecordingOverlayView.swift
 //  VirtualTrainer
 //
 //  Created by Anastasia Holovash on 06.06.2022.
@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct ARTrainingOverlayView: View {
-    @State var model: CurrentResults
+struct ARRecordingOverlayView: View {
+    @Binding var model: RecordingData
 
     var body: some View {
         ZStack {
@@ -61,60 +61,19 @@ struct ARTrainingOverlayView: View {
 
                 Spacer()
 
-                HStack(spacing: 8) {
-                    VStack(spacing: 6) {
-                        Text(model.quality)
-                            .font(.system(size: 16))
-                        HStack {
-                            Image(systemName: "tortoise.fill")
-                                .font(.system(size: 15))
-                            Rectangle()
-                                .frame(width: 40, height: 3)
-                                .cornerRadius(1.5)
-                            Image(systemName: "hare.fill")
-                                .font(.system(size: 15))
-                        }
-                    }
-                    .padding(8)
-                    .frame(width: 120, height: 60)
-                    .background(
-                        Rectangle()
-                            .fill(.ultraThinMaterial)
-                            .backgroundStyle(cornerRadius: 20)
-                    )
-
-                    PlayPauseButton(state: model.playPauseButtonState)
-
-                    VStack(spacing: 6) {
-                        Text("\(model.iterationCount) разів")
-                            .font(.system(size: 16, weight: .bold))
-                        Text(model.seconds.durationDescription)
-                            .font(.system(size: 16))
-                    }
-                    .padding(8)
-                    .frame(width: 120, height: 60)
-                    .background(
-                        Rectangle()
-                            .fill(.ultraThinMaterial)
-                            .backgroundStyle(cornerRadius: 20)
-                    )
-                }
+                PlayPauseButton(state: $model.playPauseButtonState)
             }
         }
     }
 }
 
-struct CurrentResults {
-    var quality: String
-    var speed: Float
-    var iterationCount: Int
-    var seconds: Int
-    var timer: Int
+struct RecordingData {
     var playPauseButtonState: PlayPauseButtonState
+    var timer: Int
 }
 
-struct ARTrainingOverlayView_Previews: PreviewProvider {
+struct ARRecordingOverlayView_Previews: PreviewProvider {
     static var previews: some View {
-        ARTrainingOverlayView(model: .init(quality: "Нормально", speed: 0.9, iterationCount: 5, seconds: 1990028, timer: 0, playPauseButtonState: .play))
+        ARRecordingOverlayView(model: .constant(.init(playPauseButtonState: .pause, timer: 2)))
     }
 }
