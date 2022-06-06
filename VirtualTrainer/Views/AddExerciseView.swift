@@ -18,7 +18,15 @@ struct AddExerciseView: View {
         ZStack {
             ScrollView {
                 cover
-                    .overlay(AddButton())
+                    .overlay(NavigationLink(
+                        destination: {
+                            ARRecordingView(recordingData: RecordingData())
+                                .navigationBarHidden(true)
+                        },
+                        label: {
+                            AddButton()
+                        }
+                    ))
                 content
                     .padding(.vertical, 30)
             }

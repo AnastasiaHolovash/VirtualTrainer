@@ -19,7 +19,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
     @Binding var comparisonFrameValue: Frame
 
     func makeUIView(context: Context) -> ARView {
-
         let arView = ARView(frame: .zero, cameraMode: .ar, automaticallyConfigureSession: true)
         arView.session.delegate = context.coordinator
 
@@ -46,23 +45,16 @@ struct ARTrackingViewContainer: UIViewRepresentable {
     // MARK: - Coordinator
 
     class Coordinator: NSObject, ARSessionDelegate {
-
         let characterAnchor = AnchorEntity()
-
-        var cancellables: Set<AnyCancellable> = Set()
 
         @Binding var jointModelTransformsCurrent: Frame
         @Binding var currentResults: CurrentResults
-
+        @Binding var comparisonFrameValue: Frame
         /// True if timer is out
         @Binding var isTrainingInProgress: Bool
+
         /// True if recording training/exercise data is started
         var isRecording: Bool = false
-
-        // Recording
-        @Binding var comparisonFrameValue: Frame
-
-        // Training
         var exerciseFramesLoaded: Frames = []
         var exerciseFramesCount: Int = 0
 
@@ -78,11 +70,11 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             _isTrainingInProgress = isRecording
             _currentResults = currentResults
             _comparisonFrameValue = comparisonFrameValue
+
             super.init()
 
             exerciseFramesLoaded = Defaults.shared.getExerciseTargetFrames()
             exerciseFramesCount = exerciseFramesLoaded.count
-
         }
 
         // MARK: - Delegate method
@@ -193,8 +185,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 let resultValue = jointModelTransformsCurrent.compare(to: targetFrame)
                 print("---- Compare With Target ---- \(resultValue * 100)% ----- \(exerciseFramesIndex)")
                 iterationsResults[numberOfIterations].append(resultValue)
-
-                //                some = "-\(currentNumberOfStaticFrames)- \(iterationsResults.count): \(iterationsResults[numberOfIterations].count)"
 
                 if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
                     exerciseFramesIndex += 1

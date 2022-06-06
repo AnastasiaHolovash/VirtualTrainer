@@ -47,6 +47,8 @@
 		5D23E68C284E46C10003BAD3 /* ARTrackingViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E68B284E46C10003BAD3 /* ARTrackingViewContainer.swift */; };
 		5D23E68E284E482E0003BAD3 /* CurrentResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E68D284E482E0003BAD3 /* CurrentResults.swift */; };
 		5D23E690284E4B260003BAD3 /* UINavigationControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E68F284E4B260003BAD3 /* UINavigationControllerExtension.swift */; };
+		5D23E694284EA6400003BAD3 /* ARRecordingViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E693284EA6400003BAD3 /* ARRecordingViewContainer.swift */; };
+		5D23E696284EAE3A0003BAD3 /* RecordingData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E695284EAE3A0003BAD3 /* RecordingData.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -97,6 +99,8 @@
 		5D23E68B284E46C10003BAD3 /* ARTrackingViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrackingViewContainer.swift; sourceTree = "<group>"; };
 		5D23E68D284E482E0003BAD3 /* CurrentResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentResults.swift; sourceTree = "<group>"; };
 		5D23E68F284E4B260003BAD3 /* UINavigationControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationControllerExtension.swift; sourceTree = "<group>"; };
+		5D23E693284EA6400003BAD3 /* ARRecordingViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARRecordingViewContainer.swift; sourceTree = "<group>"; };
+		5D23E695284EAE3A0003BAD3 /* RecordingData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingData.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +180,7 @@
 				5D23E659284D530E0003BAD3 /* PreferenceKey.swift */,
 				5D23E677284E0DC50003BAD3 /* Training.swift */,
 				5D23E68D284E482E0003BAD3 /* CurrentResults.swift */,
+				5D23E695284EAE3A0003BAD3 /* RecordingData.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -233,6 +238,7 @@
 			children = (
 				5D23E680284E3EAD0003BAD3 /* ARRecordingOverlayView.swift */,
 				5D23E686284E41A30003BAD3 /* ARRecordingView.swift */,
+				5D23E693284EA6400003BAD3 /* ARRecordingViewContainer.swift */,
 			);
 			path = ARRecording;
 			sourceTree = "<group>";
@@ -357,6 +363,8 @@
 				5D23E674284D795B0003BAD3 /* AddExerciseView.swift in Sources */,
 				5D23E681284E3EAD0003BAD3 /* ARRecordingOverlayView.swift in Sources */,
 				5D23E666284D59130003BAD3 /* CloseButton.swift in Sources */,
+				5D23E696284EAE3A0003BAD3 /* RecordingData.swift in Sources */,
+				5D23E694284EA6400003BAD3 /* ARRecordingViewContainer.swift in Sources */,
 				5D23E643284800C40003BAD3 /* Frame.swift in Sources */,
 				5D23E672284D77FB0003BAD3 /* AddButton.swift in Sources */,
 				5D23E64A284CDCD70003BAD3 /* ARSkeletonJoint.swift in Sources */,

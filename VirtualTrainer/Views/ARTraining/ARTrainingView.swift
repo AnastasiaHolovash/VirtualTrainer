@@ -18,14 +18,13 @@ struct ARTrainingView : View {
 
     @State var timerCancellable: AnyCancellable? = nil
     @State var isRecording: Bool = false
-    @State var buttonState: ButtonState = .start
     @State var comparisonFrameValue: Frame = []
 
     @State var currentResults: CurrentResults
 
     var body: some View {
         ZStack {
-            ARViewContainer(
+            ARTrackingViewContainer(
                 jointModelTransforms: $jointModelTransforms,
                 isRecording: $isRecording,
                 currentResults: $currentResults,
@@ -73,23 +72,4 @@ struct ARTrainingView : View {
     func stopTimer() {
         timerCancellable?.cancel()
     }
-}
-
-extension ARTrainingView {
-
-    enum ButtonState: String {
-        case start
-        case stop
-
-        mutating func toggle() {
-            switch self {
-            case .start:
-                self = .stop
-
-            case .stop:
-                self = .start
-            }
-        }
-    }
-
 }
