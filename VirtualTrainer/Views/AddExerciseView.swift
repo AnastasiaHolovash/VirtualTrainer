@@ -12,7 +12,7 @@ struct AddExerciseView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var model: AppModel
 
-    @Binding var exercise: NewExercise
+    @State var exercise = NewExercise()
 
     var body: some View {
         ZStack {
@@ -20,7 +20,7 @@ struct AddExerciseView: View {
                 cover
                     .overlay(NavigationLink(
                         destination: {
-                            ARRecordingView(recordingData: RecordingData())
+                            ARRecordingView(exercise: $exercise)
                                 .navigationBarHidden(true)
                         },
                         label: {
@@ -52,7 +52,7 @@ struct AddExerciseView: View {
         .frame(maxWidth: .infinity)
         .frame(height: 500)
         .background(
-            Image("Background 2")
+            Image(uiImage: exercise.localVideoURL?.previewImageForLocalVideo ?? UIImage(named: "Background 2")!)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .accessibility(hidden: true)
@@ -91,7 +91,7 @@ struct AddExerciseView: View {
                                 label: { Text(Complexity.easy.description) }
                             )
                         } label: {
-                            Text((exercise.complexity == nil ? "♦ Обрати" : exercise.complexity?.description) ?? "")
+                            Text(exercise.complexity.description)
                         }
                     }
                     .font(.title3)
@@ -140,6 +140,11 @@ struct AddExerciseView: View {
                 .blendMode(.softLight)
 
                 Button {
+                    // Perform request
+                    print(exercise)
+                    model.apiClient.addNewExercise(newExercise: exercise)
+//                    model.apiClient.addNewExercise(newExercise: <#T##NewExercise#>, videoURL: <#T##String#>, photoURL: <#T##String#>)
+//                    let exerciseRequest = NewExerciseRequest(
 
                 } label: {
                     Text("Готово")

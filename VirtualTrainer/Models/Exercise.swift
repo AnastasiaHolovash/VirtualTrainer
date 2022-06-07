@@ -13,7 +13,7 @@ struct Exercise: Identifiable {
     let name: String
     let complexity: Complexity
     let recommendations: String
-    let image: String
+    let image: String = ""
     let frames: [FirebaseFrame]
 
     var simdFrames: Frames {
@@ -92,6 +92,6 @@ let exerciseMock = Exercise(
     name: "Squatting",
     complexity: .normal,
     recommendations: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    image: "squatting",
+//    image: "squatting",
     frames: []
 )

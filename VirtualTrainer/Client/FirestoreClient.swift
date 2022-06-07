@@ -36,6 +36,9 @@ final class FirestoreClient {
                 print("\(completion)")
             }, receiveValue: { [weak self] value in
                 self?.exercises = value
+                value.forEach { val in
+                    print(val.frames.count)
+                }
             })
     }
 
@@ -46,14 +49,14 @@ final class FirestoreClient {
 
     var uploadTask: StorageUploadTask?
 //
-    func uploadVideoWithPhoto() { //} -> AnyPublisher<UploadPhotoVideoResult, Error> {
+    func uploadVideoWithPhoto(
+        id: String,
+        for localVideoURL: URL,
+        completion: @escaping (_ videoURL: URL, _ photoURL: URL) -> Void
+    ) {
 
         let storageRef = Storage.storage().reference()
-        let reference = storageRef.child("exercises").child("\(UUID())")
-
-        guard let videoURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("test.mov") else {
-            return
-        }
+        let reference = storageRef.child("exercises").child("\(id)")
 
         let videoReference = reference.child("video.mov")
         let photoReference = reference.child("photo.jpeg")
@@ -61,9 +64,8 @@ final class FirestoreClient {
         var videoDownloadURL: URL?
         var photoDownloadURL: URL?
 
-
         guard
-            let image = AVAsset(url: videoURL).previewImageForLocalVideo,
+            let image = AVAsset(url: localVideoURL).previewImageForLocalVideo,
             let imageData = image.jpegData(compressionQuality: 0.4)
         else {
             return
@@ -72,8 +74,7 @@ final class FirestoreClient {
         let dispatchGroup = DispatchGroup()
 
         dispatchGroup.enter()
-        uploadTask = videoReference.putFile(from: videoURL, metadata: nil) { metadata, error in
-            print(error)
+        uploadTask = videoReference.putFile(from: localVideoURL, metadata: nil) { metadata, error in
             videoReference.downloadURL { (url, error) in
                 guard let downloadURL = url else {
                     // Uh-oh, an error occurred!
@@ -99,25 +100,54 @@ final class FirestoreClient {
         }
 
         dispatchGroup.notify(queue: .main) {
+            guard
+                let videoDownloadURL = videoDownloadURL,
+                let photoDownloadURL = photoDownloadURL
+            else {
+                return
+            }
+
+            completion(videoDownloadURL, photoDownloadURL)
             print(videoDownloadURL)
             print(photoDownloadURL)
         }
     }
 
     func addNewExercise(
-        newExercise: NewExercise,
-        videoURL: String,
-        photoURL: String
+        newExercise: NewExercise
+//        videoURL: String,
+//        photoURL: String
     ) { //}-> AnyPublisher<Void, Error> {
         
         let newDocument = FirestoreClient.exercisesCollection
             .document()
-        var exerciseRequest = NewExerciseRequest(
-            id: newDocument.documentID,
-            videoURL: videoURL,
-            photoURL: photoURL,
-            newExercise: newExercise
-        )
+        let id = newDocument.documentID
+
+        guard let localVideoURL = newExercise.localVideoURL else {
+            return
+        }
+
+        uploadVideoWithPhoto(id: id, for: localVideoURL) { videoURL, photoURL in
+            let exerciseRequest = NewExerciseRequest(
+                id: id,
+                videoURL: videoURL,
+                photoURL: photoURL,
+                newExercise: newExercise
+            )
+            do {
+                try newDocument.setData(from: exerciseRequest) { error in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                    print("SETTTT")
+                }
+            } catch {
+                print(error)
+            }
+        }
+
+
 
 //        return newDocument.setData(from: newDocument)
 //        exercise.id = newDocument.documentID
@@ -145,9 +175,11 @@ import ARKit
 struct NewExerciseRequest: Encodable {
 
     var id: String
-    var videoURL: String
-    var photoURL: String
+    var videoURL: URL
+    var photoURL: URL
     var newExercise: NewExercise
+
+//    init(newExercise: NewExercise)
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -167,13 +199,12 @@ struct NewExerciseRequest: Encodable {
 
 
 struct NewExercise: Encodable {
-//    var id: String?
-    var name: String = ""
-    var complexity: Complexity?
-    var recommendations: String = ""
-    var frames: Frames = []
 
-//    let
+    var name: String = ""
+    var complexity: Complexity = .easy
+    var recommendations: String = ""
+    var localVideoURL: URL?
+    var frames: Frames = []
 
     enum CodingKeys: String, CodingKey {
         case name

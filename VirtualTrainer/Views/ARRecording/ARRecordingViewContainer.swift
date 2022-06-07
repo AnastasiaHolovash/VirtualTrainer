@@ -13,10 +13,14 @@ import Vision
 
 struct ARViewContainer: UIViewRepresentable {
 
-    @Binding var jointModelTransforms: Frame
+    @Binding var exercise: NewExercise
+
+//    @Binding var jointModelTransforms: Frame
     @Binding var isRecording: Bool
     @Binding var recordingData: RecordingData
-    @Binding var comparisonFrameValue: Frame
+//    @Binding var comparisonFrameValue: Frame
+
+    // DEBUG
     @Binding var isReviewing: Bool
 
     func makeUIView(context: Context) -> ARView {
@@ -32,10 +36,11 @@ struct ARViewContainer: UIViewRepresentable {
 
     func makeCoordinator() -> Coordinator {
         Coordinator(
-            jointModelTransforms: $jointModelTransforms,
+            exercise: $exercise,
+//            jointModelTransforms: $jointModelTransforms,
             isRecording: $isRecording,
             recordingData: $recordingData,
-            comparisonFrameValue: $comparisonFrameValue,
+//            comparisonFrameValue: $comparisonFrameValue,
             isReviewing: $isReviewing
         )
     }
@@ -48,10 +53,10 @@ struct ARViewContainer: UIViewRepresentable {
 
     class Coordinator: NSObject, ARSessionDelegate {
         let characterAnchor = AnchorEntity()
+        var jointModelTransformsCurrent: Frame = []
+        var comparisonFrameValue: Frame = []
 
-        @Binding var jointModelTransformsCurrent: Frame
         @Binding var recordingData: RecordingData
-        @Binding var comparisonFrameValue: Frame
         /// True if timer is out
         @Binding var isTrainingInProgress: Bool {
             willSet {
@@ -61,6 +66,9 @@ struct ARViewContainer: UIViewRepresentable {
             }
         }
 
+        @Binding var exercise: NewExercise
+
+        // DEBUG
         @Binding var isReviewing: Bool
 
         /// True if recording training/exercise data is started
@@ -70,23 +78,25 @@ struct ARViewContainer: UIViewRepresentable {
         let recorder = Recorder()
 
         init(
-            jointModelTransforms: Binding<[simd_float4x4]>,
+            exercise: Binding<NewExercise>,
+//            jointModelTransforms: Binding<[simd_float4x4]>,
             isRecording: Binding<Bool>,
             recordingData: Binding<RecordingData>,
-            comparisonFrameValue: Binding<Frame>,
+//            comparisonFrameValue: Binding<Frame>,
             isReviewing: Binding<Bool>
         ) {
-            _jointModelTransformsCurrent = jointModelTransforms
+            _exercise = exercise
+//            _jointModelTransformsCurrent = jointModelTransforms
             _isTrainingInProgress = isRecording
             _recordingData = recordingData
-            _comparisonFrameValue = comparisonFrameValue
+//            _comparisonFrameValue = comparisonFrameValue
             _isReviewing = isReviewing
 
             super.init()
 
-            recorder.setup { url in
-                self.isReviewing = true
-//                print("!!!!!!!!! RECORDER")
+            recorder.setup { [weak self] url in
+                self?.isReviewing = true
+                self?.exercise.localVideoURL = url
             }
         }
 
@@ -117,9 +127,9 @@ struct ARViewContainer: UIViewRepresentable {
 
                     if let capturedImage = session.currentFrame?.capturedImage {
                         if !recorder.isRecording {
-                            let ciImage = CIImage(cvPixelBuffer: capturedImage)
-                            ciImage.transformed(by: CGAffineTransform(rotationAngle: .pi / 2))
-                            let previewImage = UIImage(ciImage: ciImage)
+//                            let ciImage = CIImage(cvPixelBuffer: capturedImage)
+//                            ciImage.transformed(by: CGAffineTransform(rotationAngle: .pi / 2))
+//                            let previewImage = UIImage(ciImage: ciImage)
                             // TODO: save preview
                             recorder.start()
                         }
@@ -140,85 +150,6 @@ struct ARViewContainer: UIViewRepresentable {
                 }
             }
         }
-
-//        func writeImage(_ image: CVPixelBuffer, thisTimestamp: TimeInterval) {
-//
-//                guard let videoDirector = videoWriter else { return }
-//
-//                serialQueue.async(execute: {
-//
-//                    let scale = CMTimeScale(NSEC_PER_SEC)
-//
-//                    if (!self.seenTimestamps.contains(thisTimestamp)) {
-//
-//                        self.seenTimestamps.append(thisTimestamp)
-//                        let pts = CMTime(value: CMTimeValue((thisTimestamp) * Double(scale)),
-//                                         timescale: scale)
-//                        var timingInfo = CMSampleTimingInfo(duration: kCMTimeInvalid,
-//                                                            presentationTimeStamp: pts,
-//                                                            decodeTimeStamp: kCMTimeInvalid)
-//
-//                        var vidInfo:CMVideoFormatDescription! = nil
-//                        CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, image, &vidInfo)
-//
-//                        var sampleBuffer:CMSampleBuffer! = nil
-//                        CMSampleBufferCreateForImageBuffer(kCFAllocatorDefault, image, true, nil, nil, vidInfo, &timingInfo, &sampleBuffer)
-//
-//                        let imageBuffer: CVPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)!
-//
-//                        if self.videoWriterInput == nil {
-//
-//                            let width = CVPixelBufferGetWidth(imageBuffer)
-//                            let height = CVPixelBufferGetHeight(imageBuffer)
-//
-//
-//                            let numPixels: Double = Double(width * height);
-//                            let bitsPerPixel = 11.4;
-//                            let bitsPerSecond = Int(numPixels * bitsPerPixel)
-//
-//                            // add video input
-//                            let outputSettings: [String: Any] = [
-//                                AVVideoCodecKey : AVVideoCodecType.h264,
-//                                AVVideoWidthKey : width,
-//                                AVVideoHeightKey : height,
-//                                AVVideoCompressionPropertiesKey : [
-//                                    AVVideoExpectedSourceFrameRateKey: 30,
-//                                    AVVideoAverageBitRateKey : bitsPerSecond,
-//                                    AVVideoMaxKeyFrameIntervalKey : 1
-//                                ]
-//                            ]
-//                            self.videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: outputSettings)
-//                            self.videoWriterInput?.expectsMediaDataInRealTime = true
-//                            guard let input = self.videoWriterInput else { return }
-//
-//                            if videoDirector.canAdd(input) {
-//                                videoDirector.add(input)
-//                            }
-//                            videoDirector.startWriting()
-//                        }
-//
-//                        let writable = self.canWrite()
-//                        if writable, self.sessionAtSourceTime == nil {
-//                            let timeStamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-//                            self.sessionAtSourceTime = timeStamp
-//                            videoDirector.startSession(atSourceTime: timeStamp)
-//                        }
-//
-//                        if self.videoWriterInput?.isReadyForMoreMediaData == true {
-//                            let appendResult = self.videoWriterInput?.append(sampleBuffer)
-//                            if appendResult == false {
-//                                printDebug("writer status: \(videoDirector.status.rawValue)")
-//                                printDebug("writer error: \(videoDirector.error.debugDescription)")
-//                            }
-//                        }
-//                    }
-//                })
-//            }
-//            func canWrite() -> Bool {
-//                return isRecording && videoWriter?.status == .writing
-//            }
-
-//    }
 
         // MARK: - Check If Started
 
@@ -265,7 +196,11 @@ struct ARViewContainer: UIViewRepresentable {
 
             print("Size: \(croppedFrames.count)")
 
-            recordingData
+            // Saving new frames to model
+            exercise.frames = croppedFrames
+
+
+//            recordingData
 //            Defaults.shared.setExerciseTargetFrames(croppedFrames)
         }
     }

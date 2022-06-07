@@ -53,7 +53,7 @@ struct AVPlayerView: UIViewControllerRepresentable {
 
 struct ContentView: View {
     @EnvironmentObject var model: AppModel
-    @State var newExercise = NewExercise()
+
 
     var body: some View {
         NavigationView {
@@ -64,7 +64,7 @@ struct ContentView: View {
                     }
 
                 if model.showAddExercise {
-                    AddExerciseView(exercise: $newExercise)
+                    AddExerciseView()
                         .accessibilityIdentifier("Identifier")
                 }
             }

@@ -108,3 +108,10 @@ extension AVAsset {
         }
     }
 }
+
+extension URL {
+
+    var previewImageForLocalVideo: UIImage? {
+        AVAsset(url: self).previewImageForLocalVideo
+    }
+}

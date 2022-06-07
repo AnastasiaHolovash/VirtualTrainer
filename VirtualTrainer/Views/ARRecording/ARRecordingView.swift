@@ -13,16 +13,18 @@ import Vision
 
 struct ARRecordingView: View {
     
-    @State var jointModelTransforms: Frame = []
+//    @State var jointModelTransforms: Frame = []
     @State var timerValue: Int = GlobalConstants.timerStartTime
     
     @State var timerCancellable: AnyCancellable? = nil
     @State var isRecording: Bool = false
-    @State var comparisonFrameValue: Frame = []
-    
-    @State var recordingData: RecordingData
-    @EnvironmentObject var model: AppModel
+//    @State var comparisonFrameValue: Frame = []
+    @State var recordingData = RecordingData()
 
+    @Binding var exercise: NewExercise
+//    @EnvironmentObject var model: AppModel
+
+    // DEBUG
     @State var isReviewing: Bool = false
     let toPresent = UIHostingController(rootView: AnyView(EmptyView()))
     @State private var vURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("test.mov")
@@ -30,17 +32,18 @@ struct ARRecordingView: View {
     var body: some View {
         ZStack {
             ARViewContainer(
-                jointModelTransforms: $jointModelTransforms,
+                exercise: $exercise,
+//                jointModelTransforms: $jointModelTransforms,
                 isRecording: $isRecording,
                 recordingData: $recordingData,
-                comparisonFrameValue: $comparisonFrameValue,
+//                comparisonFrameValue: $comparisonFrameValue,
                 isReviewing: $isReviewing
             )
             .edgesIgnoringSafeArea(.all)
 
-            if isReviewing {
-                AVPlayerView(videoURL: self.$vURL).transition(.move(edge: .bottom)).edgesIgnoringSafeArea(.all)
-            }
+//            if isReviewing {
+//                AVPlayerView(videoURL: self.$vURL).transition(.move(edge: .bottom)).edgesIgnoringSafeArea(.all)
+//            }
 
             ARRecordingOverlayView(model: $recordingData)
                 .onChange(of: recordingData.playPauseButtonState, perform: { newValue in
@@ -57,11 +60,11 @@ struct ARRecordingView: View {
                     recordingData.timer = newValue
                 }
         }
-        .onChange(of: isReviewing, perform: { newValue in
-            if newValue {
-                model.apiClient.uploadVideoWithPhoto()
-            }
-        })
+//        .onChange(of: isReviewing, perform: { newValue in
+//            if newValue {
+//                model.apiClient.uploadVideoWithPhoto()
+//            }
+//        })
         .onAppear {
             recordingData.timer = GlobalConstants.timerStartTime
         }
