@@ -7,26 +7,28 @@
 
 import UIKit
 import SwiftUI
-
-let appModel = AppModel()
+import FirebaseCore
 
 @main
+struct YourApp: App {
+    // register app delegate for Firebase setup
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject var appModel = AppModel()
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environmentObject(appModel)
+
+        }
+    }
+}
+
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-    var window: UIWindow?
-
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
-        // Create the SwiftUI view that provides the window contents.
-        let contentView = ContentView()
-            .environmentObject(appModel)
-
-        // Use a UIHostingController as window root view controller.
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = UIHostingController(rootView: contentView)
-        self.window = window
-        window.makeKeyAndVisible()
+        FirebaseApp.configure()
         return true
     }
 
@@ -46,7 +48,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
-
 
 }
 

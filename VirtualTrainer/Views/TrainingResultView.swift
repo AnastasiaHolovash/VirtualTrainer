@@ -161,7 +161,7 @@ struct TrainingResultView: View {
         }
         withAnimation(.closeCard.delay(0.2)) {
             model.showDetail = false
-            model.selectedExercise = 0
+            model.selectedExercise = nil
         }
     }
 

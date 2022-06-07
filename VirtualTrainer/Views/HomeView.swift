@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import FirebaseCore
+import FirebaseFirestore
 
 struct HomeView: View {
     var columns = [GridItem(.adaptive(minimum: 300), spacing: 20)]
@@ -35,7 +37,7 @@ struct HomeView: View {
 
                 if model.showDetail {
                     LazyVGrid(columns: columns, spacing: 20) {
-                        ForEach(model.exercises) { course in
+                        ForEach(model.apiClient.exercises) { course in
                             Rectangle()
                                 .fill(.white)
                                 .frame(height: 360)
@@ -66,7 +68,6 @@ struct HomeView: View {
                         .accessibility(hidden: true)
                 }
             )
-
         }
         .onChange(of: model.showDetail) { value in
             withAnimation {
@@ -74,13 +75,25 @@ struct HomeView: View {
                 showStatusBar.toggle()
             }
         }
+        .onAppear {
+//            task {
+//                try await Firestore.firestore().collection("exercises")
+//                    .getDocuments()
+//                    .tryMap { snapshot -> [Exercise] in
+//                        try snapshot.documents.map { document in
+//                            try document.data(as: Exercise.self)
+//                        }
+//                    }
+//            }
+//            model.apiClient.getAllExercises()
+        }
         .overlay(NavigationBar(title: "Тренування", contentHasScrolled: $contentHasScrolled))
         .statusBar(hidden: !showStatusBar)
     }
 
     var detail: some View {
         ForEach(model.exercises) { exercise in
-            if exercise.index == model.selectedExercise {
+            if exercise.id == model.selectedExercise {
                 ExerciseView(namespace: namespace, exercise: exercise)
             }
         }

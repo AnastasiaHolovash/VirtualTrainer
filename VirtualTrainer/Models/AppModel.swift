@@ -10,12 +10,13 @@ import Combine
 
 class AppModel: ObservableObject {
 
+    @Published var apiClient: FirestoreClient = FirestoreClient()
     @Published var showNav: Bool = true
 
     @Published var showAddExercise: Bool = false
 
     @Published var showDetail: Bool = false
-    @Published var selectedExercise: Int = 0
+    @Published var selectedExercise: String?
 
     @Published var showResults: Bool = false
     @Published var startTraining: Bool = false
@@ -27,7 +28,7 @@ class AppModel: ObservableObject {
 
     @Published var exercises: [Exercise] = [
         Exercise(
-            index: 1,
+            id: UUID().uuidString,
             name: "Squatting",
             complexity: .normal,
             recommendations: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
@@ -35,7 +36,7 @@ class AppModel: ObservableObject {
             frames: []
         ),
         Exercise(
-            index: 2,
+            id: UUID().uuidString,
             name: "Other Exercise",
             complexity: .normal,
             recommendations: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",

@@ -8,16 +8,34 @@
 import Foundation
 
 struct Exercise: Identifiable {
-    let id = UUID()
-    let index: Int
+    let id: String
     let name: String
     let complexity: Complexity
     let recommendations: String
     let image: String
-    let frames: Frames
+    let frames: [Frame]
+
+    struct Frame: Codable {
+        var values: [SIMD4x4]
+    }
+
+    struct SIMD4x4: Codable {
+        let column0: [Float]
+        let colomn1: [Float]
+        let colomn2: [Float]
+        let colomn3: [Float]
+    }
+
+    struct SIMD4: Codable {
+        let values: [Float]
+    }
 }
 
-enum Complexity {
+extension Exercise: Codable {
+
+}
+
+enum Complexity: String, Codable {
     case easy
     case normal
     case hard
@@ -44,7 +62,7 @@ struct NewExercise: Identifiable {
 }
 
 let exerciseMock = Exercise(
-    index: 0,
+    id: UUID().uuidString,
     name: "Squatting",
     complexity: .normal,
     recommendations: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",

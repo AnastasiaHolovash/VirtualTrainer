@@ -20,6 +20,8 @@ extension simd_float4x4: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
+
         try container.encode([columns.0,columns.1, columns.2, columns.3])
     }
 }
+
