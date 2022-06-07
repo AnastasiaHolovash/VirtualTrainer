@@ -23,6 +23,9 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             Color("Background").ignoresSafeArea()
+                .onChange(of: model.apiClient.exercises) { newValue in
+                    print("alallalalalal")
+                }
 
             if model.showDetail {
                 detail
@@ -92,7 +95,7 @@ struct HomeView: View {
     }
 
     var detail: some View {
-        ForEach(model.exercises) { exercise in
+        ForEach(model.apiClient.exercises, id: \.id) { exercise in
             if exercise.id == model.selectedExercise {
                 ExerciseView(namespace: namespace, exercise: exercise)
             }
@@ -100,7 +103,7 @@ struct HomeView: View {
     }
 
     var course: some View {
-        ForEach(model.exercises) { exercise in
+        ForEach(model.apiClient.exercises, id: \.id) { exercise in
             ExerciseItem(namespace: namespace, exercise: exercise)
                 .accessibilityElement(children: .combine)
                 .accessibilityAddTraits(.isButton)

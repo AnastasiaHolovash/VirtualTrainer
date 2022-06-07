@@ -12,34 +12,36 @@ import FirebaseFirestoreCombineSwift
 import FirebaseStorage
 import FirebaseStorageCombineSwift
 import AVFoundation
+import RealityKit
 
-final class FirestoreClient {
+final class FirestoreClient: ObservableObject {
     static let exercisesCollection = Firestore.firestore().collection("exercises")
 
-    private var getAllExercisesCancellable: Cancellable?
     private var addNewExerciseCancellable: Cancellable?
 
-    var exercises: [Exercise] = []
+    @Published var exercises: [Exercise] = []
+    private var allExercisesCancellable: Cancellable?
 
     init() {
-        getAllExercises()
+        subscribeOnAllExercises()
     }
 
-    func getAllExercises() { //} -> AnyPublisher<[Exercise], Error> {
-        getAllExercisesCancellable = FirestoreClient.exercisesCollection.getDocuments()
+    func subscribeOnAllExercises() { //} -> AnyPublisher<[Exercise], Error> {
+        allExercisesCancellable = FirestoreClient.exercisesCollection
+            .snapshotPublisher()
             .tryMap { snapshot -> [Exercise] in
                 try snapshot.documents.map { document in
                     try document.data(as: Exercise.self)
                 }
             }
-            .sink(receiveCompletion: { completion in
-                print("\(completion)")
-            }, receiveValue: { [weak self] value in
-                self?.exercises = value
-                value.forEach { val in
-                    print(val.frames.count)
-                }
-            })
+            .catch { error -> Just<[Exercise]> in
+                print(error.localizedDescription)
+                return Just([])
+            }
+            .sink { newExercises in
+                print(newExercises.count)
+                self.exercises = newExercises
+            }
     }
 
     struct UploadPhotoVideoResult {

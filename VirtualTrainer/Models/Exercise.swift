@@ -8,7 +8,7 @@
 import Foundation
 import ARKit
 
-struct Exercise: Identifiable {
+struct Exercise: Identifiable, Equatable {
     let id: String
     let name: String
     let complexity: Complexity
@@ -19,9 +19,13 @@ struct Exercise: Identifiable {
     var simdFrames: Frames {
         frames.map { $0.simdArray }
     }
+
+//    static func == (lhs: Exercise, rhs: Exercise) {
+//        return lhs.id == rhs.id
+//    }
 }
 
-struct FirebaseFrame: Codable {
+struct FirebaseFrame: Codable, Equatable {
     var values: [FirebaseSIMD4x4]
 
     var simdArray: Frame {
@@ -33,7 +37,7 @@ struct FirebaseFrame: Codable {
     }
 }
 
-struct FirebaseSIMD4x4: Codable {
+struct FirebaseSIMD4x4: Codable, Equatable {
     let column0: [Float]
     let colomn1: [Float]
     let colomn2: [Float]
@@ -69,7 +73,7 @@ extension Exercise: Codable {
 
 }
 
-enum Complexity: String, Codable {
+enum Complexity: String, Codable, Equatable {
     case easy
     case normal
     case hard

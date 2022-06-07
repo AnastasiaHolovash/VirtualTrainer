@@ -11,6 +11,7 @@ import Combine
 class AppModel: ObservableObject {
 
     @Published var apiClient: FirestoreClient = FirestoreClient()
+
     @Published var showNav: Bool = true
 
     @Published var showAddExercise: Bool = false
@@ -25,23 +26,12 @@ class AppModel: ObservableObject {
         iterations: [iterationResultsMock, iterationResultsMock,iterationResultsMock],
         duration: 4855
     )
+    
+    var apiClientCancellable: AnyCancellable? = nil
 
-    @Published var exercises: [Exercise] = [
-        Exercise(
-            id: UUID().uuidString,
-            name: "Squatting",
-            complexity: .normal,
-            recommendations: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-//            image: "squatting",
-            frames: []
-        ),
-        Exercise(
-            id: UUID().uuidString,
-            name: "Other Exercise",
-            complexity: .normal,
-            recommendations: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-//            image: "squatting",
-            frames: []
-        )
-    ]
+    init() {
+        apiClientCancellable = apiClient.objectWillChange.sink { [weak self] _ in
+            self?.objectWillChange.send()
+        }
+    }
 }
