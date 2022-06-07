@@ -179,13 +179,13 @@ struct AddExerciseView: View {
     }
 }
 
-#if DEBUG
-struct AddExerciseView_Previews: PreviewProvider {
-    @Namespace static var namespace
-
-    static var previews: some View {
-        AddExerciseView(exercise: .constant(NewExercise(name: "", complexity: .easy, recommendations: "", image: "", frames: [])))
-    }
-}
-#endif
+//#if DEBUG
+//struct AddExerciseView_Previews: PreviewProvider {
+//    @Namespace static var namespace
+//
+//    static var previews: some View {
+//        AddExerciseView(exercise: .constant(NewExercise(name: "", complexity: .easy, recommendations: "", image: "", frames: [])))
+//    }
+//}
+//#endif
 

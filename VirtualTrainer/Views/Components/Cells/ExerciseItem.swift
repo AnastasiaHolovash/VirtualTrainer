@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct ExerciseItem: View {
     var namespace: Namespace.ID
@@ -48,7 +49,7 @@ struct ExerciseItem: View {
             )
         }
         .background(
-            Image(exercise.image)
+            Image(uiImage: AVAsset(url: url!).previewImageForLocalVideo ?? UIImage())
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .disabled(true)
@@ -74,6 +75,7 @@ struct ExerciseItem: View {
         }
     }
 }
+let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("test.mov")
 
 #if DEBUG
 struct CardItem_Previews: PreviewProvider {
@@ -85,3 +87,24 @@ struct CardItem_Previews: PreviewProvider {
     }
 }
 #endif
+
+extension AVAsset {
+
+    var previewImageForLocalVideo: UIImage? {
+
+        let imageGenerator = AVAssetImageGenerator(asset: self)
+        imageGenerator.appliesPreferredTrackTransform = true
+
+        var time = duration
+
+        time.value = min(time.value, 2)
+
+        do {
+            let imageRef = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+            return UIImage(cgImage: imageRef)
+        } catch let error as NSError {
+            print("Image generation failed with error \(error)")
+            return nil
+        }
+    }
+}

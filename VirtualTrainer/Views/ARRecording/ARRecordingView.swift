@@ -21,6 +21,11 @@ struct ARRecordingView: View {
     @State var comparisonFrameValue: Frame = []
     
     @State var recordingData: RecordingData
+    @EnvironmentObject var model: AppModel
+
+    @State var isReviewing: Bool = false
+    let toPresent = UIHostingController(rootView: AnyView(EmptyView()))
+    @State private var vURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("test.mov")
     
     var body: some View {
         ZStack {
@@ -28,10 +33,15 @@ struct ARRecordingView: View {
                 jointModelTransforms: $jointModelTransforms,
                 isRecording: $isRecording,
                 recordingData: $recordingData,
-                comparisonFrameValue: $comparisonFrameValue
+                comparisonFrameValue: $comparisonFrameValue,
+                isReviewing: $isReviewing
             )
             .edgesIgnoringSafeArea(.all)
-            
+
+            if isReviewing {
+                AVPlayerView(videoURL: self.$vURL).transition(.move(edge: .bottom)).edgesIgnoringSafeArea(.all)
+            }
+
             ARRecordingOverlayView(model: $recordingData)
                 .onChange(of: recordingData.playPauseButtonState, perform: { newValue in
                     switch newValue {
@@ -47,6 +57,11 @@ struct ARRecordingView: View {
                     recordingData.timer = newValue
                 }
         }
+        .onChange(of: isReviewing, perform: { newValue in
+            if newValue {
+                model.apiClient.uploadVideoWithPhoto()
+            }
+        })
         .onAppear {
             recordingData.timer = GlobalConstants.timerStartTime
         }

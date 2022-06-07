@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D0FF19E284FA5B3002ABAB2 /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0FF19D284FA5B3002ABAB2 /* Test.swift */; };
+		5D0FF1A0284FA726002ABAB2 /* Test2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0FF19F284FA726002ABAB2 /* Test2.swift */; };
+		5D0FF1A2284FB0B4002ABAB2 /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0FF1A1284FB0B4002ABAB2 /* Recorder.swift */; };
 		5D23E62B284421AB0003BAD3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E62A284421AB0003BAD3 /* AppDelegate.swift */; };
 		5D23E62D284421AB0003BAD3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E62C284421AB0003BAD3 /* ContentView.swift */; };
 		5D23E62F284421AB0003BAD3 /* Experience.rcproject in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E62E284421AB0003BAD3 /* Experience.rcproject */; };
@@ -57,6 +60,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5D0FF19D284FA5B3002ABAB2 /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
+		5D0FF19F284FA726002ABAB2 /* Test2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test2.swift; sourceTree = "<group>"; };
+		5D0FF1A1284FB0B4002ABAB2 /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
 		5D23E627284421AB0003BAD3 /* VirtualTrainer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTrainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D23E62A284421AB0003BAD3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5D23E62C284421AB0003BAD3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -251,6 +257,9 @@
 				5D23E680284E3EAD0003BAD3 /* ARRecordingOverlayView.swift */,
 				5D23E686284E41A30003BAD3 /* ARRecordingView.swift */,
 				5D23E693284EA6400003BAD3 /* ARRecordingViewContainer.swift */,
+				5D0FF19D284FA5B3002ABAB2 /* Test.swift */,
+				5D0FF19F284FA726002ABAB2 /* Test2.swift */,
+				5D0FF1A1284FB0B4002ABAB2 /* Recorder.swift */,
 			);
 			path = ARRecording;
 			sourceTree = "<group>";
@@ -405,9 +414,12 @@
 				5D23E67D284E2FBA0003BAD3 /* ARTrainingOverlayView.swift in Sources */,
 				5D23E64C284CDD630003BAD3 /* GlobalConstants.swift in Sources */,
 				5D23E685284E41940003BAD3 /* ARTrainingView.swift in Sources */,
+				5D0FF1A2284FB0B4002ABAB2 /* Recorder.swift in Sources */,
+				5D0FF19E284FA5B3002ABAB2 /* Test.swift in Sources */,
 				5D23E65A284D530E0003BAD3 /* PreferenceKey.swift in Sources */,
 				5D23E690284E4B260003BAD3 /* UINavigationControllerExtension.swift in Sources */,
 				5D23E67A284E13260003BAD3 /* IterationRow.swift in Sources */,
+				5D0FF1A0284FA726002ABAB2 /* Test2.swift in Sources */,
 				5D23E689284E42E30003BAD3 /* ProcessingARDataExtension.swift in Sources */,
 				5D23E647284A67CF0003BAD3 /* Exercise.swift in Sources */,
 				5D23E678284E0DC50003BAD3 /* Training.swift in Sources */,
