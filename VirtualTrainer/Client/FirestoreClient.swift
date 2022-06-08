@@ -15,18 +15,21 @@ import AVFoundation
 import RealityKit
 
 final class FirestoreClient: ObservableObject {
+
     static let exercisesCollection = Firestore.firestore().collection("exercises")
 
-    private var addNewExerciseCancellable: Cancellable?
-
     @Published var exercises: [Exercise] = []
+
+    private var addNewExerciseCancellable: Cancellable?
     private var allExercisesCancellable: Cancellable?
 
+    var uploadTask: StorageUploadTask?
+    
     init() {
         subscribeOnAllExercises()
     }
 
-    func subscribeOnAllExercises() { //} -> AnyPublisher<[Exercise], Error> {
+    func subscribeOnAllExercises() {
         allExercisesCancellable = FirestoreClient.exercisesCollection
             .snapshotPublisher()
             .tryMap { snapshot -> [Exercise] in
@@ -40,18 +43,41 @@ final class FirestoreClient: ObservableObject {
             }
             .sink { newExercises in
                 print(newExercises.count)
-//                print(newExercises[0].videoURL)
                 self.exercises = newExercises
             }
     }
 
-    struct UploadPhotoVideoResult {
-        var videoURL: String
-        var photoURL: String
+    func addNewExercise(newExercise: NewExercise) {
+        let newDocument = FirestoreClient.exercisesCollection
+            .document()
+        let id = newDocument.documentID
+
+        guard let localVideoURL = newExercise.localVideoURL else {
+            return
+        }
+
+        uploadVideoWithPhoto(id: id, for: localVideoURL) { videoURL, photoURL in
+            let exerciseRequest = NewExerciseRequest(
+                id: id,
+                videoURL: videoURL,
+                photoURL: photoURL,
+                newExercise: newExercise
+            )
+            do {
+                try newDocument.setData(from: exerciseRequest) { error in
+                    if let error = error {
+                        print(error)
+                        return
+                    }
+                    print("SETTTT")
+                }
+            } catch {
+                print(error)
+            }
+        }
     }
 
-    var uploadTask: StorageUploadTask?
-//
+
     func uploadVideoWithPhoto(
         id: String,
         for localVideoURL: URL,
@@ -116,133 +142,4 @@ final class FirestoreClient: ObservableObject {
         }
     }
 
-    func addNewExercise(
-        newExercise: NewExercise
-//        videoURL: String,
-//        photoURL: String
-    ) { //}-> AnyPublisher<Void, Error> {
-        
-        let newDocument = FirestoreClient.exercisesCollection
-            .document()
-        let id = newDocument.documentID
-
-        guard let localVideoURL = newExercise.localVideoURL else {
-            return
-        }
-
-        uploadVideoWithPhoto(id: id, for: localVideoURL) { videoURL, photoURL in
-            let exerciseRequest = NewExerciseRequest(
-                id: id,
-                videoURL: videoURL,
-                photoURL: photoURL,
-                newExercise: newExercise
-            )
-            do {
-                try newDocument.setData(from: exerciseRequest) { error in
-                    if let error = error {
-                        print(error)
-                        return
-                    }
-                    print("SETTTT")
-                }
-            } catch {
-                print(error)
-            }
-        }
-
-
-
-//        return newDocument.setData(from: newDocument)
-//        exercise.id = newDocument.documentID
-
-//        return newDocument
-//            .setData(from: newDocument)
-//            .flatMap { _ in newDocument.getDocument().eraseToAnyPublisher() }
-//            .on(
-//                value: { response in
-//                    do {
-//                        let exercise = try response.data(as: Exercise.self)
-//                        return exercise
-//                    } catch let error {
-//                        return error
-//                    }
-//                },
-//                error: { return $0 }
-//            )
-
-    }
 }
-
-import ARKit
-
-struct NewExerciseRequest: Encodable {
-
-    var id: String
-    var videoURL: URL
-    var photoURL: URL
-    var newExercise: NewExercise
-
-//    init(newExercise: NewExercise)
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case videoURL
-        case photoURL
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: .id)
-        try container.encode(videoURL, forKey: .videoURL)
-        try container.encode(photoURL, forKey: .photoURL)
-        try newExercise.encode(to: encoder)
-    }
-
-}
-
-
-struct NewExercise: Encodable {
-
-    var name: String = ""
-    var complexity: Complexity = .easy
-    var recommendations: String = ""
-    var localVideoURL: URL?
-    var frames: Frames = []
-
-    enum CodingKeys: String, CodingKey {
-        case name
-        case complexity
-        case recommendations
-        case frames
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(name, forKey: .name)
-        try  container.encode(complexity, forKey: .complexity)
-        try container.encode(recommendations, forKey: .recommendations)
-        let firebaseFrames = frames.map { FirebaseFrame(simdArray: $0) }
-        try  container.encode(firebaseFrames, forKey: .frames)
-    }
-
-//    var frames: [FirebaseFrame] = []
-
-//    init(
-//        name: String,
-//        complexity: Complexity,
-//        recommendations: String,
-//        frames: Frames
-//    ) {
-//        self.name = name
-//        self.complexity = complexity
-//        self.recommendations = recommendations
-//        self.frames = frames.map { FirebaseFrame(simdArray: $0) }
-//    }
-}
-
-
-//
-//struct GetAllExercises {
-//    let name: String
-//    let complexity:
-//}

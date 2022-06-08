@@ -10,6 +10,8 @@
 		5D0FF19E284FA5B3002ABAB2 /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0FF19D284FA5B3002ABAB2 /* Test.swift */; };
 		5D0FF1A0284FA726002ABAB2 /* Test2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0FF19F284FA726002ABAB2 /* Test2.swift */; };
 		5D0FF1A2284FB0B4002ABAB2 /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0FF1A1284FB0B4002ABAB2 /* Recorder.swift */; };
+		5D1E5C9828516274008A9469 /* NewExerciseRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1E5C9728516274008A9469 /* NewExerciseRequest.swift */; };
+		5D1E5C9A28516288008A9469 /* NewExercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1E5C9928516288008A9469 /* NewExercise.swift */; };
 		5D23E62B284421AB0003BAD3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E62A284421AB0003BAD3 /* AppDelegate.swift */; };
 		5D23E62D284421AB0003BAD3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E62C284421AB0003BAD3 /* ContentView.swift */; };
 		5D23E62F284421AB0003BAD3 /* Experience.rcproject in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E62E284421AB0003BAD3 /* Experience.rcproject */; };
@@ -64,6 +66,8 @@
 		5D0FF19D284FA5B3002ABAB2 /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
 		5D0FF19F284FA726002ABAB2 /* Test2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test2.swift; sourceTree = "<group>"; };
 		5D0FF1A1284FB0B4002ABAB2 /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
+		5D1E5C9728516274008A9469 /* NewExerciseRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewExerciseRequest.swift; sourceTree = "<group>"; };
+		5D1E5C9928516288008A9469 /* NewExercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewExercise.swift; sourceTree = "<group>"; };
 		5D23E627284421AB0003BAD3 /* VirtualTrainer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTrainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D23E62A284421AB0003BAD3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5D23E62C284421AB0003BAD3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -132,6 +136,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5D1E5C96285136B5008A9469 /* ForFollowingUpdates */ = {
+			isa = PBXGroup;
+			children = (
+				5D0FF19F284FA726002ABAB2 /* Test2.swift */,
+			);
+			path = ForFollowingUpdates;
+			sourceTree = "<group>";
+		};
 		5D23E61E284421AB0003BAD3 = {
 			isa = PBXGroup;
 			children = (
@@ -200,6 +212,8 @@
 				5D23E677284E0DC50003BAD3 /* Training.swift */,
 				5D23E68D284E482E0003BAD3 /* CurrentResults.swift */,
 				5D23E695284EAE3A0003BAD3 /* RecordingData.swift */,
+				5D1E5C9728516274008A9469 /* NewExerciseRequest.swift */,
+				5D1E5C9928516288008A9469 /* NewExercise.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -207,6 +221,7 @@
 		5D23E6452848043C0003BAD3 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5D1E5C96285136B5008A9469 /* ForFollowingUpdates */,
 				5D23E697284EB6320003BAD3 /* GoogleService-Info.plist */,
 				5D23E630284421AD0003BAD3 /* Assets.xcassets */,
 			);
@@ -260,7 +275,6 @@
 				5D23E686284E41A30003BAD3 /* ARRecordingView.swift */,
 				5D23E693284EA6400003BAD3 /* ARRecordingViewContainer.swift */,
 				5D0FF19D284FA5B3002ABAB2 /* Test.swift */,
-				5D0FF19F284FA726002ABAB2 /* Test2.swift */,
 				5D0FF1A1284FB0B4002ABAB2 /* Recorder.swift */,
 			);
 			path = ARRecording;
@@ -391,6 +405,7 @@
 				5D23E6A2284EC2A20003BAD3 /* FirestoreClient.swift in Sources */,
 				5D23E62D284421AB0003BAD3 /* ContentView.swift in Sources */,
 				5D23E664284D58200003BAD3 /* ExerciseView.swift in Sources */,
+				5D1E5C9A28516288008A9469 /* NewExercise.swift in Sources */,
 				5D23E62B284421AB0003BAD3 /* AppDelegate.swift in Sources */,
 				5D23E65C284D54780003BAD3 /* ExerciseItem.swift in Sources */,
 				5D23E653284D4AF90003BAD3 /* HomeView.swift in Sources */,
@@ -408,6 +423,7 @@
 				5D23E666284D59130003BAD3 /* CloseButton.swift in Sources */,
 				5D23E696284EAE3A0003BAD3 /* RecordingData.swift in Sources */,
 				5D23E694284EA6400003BAD3 /* ARRecordingViewContainer.swift in Sources */,
+				5D1E5C9828516274008A9469 /* NewExerciseRequest.swift in Sources */,
 				5D23E643284800C40003BAD3 /* Frame.swift in Sources */,
 				5D23E672284D77FB0003BAD3 /* AddButton.swift in Sources */,
 				5D23E64A284CDCD70003BAD3 /* ARSkeletonJoint.swift in Sources */,

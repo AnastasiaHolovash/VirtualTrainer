@@ -24,7 +24,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         let configuration = ARBodyTrackingConfiguration()
         arView.session.run(configuration)
-        arView.scene.addAnchor(context.coordinator.characterAnchor)
 
         return arView
     }
@@ -45,7 +44,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
     // MARK: - Coordinator
 
     class Coordinator: NSObject, ARSessionDelegate {
-        let characterAnchor = AnchorEntity()
 
         @Binding var jointModelTransformsCurrent: Frame
         @Binding var currentResults: CurrentResults
@@ -104,7 +102,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                     print("--- STOP Recording ---")
                     isRecording.toggle()
 
-                    makeTrainingDescription(from: iterationsResults)
+//                    makeTrainingDescription(from: iterationsResults)
 
                 }
             }
@@ -207,6 +205,8 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             isRecording = false
         }
 
+        // MARK: - Update results
+
         func updateCurrentResults() {
             let iteration = iterationsResults[numberOfIterations - 1]
             if iteration.count > exerciseFramesCount / 3 * 2 {
@@ -222,6 +222,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             }
         }
 
+        /**
         func makeTrainingDescription(from results: [[Float]]) {
             //            var iterations: [IterationResults] = []
 
@@ -246,6 +247,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             let score = iterations.reduce(0.0) { $0 + $1.score } / Float(numberOfIterations)
             print("\nGeneral score: \(Int(score * 100))%")
         }
+        */
 
     }
 

@@ -9,19 +9,12 @@ import SwiftUI
 import RealityKit
 import ARKit
 import Combine
-import Vision
 
 struct ARViewContainer: UIViewRepresentable {
 
     @Binding var exercise: NewExercise
-
-//    @Binding var jointModelTransforms: Frame
     @Binding var isRecording: Bool
     @Binding var recordingData: RecordingData
-//    @Binding var comparisonFrameValue: Frame
-
-    // DEBUG
-    @Binding var isReviewing: Bool
 
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero, cameraMode: .ar, automaticallyConfigureSession: true)
@@ -29,7 +22,6 @@ struct ARViewContainer: UIViewRepresentable {
 
         let configuration = ARBodyTrackingConfiguration()
         arView.session.run(configuration)
-        arView.scene.addAnchor(context.coordinator.characterAnchor)
 
         return arView
     }
@@ -37,11 +29,8 @@ struct ARViewContainer: UIViewRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(
             exercise: $exercise,
-//            jointModelTransforms: $jointModelTransforms,
             isRecording: $isRecording,
-            recordingData: $recordingData,
-//            comparisonFrameValue: $comparisonFrameValue,
-            isReviewing: $isReviewing
+            recordingData: $recordingData
         )
     }
 
@@ -52,7 +41,6 @@ struct ARViewContainer: UIViewRepresentable {
     // MARK: - Coordinator
 
     class Coordinator: NSObject, ARSessionDelegate {
-        let characterAnchor = AnchorEntity()
         var jointModelTransformsCurrent: Frame = []
         var comparisonFrameValue: Frame = []
 
@@ -68,10 +56,7 @@ struct ARViewContainer: UIViewRepresentable {
 
         @Binding var exercise: NewExercise
 
-        // DEBUG
-        @Binding var isReviewing: Bool
-
-        /// True if recording training/exercise data is started
+        /// True if recording exercise data is started
         var isRecording: Bool = false
         var exerciseFrames: Frames = []
 
@@ -79,23 +64,16 @@ struct ARViewContainer: UIViewRepresentable {
 
         init(
             exercise: Binding<NewExercise>,
-//            jointModelTransforms: Binding<[simd_float4x4]>,
             isRecording: Binding<Bool>,
-            recordingData: Binding<RecordingData>,
-//            comparisonFrameValue: Binding<Frame>,
-            isReviewing: Binding<Bool>
+            recordingData: Binding<RecordingData>
         ) {
             _exercise = exercise
-//            _jointModelTransformsCurrent = jointModelTransforms
             _isTrainingInProgress = isRecording
             _recordingData = recordingData
-//            _comparisonFrameValue = comparisonFrameValue
-            _isReviewing = isReviewing
 
             super.init()
 
             recorder.setup { [weak self] url in
-                self?.isReviewing = true
                 self?.exercise.localVideoURL = url
             }
         }
@@ -113,7 +91,7 @@ struct ARViewContainer: UIViewRepresentable {
                 guard let bodyAnchor = anchor as? ARBodyAnchor else { continue }
 
                 let transforms = bodyAnchor.skeleton.jointModelTransforms
-                jointModelTransformsCurrent = trackingJointNamesRawValues.map {  transforms[$0] }
+                jointModelTransformsCurrent = trackingJointNamesRawValues.map { transforms[$0] }
 
                 if isTrainingInProgress && !isRecording {
                     print("\n***** Check If STARTED *****")
@@ -127,16 +105,13 @@ struct ARViewContainer: UIViewRepresentable {
 
                     if let capturedImage = session.currentFrame?.capturedImage {
                         if !recorder.isRecording {
-//                            let ciImage = CIImage(cvPixelBuffer: capturedImage)
-//                            ciImage.transformed(by: CGAffineTransform(rotationAngle: .pi / 2))
-//                            let previewImage = UIImage(ciImage: ciImage)
-                            // TODO: save preview
                             recorder.start()
                         }
                         recorder.render(pixelBuffer: capturedImage)
                     }
                 }
 
+                /// STOP Recording
                 if !isTrainingInProgress && isRecording {
                     print("--- STOP Recording ---")
                     isRecording.toggle()
@@ -173,7 +148,8 @@ struct ARViewContainer: UIViewRepresentable {
             return result
         }
 
-        /// For exercise recording process
+        // MARK: - Сropp Recorded Data
+
         func cropOneIteration() {
             let previousChecked = exerciseFrames.last
             let (frameIndex, _) = exerciseFrames.reversed().enumerated().first { index, frame in
@@ -198,10 +174,6 @@ struct ARViewContainer: UIViewRepresentable {
 
             // Saving new frames to model
             exercise.frames = croppedFrames
-
-
-//            recordingData
-//            Defaults.shared.setExerciseTargetFrames(croppedFrames)
         }
     }
 

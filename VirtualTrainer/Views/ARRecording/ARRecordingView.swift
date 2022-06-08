@@ -13,16 +13,13 @@ import Vision
 
 struct ARRecordingView: View {
     
-//    @State var jointModelTransforms: Frame = []
     @State var timerValue: Int = GlobalConstants.timerStartTime
     
     @State var timerCancellable: AnyCancellable? = nil
     @State var isRecording: Bool = false
-//    @State var comparisonFrameValue: Frame = []
     @State var recordingData = RecordingData()
 
     @Binding var exercise: NewExercise
-//    @EnvironmentObject var model: AppModel
 
     // DEBUG
     @State var isReviewing: Bool = false
@@ -33,11 +30,8 @@ struct ARRecordingView: View {
         ZStack {
             ARViewContainer(
                 exercise: $exercise,
-//                jointModelTransforms: $jointModelTransforms,
                 isRecording: $isRecording,
-                recordingData: $recordingData,
-//                comparisonFrameValue: $comparisonFrameValue,
-                isReviewing: $isReviewing
+                recordingData: $recordingData
             )
             .edgesIgnoringSafeArea(.all)
 
