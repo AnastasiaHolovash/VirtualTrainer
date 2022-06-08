@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct ExerciseView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
@@ -51,7 +52,7 @@ struct ExerciseView: View {
         .frame(maxWidth: .infinity)
         .frame(height: 500)
         .background(
-            Image(exercise.image)
+            WebImage(url: URL(string: exercise.photoURL))
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .accessibility(hidden: true)

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVFoundation
+import SDWebImageSwiftUI
 
 struct ExerciseItem: View {
     var namespace: Namespace.ID
@@ -49,7 +50,7 @@ struct ExerciseItem: View {
             )
         }
         .background(
-            Image(uiImage: AVAsset(url: url!).previewImageForLocalVideo ?? UIImage())
+            WebImage(url: URL(string: exercise.photoURL))
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .disabled(true)

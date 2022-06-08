@@ -26,7 +26,7 @@ class AppModel: ObservableObject {
         iterations: [iterationResultsMock, iterationResultsMock,iterationResultsMock],
         duration: 4855
     )
-    
+
     var apiClientCancellable: AnyCancellable? = nil
 
     init() {

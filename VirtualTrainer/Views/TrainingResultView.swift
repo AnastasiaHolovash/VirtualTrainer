@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct TrainingResultView: View {
     @Binding var training: Training
@@ -64,7 +65,7 @@ struct TrainingResultView: View {
             .frame(maxWidth: .infinity)
             .frame(height: scrollY > 0 ? 500 + scrollY : 500)
             .background(
-                Image(training.exercise.image)
+                WebImage(url: URL(string: training.exercise.photoURL))
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .offset(y: scrollY > 0 ? -scrollY : 0)

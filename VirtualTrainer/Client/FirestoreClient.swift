@@ -40,6 +40,7 @@ final class FirestoreClient: ObservableObject {
             }
             .sink { newExercises in
                 print(newExercises.count)
+//                print(newExercises[0].videoURL)
                 self.exercises = newExercises
             }
     }

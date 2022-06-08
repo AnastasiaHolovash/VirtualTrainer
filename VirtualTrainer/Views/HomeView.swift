@@ -23,9 +23,6 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             Color("Background").ignoresSafeArea()
-                .onChange(of: model.apiClient.exercises) { newValue in
-                    print("alallalalalal")
-                }
 
             if model.showDetail {
                 detail
