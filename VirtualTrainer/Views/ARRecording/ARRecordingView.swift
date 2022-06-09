@@ -13,31 +13,24 @@ import Vision
 
 struct ARRecordingView: View {
     
-    @State var timerValue: Int = GlobalConstants.timerStartTime
-    
-    @State var timerCancellable: AnyCancellable? = nil
+    @State private var timerValue: Int = GlobalConstants.timerStartTime
+    @State private var timerCancellable: AnyCancellable? = nil
+
     @State var isRecording: Bool = false
     @State var recordingData = RecordingData()
-
     @Binding var exercise: NewExercise
 
-    // DEBUG
-    @State var isReviewing: Bool = false
-    let toPresent = UIHostingController(rootView: AnyView(EmptyView()))
-    @State private var vURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("test.mov")
+//    let toPresent = UIHostingController(rootView: AnyView(EmptyView()))
+//    @State private var vURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("test.mov")
     
     var body: some View {
         ZStack {
-            ARViewContainer(
+            ARRecordingViewContainer(
                 exercise: $exercise,
                 isRecording: $isRecording,
                 recordingData: $recordingData
             )
             .edgesIgnoringSafeArea(.all)
-
-//            if isReviewing {
-//                AVPlayerView(videoURL: self.$vURL).transition(.move(edge: .bottom)).edgesIgnoringSafeArea(.all)
-//            }
 
             ARRecordingOverlayView(model: $recordingData)
                 .onChange(of: recordingData.playPauseButtonState, perform: { newValue in
@@ -54,17 +47,12 @@ struct ARRecordingView: View {
                     recordingData.timer = newValue
                 }
         }
-//        .onChange(of: isReviewing, perform: { newValue in
-//            if newValue {
-//                model.apiClient.uploadVideoWithPhoto()
-//            }
-//        })
         .onAppear {
             recordingData.timer = GlobalConstants.timerStartTime
         }
     }
     
-    func startTimer() {
+    private func startTimer() {
         timerCancellable = Timer.publish(every: 1, on: .main, in: .default)
             .autoconnect()
             .receive(on: DispatchQueue.main)
@@ -81,7 +69,7 @@ struct ARRecordingView: View {
             })
     }
     
-    func stopTimer() {
+    private func stopTimer() {
         timerCancellable?.cancel()
     }
 }

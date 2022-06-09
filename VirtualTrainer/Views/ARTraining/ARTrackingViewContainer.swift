@@ -13,7 +13,7 @@ import Vision
 
 struct ARTrackingViewContainer: UIViewRepresentable {
 
-    @Binding var jointModelTransforms: Frame
+//    @Binding var jointModelTransforms: Frame
     @Binding var isRecording: Bool
     @Binding var currentResults: CurrentResults
     @Binding var comparisonFrameValue: Frame
@@ -30,7 +30,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
     func makeCoordinator() -> Coordinator {
         Coordinator(
-            jointModelTransforms: $jointModelTransforms,
+//            jointModelTransforms: $jointModelTransforms,
             isRecording: $isRecording,
             currentResults: $currentResults,
             comparisonFrameValue: $comparisonFrameValue
@@ -45,26 +45,26 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
     class Coordinator: NSObject, ARSessionDelegate {
 
-        @Binding var jointModelTransformsCurrent: Frame
+        private var jointModelTransformsCurrent: Frame = []
         @Binding var currentResults: CurrentResults
         @Binding var comparisonFrameValue: Frame
         /// True if timer is out
         @Binding var isTrainingInProgress: Bool
 
         /// True if recording training/exercise data is started
-        var isRecording: Bool = false
-        var exerciseFramesLoaded: Frames = []
-        var exerciseFramesCount: Int = 0
+        private var isRecording: Bool = false
+        private var exerciseFramesLoaded: Frames = []
+        private var exerciseFramesCount: Int = 0
 
-        var iterations: [IterationResults] = []
+        private var iterations: [IterationResults] = []
 
         init(
-            jointModelTransforms: Binding<[simd_float4x4]>,
+//            jointModelTransforms: Binding<[simd_float4x4]>,
             isRecording: Binding<Bool>,
             currentResults: Binding<CurrentResults>,
             comparisonFrameValue: Binding<Frame>
         ) {
-            _jointModelTransformsCurrent = jointModelTransforms
+//            _jointModelTransformsCurrent = jointModelTransforms
             _isTrainingInProgress = isRecording
             _currentResults = currentResults
             _comparisonFrameValue = comparisonFrameValue
@@ -77,11 +77,11 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         // MARK: - Delegate method
 
-        let trackingJointNamesRawValues: [Int] = {
+        private let trackingJointNamesRawValues: [Int] = {
             GlobalConstants.trackingJointNames.map { $0.rawValue }
         }()
 
-        var wasRecorded = false
+        private var wasRecorded = false
 
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
             for anchor in anchors {
@@ -110,7 +110,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         // MARK: - Check If Started
 
-        func checkIfExerciseStarted() -> Bool {
+        private func checkIfExerciseStarted() -> Bool {
             guard !comparisonFrameValue.isEmpty else {
                 comparisonFrameValue = jointModelTransformsCurrent
                 return false
@@ -141,7 +141,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         var previous: Frame = []
 
-        func compareTrainingWithTarget() {
+        private func compareTrainingWithTarget() {
             let lastTargetFrame = exerciseFramesLoaded.last
 
             // Detection end of iteration
@@ -190,7 +190,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             }
         }
 
-        func startDetectionStartOfIteration() {
+        private func startDetectionStartOfIteration() {
             iterationsResults.append([])
             numberOfIterations += 1
 
@@ -207,7 +207,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         // MARK: - Update results
 
-        func updateCurrentResults() {
+        private func updateCurrentResults() {
             let iteration = iterationsResults[numberOfIterations - 1]
             if iteration.count > exerciseFramesCount / 3 * 2 {
                 let score = iteration.reduce(0.0, +) / Float(iteration.count)

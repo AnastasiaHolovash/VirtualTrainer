@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct ARTrainingOverlayView: View {
-    @Binding var model: CurrentResults
+    @Binding var currentResults: CurrentResults
+    @EnvironmentObject var model: AppModel
 
     var body: some View {
         ZStack {
-            if model.timer < GlobalConstants.timerStartTime + 1 {
-                Text("\(model.timer)")
+            if currentResults.timer < GlobalConstants.timerStartTime + 1 {
+                Text("\(currentResults.timer)")
                     .animatableFont(size: 100, weight: .semibold)
                     .background(
                         PlayShape()
@@ -43,15 +44,23 @@ struct ARTrainingOverlayView: View {
                             .cornerRadius(20)
                             .blendMode(.softLight)
 
-                            Button {
-
-                            } label: {
-                                Text("Готово")
-                                    .font(.body).bold()
-                            }
-                            .padding()
-                            .foregroundColor(Color(hex: "281B5A").opacity(0.8))
-                            .cornerRadius(20)
+                            NavigationLink(
+                                destination: {
+                                    TrainingResultView(training: $model.currentTraining)
+//                                    TrainingResultView(training: .constant(Training(
+//                                        exercise: exerciseMock,
+//                                        iterations: [iterationResultsMock, iterationResultsMock,iterationResultsMock],
+//                                        duration: 4855
+//                                    )))
+                                },
+                                label: {
+                                    Text("Готово")
+                                        .font(.body).bold()
+                                        .padding()
+                                        .foregroundColor(Color(hex: "281B5A").opacity(0.8))
+                                        .cornerRadius(20)
+                                }
+                            )
                         }
                         .frame(width: 100, height: 50, alignment: .center)
                         .padding(.horizontal, 20)
@@ -63,7 +72,7 @@ struct ARTrainingOverlayView: View {
 
                 HStack(spacing: 8) {
                     VStack(spacing: 6) {
-                        Text(model.quality)
+                        Text(currentResults.quality)
                             .font(.system(size: 16))
                         HStack {
                             Image(systemName: "tortoise.fill")
@@ -83,15 +92,15 @@ struct ARTrainingOverlayView: View {
                             .backgroundStyle(cornerRadius: 20)
                     )
 
-                    PlayPauseButton(state: $model.playPauseButtonState)
+                    PlayPauseButton(state: $currentResults.playPauseButtonState)
                         .onTapGesture {
-                            model.playPauseButtonState = model.playPauseButtonState.toggle()
+                            currentResults.playPauseButtonState = currentResults.playPauseButtonState.toggle()
                         }
 
                     VStack(spacing: 6) {
-                        Text("\(model.iterationCount) разів")
+                        Text("\(currentResults.iterationCount) разів")
                             .font(.system(size: 16, weight: .bold))
-                        Text(model.seconds.durationDescription)
+                        Text(currentResults.seconds.durationDescription)
                             .font(.system(size: 16))
                     }
                     .padding(8)

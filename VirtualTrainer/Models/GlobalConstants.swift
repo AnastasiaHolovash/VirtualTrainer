@@ -43,12 +43,3 @@ enum GlobalConstants {
     ]
 
 }
-
-extension GlobalConstants {
-
-    enum Mode {
-        case recording
-        case training
-    }
-    
-}

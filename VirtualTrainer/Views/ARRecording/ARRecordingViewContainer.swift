@@ -10,7 +10,7 @@ import RealityKit
 import ARKit
 import Combine
 
-struct ARViewContainer: UIViewRepresentable {
+struct ARRecordingViewContainer: UIViewRepresentable {
 
     @Binding var exercise: NewExercise
     @Binding var isRecording: Bool
@@ -41,8 +41,8 @@ struct ARViewContainer: UIViewRepresentable {
     // MARK: - Coordinator
 
     class Coordinator: NSObject, ARSessionDelegate {
-        var jointModelTransformsCurrent: Frame = []
-        var comparisonFrameValue: Frame = []
+        private var jointModelTransformsCurrent: Frame = []
+        private var comparisonFrameValue: Frame = []
 
         @Binding var recordingData: RecordingData
         /// True if timer is out
@@ -57,10 +57,9 @@ struct ARViewContainer: UIViewRepresentable {
         @Binding var exercise: NewExercise
 
         /// True if recording exercise data is started
-        var isRecording: Bool = false
-        var exerciseFrames: Frames = []
-
-        let recorder = Recorder()
+        private var isRecording: Bool = false
+        private var exerciseFrames: Frames = []
+        private let recorder = Recorder()
 
         init(
             exercise: Binding<NewExercise>,
@@ -80,11 +79,11 @@ struct ARViewContainer: UIViewRepresentable {
 
         // MARK: - Delegate method
 
-        let trackingJointNamesRawValues: [Int] = {
+        private let trackingJointNamesRawValues: [Int] = {
             GlobalConstants.trackingJointNames.map { $0.rawValue }
         }()
 
-        var wasRecorded = false
+        private var wasRecorded = false
 
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
             for anchor in anchors {
@@ -128,7 +127,7 @@ struct ARViewContainer: UIViewRepresentable {
 
         // MARK: - Check If Started
 
-        func checkIfExerciseStarted() -> Bool {
+        private func checkIfExerciseStarted() -> Bool {
             guard !comparisonFrameValue.isEmpty else {
                 comparisonFrameValue = jointModelTransformsCurrent
                 return false
@@ -150,7 +149,7 @@ struct ARViewContainer: UIViewRepresentable {
 
         // MARK: - Сropp Recorded Data
 
-        func cropOneIteration() {
+        private func cropOneIteration() {
             let previousChecked = exerciseFrames.last
             let (frameIndex, _) = exerciseFrames.reversed().enumerated().first { index, frame in
                 guard index < exerciseFrames.count - 1,

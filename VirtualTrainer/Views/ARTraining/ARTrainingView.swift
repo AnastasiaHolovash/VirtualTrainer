@@ -13,10 +13,9 @@ import Vision
 
 struct ARTrainingView : View {
 
-    @State var jointModelTransforms: Frame = []
-    @State var timerValue: Int = GlobalConstants.timerStartTime
+    @State private var timerValue: Int = GlobalConstants.timerStartTime
 
-    @State var timerCancellable: AnyCancellable? = nil
+    @State private var timerCancellable: AnyCancellable? = nil
     @State var isRecording: Bool = false
     @State var comparisonFrameValue: Frame = []
 
@@ -25,14 +24,13 @@ struct ARTrainingView : View {
     var body: some View {
         ZStack {
             ARTrackingViewContainer(
-                jointModelTransforms: $jointModelTransforms,
                 isRecording: $isRecording,
                 currentResults: $currentResults,
                 comparisonFrameValue: $comparisonFrameValue
             )
             .edgesIgnoringSafeArea(.all)
 
-            ARTrainingOverlayView(model: $currentResults)
+            ARTrainingOverlayView(currentResults: $currentResults)
                 .onChange(of: currentResults.playPauseButtonState, perform: { newValue in
                     switch newValue {
                     case .play:
@@ -52,7 +50,7 @@ struct ARTrainingView : View {
         }
     }
 
-    func startTimer() {
+    private func startTimer() {
         timerCancellable = Timer.publish(every: 1, on: .main, in: .default)
             .autoconnect()
             .receive(on: DispatchQueue.main)
@@ -69,7 +67,7 @@ struct ARTrainingView : View {
             })
     }
 
-    func stopTimer() {
+    private func stopTimer() {
         timerCancellable?.cancel()
     }
 }

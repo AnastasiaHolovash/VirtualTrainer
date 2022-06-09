@@ -45,7 +45,7 @@ struct ExerciseView: View {
         .zIndex(1)
     }
 
-    var cover: some View {
+    private var cover: some View {
         VStack {
             Spacer()
         }
@@ -125,14 +125,14 @@ struct ExerciseView: View {
 
     }
 
-    func close() {
+    private func close() {
         withAnimation(.closeCard.delay(0.2)) {
             model.showDetail = false
             model.selectedExercise = nil
         }
     }
 
-    var content: some View {
+    private var content: some View {
         VStack(alignment: .leading, spacing: 30) {
             Text("Рекомендації")
                 .font(.title).bold()
