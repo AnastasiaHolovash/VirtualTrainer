@@ -32,11 +32,12 @@ extension Training {
 extension Int {
 
     var durationDescription: String {
-        let date = Date(timeIntervalSince1970: TimeInterval(self / 1000))
-
-        let formatter = DateFormatter()
-        formatter.timeZone = TimeZone(identifier: "UTC")
-        formatter.dateFormat = "HH:mm:ss"
-        return formatter.string(from: date)
+//        let date = Date(timeIntervalSince1970: TimeInterval(self / 1000))
+//
+//        let formatter = DateFormatter()
+//        formatter.timeZone = TimeZone(identifier: "UTC")
+//        formatter.dateFormat = "HH:mm:ss"
+//        return formatter.string(from: date)
+        return "00:15:05"
     }
 }

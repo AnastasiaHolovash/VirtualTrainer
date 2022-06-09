@@ -99,7 +99,7 @@ struct ExerciseView: View {
                     .blendMode(.softLight)
 
                     NavigationLink {
-                        ARTrainingView(currentResults: CurrentResults())
+                        ARTrainingView(currentResults: CurrentResults(), exercise: self.exercise)
                             .navigationBarHidden(true)
                     } label: {
                         Text("Почати")

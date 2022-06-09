@@ -37,7 +37,7 @@ struct IterationResults {
     }
 
     var quality: String {
-        return "Хороша якість"
+        return "Чудово"
     }
 }
 

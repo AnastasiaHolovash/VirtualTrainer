@@ -20,10 +20,12 @@ struct ARTrainingView : View {
     @State var comparisonFrameValue: Frame = []
 
     @State var currentResults: CurrentResults
+    @State var exercise: Exercise
 
     var body: some View {
         ZStack {
             ARTrackingViewContainer(
+                exercise: exercise,
                 isRecording: $isRecording,
                 currentResults: $currentResults,
                 comparisonFrameValue: $comparisonFrameValue

@@ -75,18 +75,6 @@ struct HomeView: View {
                 showStatusBar.toggle()
             }
         }
-        .onAppear {
-//            task {
-//                try await Firestore.firestore().collection("exercises")
-//                    .getDocuments()
-//                    .tryMap { snapshot -> [Exercise] in
-//                        try snapshot.documents.map { document in
-//                            try document.data(as: Exercise.self)
-//                        }
-//                    }
-//            }
-//            model.apiClient.getAllExercises()
-        }
         .overlay(NavigationBar(title: "Тренування", contentHasScrolled: $contentHasScrolled))
         .statusBar(hidden: !showStatusBar)
     }

@@ -47,6 +47,7 @@ struct ARTrainingOverlayView: View {
                             NavigationLink(
                                 destination: {
                                     TrainingResultView(training: $model.currentTraining)
+                                        .navigationBarHidden(true)
 //                                    TrainingResultView(training: .constant(Training(
 //                                        exercise: exerciseMock,
 //                                        iterations: [iterationResultsMock, iterationResultsMock,iterationResultsMock],

@@ -23,8 +23,9 @@ class AppModel: ObservableObject {
     @Published var startTraining: Bool = false
     @Published var currentTraining: Training = Training(
         exercise: exerciseMock,
-        iterations: [iterationResultsMock, iterationResultsMock,iterationResultsMock],
-        duration: 4855
+        iterations: [iterationResultsMock1, iterationResultsMock2, iterationResultsMock3, iterationResultsMock4,
+                     iterationResultsMock5, iterationResultsMock6, iterationResultsMock7, iterationResultsMock8],
+        duration: 48755555
     )
 
     var apiClientCancellable: AnyCancellable? = nil
@@ -35,3 +36,12 @@ class AppModel: ObservableObject {
         }
     }
 }
+
+let iterationResultsMock1 = IterationResults(number: 1, score: 0.97, speed: 0.9)
+let iterationResultsMock2 = IterationResults(number: 2, score: 0.96, speed: 1.3)
+let iterationResultsMock3 = IterationResults(number: 3, score: 0.96, speed: 1.2)
+let iterationResultsMock4 = IterationResults(number: 4, score: 0.95, speed: 1.0)
+let iterationResultsMock5 = IterationResults(number: 5, score: 0.90, speed: 1.1)
+let iterationResultsMock6 = IterationResults(number: 6, score: 0.95, speed: 1.2)
+let iterationResultsMock7 = IterationResults(number: 7, score: 0.95, speed: 1.3)
+let iterationResultsMock8 = IterationResults(number: 8, score: 0.93, speed: 1.3)

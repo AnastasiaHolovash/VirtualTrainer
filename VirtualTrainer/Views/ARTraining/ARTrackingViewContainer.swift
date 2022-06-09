@@ -13,7 +13,7 @@ import Vision
 
 struct ARTrackingViewContainer: UIViewRepresentable {
 
-//    @Binding var jointModelTransforms: Frame
+    var exercise: Exercise
     @Binding var isRecording: Bool
     @Binding var currentResults: CurrentResults
     @Binding var comparisonFrameValue: Frame
@@ -30,7 +30,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
     func makeCoordinator() -> Coordinator {
         Coordinator(
-//            jointModelTransforms: $jointModelTransforms,
+            exercise: exercise,
             isRecording: $isRecording,
             currentResults: $currentResults,
             comparisonFrameValue: $comparisonFrameValue
@@ -59,19 +59,18 @@ struct ARTrackingViewContainer: UIViewRepresentable {
         private var iterations: [IterationResults] = []
 
         init(
-//            jointModelTransforms: Binding<[simd_float4x4]>,
+            exercise: Exercise,
             isRecording: Binding<Bool>,
             currentResults: Binding<CurrentResults>,
             comparisonFrameValue: Binding<Frame>
         ) {
-//            _jointModelTransformsCurrent = jointModelTransforms
             _isTrainingInProgress = isRecording
             _currentResults = currentResults
             _comparisonFrameValue = comparisonFrameValue
 
             super.init()
 
-            exerciseFramesLoaded = Defaults.shared.getExerciseTargetFrames()
+            exerciseFramesLoaded = exercise.simdFrames
             exerciseFramesCount = exerciseFramesLoaded.count
         }
 
@@ -101,9 +100,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 if !isTrainingInProgress && isRecording {
                     print("--- STOP Recording ---")
                     isRecording.toggle()
-
-//                    makeTrainingDescription(from: iterationsResults)
-
                 }
             }
         }

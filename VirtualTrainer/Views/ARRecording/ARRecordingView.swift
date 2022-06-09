@@ -19,9 +19,6 @@ struct ARRecordingView: View {
     @State var isRecording: Bool = false
     @State var recordingData = RecordingData()
     @Binding var exercise: NewExercise
-
-//    let toPresent = UIHostingController(rootView: AnyView(EmptyView()))
-//    @State private var vURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("test.mov")
     
     var body: some View {
         ZStack {
