@@ -24,7 +24,7 @@ struct IterationRow: View {
                 Text("\(iteration.number) повторення")
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
-                Text(iteration.quality)
+                Text(iteration.quality.rawValue)
                     .fontWeight(.semibold)
                 Text(iteration.speedDescription)
                     .font(.caption.weight(.medium))
@@ -35,9 +35,10 @@ struct IterationRow: View {
     }
 }
 
+/*
 struct IterationRow_Previews: PreviewProvider {
     static var previews: some View {
         IterationRow(iteration: iterationResultsMock)
     }
 }
-
+*/

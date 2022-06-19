@@ -19,13 +19,17 @@ struct ExerciseView: View {
 
     var body: some View {
         ZStack {
-            if model.showResults {
-                TrainingResultView(training: $model.currentTraining)
-            }
-
             ScrollView {
                 cover
-                    .overlay(PlayButton())
+                    .overlay(
+                        NavigationLink(destination: {
+                            AVPlayerView(videoURL: URL(string: exercise.videoURL)!)
+                                .navigationBarHidden(true)
+                                .background(Color.black)
+                        }, label: {
+                            PlayButton()
+                        })
+                    )
                 content
                     .padding(.vertical, 80)
             }
@@ -68,7 +72,6 @@ struct ExerciseView: View {
         .overlay(
             VStack(spacing: 8) {
                 VStack(alignment: .leading, spacing: 8) {
-
                     Text(exercise.name)
                         .font(.title).bold()
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -99,7 +102,7 @@ struct ExerciseView: View {
                     .blendMode(.softLight)
 
                     NavigationLink {
-                        ARTrainingView(currentResults: CurrentResults(), exercise: self.exercise)
+                        ARTrainingView(with: self.exercise)
                             .navigationBarHidden(true)
                     } label: {
                         Text("Почати")

@@ -14,6 +14,12 @@ struct AddExerciseView: View {
 
     @State var exercise = NewExercise()
 
+    private enum Field: Int, CaseIterable {
+        case name
+        case recommendations
+    }
+    @FocusState private var focusedField: Field?
+
     var body: some View {
         ZStack {
             ScrollView {
@@ -32,7 +38,8 @@ struct AddExerciseView: View {
             }
             .coordinateSpace(name: "scroll")
             .background(Color("Background"))
-            .ignoresSafeArea()
+            .ignoresSafeArea(.container, edges: .all)
+            .ignoresSafeArea(.keyboard, edges: .top)
 
             Button {
                 close()
@@ -41,6 +48,14 @@ struct AddExerciseView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .padding(20)
+        }
+        .toolbar {
+            ToolbarItem(placement: .keyboard) {
+                HStack {
+                    Spacer()
+                    Button("Готово") { focusedField = nil }
+                }
+            }
         }
         .zIndex(1)
     }
@@ -73,6 +88,7 @@ struct AddExerciseView: View {
                         .font(.title.bold())
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary)
+                        .focused($focusedField, equals: .name)
 
                     HStack {
                         Text("Складність")
@@ -128,6 +144,7 @@ struct AddExerciseView: View {
             TextEditor(text: $exercise.recommendations)
                 .frame(height: 100)
                 .cornerRadius(20)
+                .focused($focusedField, equals: .recommendations)
 
             ZStack {
                 angularGradient
@@ -143,9 +160,6 @@ struct AddExerciseView: View {
                     // Perform request
                     print(exercise)
                     model.apiClient.addNewExercise(newExercise: exercise)
-//                    model.apiClient.addNewExercise(newExercise: <#T##NewExercise#>, videoURL: <#T##String#>, photoURL: <#T##String#>)
-//                    let exerciseRequest = NewExerciseRequest(
-
                 } label: {
                     Text("Готово")
                         .font(.title2).bold()

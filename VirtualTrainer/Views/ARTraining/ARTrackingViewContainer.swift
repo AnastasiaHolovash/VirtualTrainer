@@ -16,7 +16,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
     var exercise: Exercise
     @Binding var isRecording: Bool
     @Binding var currentResults: CurrentResults
-    @Binding var comparisonFrameValue: Frame
+    @Binding var iterations: [IterationResults]
 
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero, cameraMode: .ar, automaticallyConfigureSession: true)
@@ -33,7 +33,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             exercise: exercise,
             isRecording: $isRecording,
             currentResults: $currentResults,
-            comparisonFrameValue: $comparisonFrameValue
+            iterations: $iterations
         )
     }
 
@@ -47,26 +47,27 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         private var jointModelTransformsCurrent: Frame = []
         @Binding var currentResults: CurrentResults
-        @Binding var comparisonFrameValue: Frame
+
         /// True if timer is out
         @Binding var isTrainingInProgress: Bool
+        @Binding var iterations: [IterationResults]
 
         /// True if recording training/exercise data is started
         private var isRecording: Bool = false
         private var exerciseFramesLoaded: Frames = []
         private var exerciseFramesCount: Int = 0
+        private var comparisonFrameValue: Frame = []
 
-        private var iterations: [IterationResults] = []
 
         init(
             exercise: Exercise,
             isRecording: Binding<Bool>,
             currentResults: Binding<CurrentResults>,
-            comparisonFrameValue: Binding<Frame>
+            iterations: Binding<[IterationResults]>
         ) {
             _isTrainingInProgress = isRecording
             _currentResults = currentResults
-            _comparisonFrameValue = comparisonFrameValue
+            _iterations = iterations
 
             super.init()
 
@@ -144,11 +145,8 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             if couldDetectEndOfIteration,
                let last = lastTargetFrame {
                 let resultValue = jointModelTransformsCurrent.compare(to: last)
-                //                print("Could Detect End Of Iteration with --- resultValue: \(resultValue)")
 
                 if resultValue.isCloseToEqual {
-                    //                    print("Could Detect End Of Iteration with --- resultValue: \(resultValue)")
-
                     if previous.isEmpty {
                         previous = jointModelTransformsCurrent
                         currentNumberOfStaticFrames = 1
@@ -161,7 +159,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                             currentNumberOfStaticFrames += 1
                         }
                     }
-
                     print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
                 }
             }
@@ -210,7 +207,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 let iterationResults = IterationResults(
                     number: iterations.count + 1,
                     score: score,
-                    speed: Float(iteration.count) / Float(exerciseFramesCount)
+                    speed: Float(exerciseFramesCount) / Float(iteration.count)
                 )
 
                 iterations.append(iterationResults)
@@ -218,7 +215,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             }
         }
 
-        /**
+       /*
         func makeTrainingDescription(from results: [[Float]]) {
             //            var iterations: [IterationResults] = []
 
@@ -243,7 +240,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             let score = iterations.reduce(0.0) { $0 + $1.score } / Float(numberOfIterations)
             print("\nGeneral score: \(Int(score * 100))%")
         }
-        */
+       */
 
     }
 

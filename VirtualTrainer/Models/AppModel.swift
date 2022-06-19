@@ -21,12 +21,6 @@ class AppModel: ObservableObject {
 
     @Published var showResults: Bool = false
     @Published var startTraining: Bool = false
-    @Published var currentTraining: Training = Training(
-        exercise: exerciseMock,
-        iterations: [iterationResultsMock1, iterationResultsMock2, iterationResultsMock3, iterationResultsMock4,
-                     iterationResultsMock5, iterationResultsMock6, iterationResultsMock7, iterationResultsMock8],
-        duration: 48755555
-    )
 
     var apiClientCancellable: AnyCancellable? = nil
 

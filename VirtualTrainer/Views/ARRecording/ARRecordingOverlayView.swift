@@ -13,7 +13,7 @@ struct ARRecordingOverlayView: View {
 
     var body: some View {
         ZStack {
-            if model.timer < GlobalConstants.timerStartTime + 1 {
+            if model.timer <= GlobalConstants.timerStartTime && model.playPauseButtonState == .play {
                 Text("\(model.timer)")
                     .animatableFont(size: 100, weight: .semibold)
                     .background(
@@ -26,7 +26,7 @@ struct ARRecordingOverlayView: View {
                     .frame(width: 200, height: 200)
                     .background(.ultraThinMaterial)
                     .cornerRadius(100)
-                    .modifier(OutlineOverlay(cornerRadius: 60))
+                    .modifier(OutlineOverlay(cornerRadius: 100))
             }
 
             VStack {

@@ -9,11 +9,11 @@ import SwiftUI
 
 struct ARTrainingOverlayView: View {
     @Binding var currentResults: CurrentResults
-    @EnvironmentObject var model: AppModel
+    @Binding var currentTraining: Training
 
     var body: some View {
         ZStack {
-            if currentResults.timer < GlobalConstants.timerStartTime + 1 {
+            if currentResults.timer <= GlobalConstants.timerStartTime && currentResults.playPauseButtonState == .play {
                 Text("\(currentResults.timer)")
                     .animatableFont(size: 100, weight: .semibold)
                     .background(
@@ -26,7 +26,7 @@ struct ARTrainingOverlayView: View {
                     .frame(width: 200, height: 200)
                     .background(.ultraThinMaterial)
                     .cornerRadius(100)
-                    .modifier(OutlineOverlay(cornerRadius: 60))
+                    .modifier(OutlineOverlay(cornerRadius: 100))
             }
 
             VStack {
@@ -46,13 +46,8 @@ struct ARTrainingOverlayView: View {
 
                             NavigationLink(
                                 destination: {
-                                    TrainingResultView(training: $model.currentTraining)
+                                    TrainingResultView(training: $currentTraining)
                                         .navigationBarHidden(true)
-//                                    TrainingResultView(training: .constant(Training(
-//                                        exercise: exerciseMock,
-//                                        iterations: [iterationResultsMock, iterationResultsMock,iterationResultsMock],
-//                                        duration: 4855
-//                                    )))
                                 },
                                 label: {
                                     Text("Готово")
@@ -78,9 +73,19 @@ struct ARTrainingOverlayView: View {
                         HStack {
                             Image(systemName: "tortoise.fill")
                                 .font(.system(size: 15))
-                            Rectangle()
-                                .frame(width: 40, height: 3)
-                                .cornerRadius(1.5)
+
+                            ZStack(alignment: currentResults.speedState?.speedAlignment ?? .center) {
+                                Rectangle()
+                                    .frame(width: 40, height: 3)
+                                    .cornerRadius(1.5)
+
+                                if currentResults.speedState != nil {
+                                    Circle()
+                                        .frame(width: 10, height: 10)
+                                        .foregroundColor(.purple)
+                                }
+                            }
+
                             Image(systemName: "hare.fill")
                                 .font(.system(size: 15))
                         }
@@ -101,7 +106,7 @@ struct ARTrainingOverlayView: View {
                     VStack(spacing: 6) {
                         Text("\(currentResults.iterationCount) разів")
                             .font(.system(size: 16, weight: .bold))
-                        Text(currentResults.seconds.durationDescription)
+                        Text(currentResults.currentSecondsFormated)
                             .font(.system(size: 16))
                     }
                     .padding(8)
@@ -115,6 +120,23 @@ struct ARTrainingOverlayView: View {
             }
         }
     }
+}
+
+extension CurrentResults.SpeedState {
+
+    var speedAlignment: Alignment {
+        switch self {
+        case .fast:
+            return .leading
+
+        case .normal:
+            return .center
+
+        case .slow:
+            return .trailing
+        }
+    }
+
 }
 
 //struct ARTrainingOverlayView_Previews: PreviewProvider {

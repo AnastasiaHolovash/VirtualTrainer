@@ -46,6 +46,7 @@ struct TrainingResultView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .padding(20)
+            .padding(.vertical, 30)
             .ignoresSafeArea()
         }
         .zIndex(1)
@@ -92,7 +93,7 @@ struct TrainingResultView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary)
 
-                    Text("\(training.iterationsNumber) разів - \(training.duration.durationDescription)".uppercased())
+                    Text("\(training.iterationsNumber) разів - \(training.duration)".uppercased())
                         .font(.footnote).bold()
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary.opacity(0.7))
@@ -213,12 +214,13 @@ struct TrainingResultView: View {
     }
 }
 
+/*
 struct TrainingResultView_Previews: PreviewProvider {
     @Namespace static var namespace
 
     static var previews: some View {
-        TrainingResultView(training: .constant(Training(exercise: exerciseMock, iterations: [iterationResultsMock, iterationResultsMock,iterationResultsMock], duration: 4855)))
+        TrainingResultView(training: .constant(Training(exercise: exerciseMock, iterations: [iterationResultsMock1, iterationResultsMock1, iterationResultsMock1])))
             .environmentObject(AppModel())
     }
 }
-
+*/

@@ -9,33 +9,6 @@ import SwiftUI
 import UIKit
 import AVKit
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
-
-struct AVPlayerView: UIViewControllerRepresentable {
-
-    @Binding var videoURL: URL?
-
-    private var player: AVPlayer {
-        let some = AVPlayer.init()
-        return AVPlayer(url: videoURL!)
-    }
-
-    func updateUIViewController(_ playerController: AVPlayerViewController, context: Context) {
-        playerController.modalPresentationStyle = .fullScreen
-        playerController.player = player
-        playerController.player?.play()
-    }
-
-    func makeUIViewController(context: Context) -> AVPlayerViewController {
-        return AVPlayerViewController()
-    }
-
-}
-
 struct ContentView: View {
     @EnvironmentObject var model: AppModel
 
@@ -59,9 +32,8 @@ struct ContentView: View {
     }
 }
 
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentView()
-//            .environmentObject(AppModel())
-//    }
-//}
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}

@@ -8,7 +8,7 @@
 import Foundation
 
 enum GlobalConstants {
-    static let timerStartTime: Int = 5
+    static let timerStartTime: Int = 3
     static let startStopMovementRange: ClosedRange<Float> = 0...0.995
     static let closeToEqualRange: ClosedRange<Float> = 0.9...1
     static let veryCloseToEqualRange: ClosedRange<Float> = 0.999...1
