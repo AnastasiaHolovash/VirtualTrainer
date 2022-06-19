@@ -22,7 +22,7 @@ extension Training {
     }
 
     var score: Float {
-        iterations.reduce(0.0) { $0 + $1.normalisedScore } / Float(iterationsNumber)
+        iterations.reduce(0.0) { $0 + $1.normalisedQuality } / Float(iterationsNumber)
     }
 
     var scoreDescription: String {

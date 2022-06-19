@@ -13,6 +13,7 @@ struct AddExerciseView: View {
     @EnvironmentObject var model: AppModel
 
     @State var exercise = NewExercise()
+    @State var isLoading: Bool = false
 
     private enum Field: Int, CaseIterable {
         case name
@@ -157,13 +158,24 @@ struct AddExerciseView: View {
                 .blendMode(.softLight)
 
                 Button {
-                    // Perform request
-                    print(exercise)
-                    model.apiClient.addNewExercise(newExercise: exercise)
+                    isLoading = true
+                    model.apiClient.addNewExercise(newExercise: exercise) {
+                        isLoading = false
+                        close()
+                    }
                 } label: {
-                    Text("Готово")
-                        .font(.title2).bold()
-                        .frame(maxWidth: .infinity)
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .foregroundColor(.white)
+                            .tint(.white)
+                            .opacity(isLoading ? 1 : 0)
+                            .progressViewStyle(.circular)
+                            .animation(.default, value: isLoading)
+
+                        Text("Готово")
+                            .font(.title2).bold()
+                    }
+                    .frame(maxWidth: .infinity)
 
                 }
                 .padding()

@@ -28,21 +28,20 @@ struct IterationResults: Equatable {
         }
     }
 
-//    var persent
-
     var normalisedScore: Float {
         (score - 0.5) / 0.5
     }
 
+    var normalisedQuality: Float {
+        normalisedScore - abs(speed - 1.0)
+    }
+
     var scoreDescription: String {
-        return "\(Int(normalisedScore * 100))%"
+        return "\(Int(normalisedQuality * 100))%"
     }
 
     var quality: Quality {
-        let some = abs(speed - 1.0)
-        let resultValue = normalisedScore - some
-
-        switch resultValue {
+        switch normalisedQuality {
         case 0.9...1.0:
             return .veryGood
 

@@ -92,6 +92,14 @@ struct HomeView: View {
             ExerciseItem(namespace: namespace, exercise: exercise)
                 .accessibilityElement(children: .combine)
                 .accessibilityAddTraits(.isButton)
+                .contextMenu {
+                        Button {
+                            model.apiClient.deleteExercise(exercise: exercise)
+                            print("Change country setting")
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
         }
     }
 

@@ -7,6 +7,9 @@
 
 import Foundation
 import ARKit
+import Firebase
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
 struct Exercise: Identifiable, Equatable {
     let id: String
@@ -16,6 +19,7 @@ struct Exercise: Identifiable, Equatable {
     let videoURL: String
     let photoURL: String
     let frames: [FirebaseFrame]
+    var sentAt: Timestamp?
 
     var simdFrames: Frames {
         frames.map { $0.simdArray }

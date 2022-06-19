@@ -214,34 +214,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 currentResults.update(with: numberOfIterations, iteration: iterationResults)
             }
         }
-
-       /*
-        func makeTrainingDescription(from results: [[Float]]) {
-            //            var iterations: [IterationResults] = []
-
-            results.enumerated().forEach { index, iteration in
-                if iteration.count > exerciseFramesCount / 3 * 2 {
-                    let score = iteration.reduce(0.0, +) / Float(iteration.count)
-                    //                    iterations.append(IterationResults(
-                    //                        number: iterations.count + 1,
-                    //                        score: score,
-                    //                        speed: Float(iteration.count) / Float(exerciseFramesCount)
-                    //                    ))
-
-                    print("Score of \(index + 1) Iteration: \(Int(score * 100))%")
-                    print(iterations.last!.speedDescription)
-                    //                    print(iteration)
-                }
-            }
-
-            let numberOfIterations = iterations.count
-            print("Number Of Iterations: \(numberOfIterations)\n")
-
-            let score = iterations.reduce(0.0) { $0 + $1.score } / Float(numberOfIterations)
-            print("\nGeneral score: \(Int(score * 100))%")
-        }
-       */
-
     }
 
 }

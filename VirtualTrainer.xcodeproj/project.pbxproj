@@ -120,7 +120,18 @@
 		5D23E695284EAE3A0003BAD3 /* RecordingData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingData.swift; sourceTree = "<group>"; };
 		5D23E697284EB6320003BAD3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5D23E6A1284EC2A20003BAD3 /* FirestoreClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreClient.swift; sourceTree = "<group>"; };
+		5D973ADE285FBB7D00B77010 /* AR Session 19.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 19.mov"; sourceTree = "<group>"; };
+		5D973AE0285FC03B00B77010 /* AR Session 21.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 21.mov"; sourceTree = "<group>"; };
+		5D973AE1285FC56D00B77010 /* AR Session 22.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 22.mov"; sourceTree = "<group>"; };
+		5D973AE2285FE3C100B77010 /* AR Session 23.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 23.mov"; sourceTree = "<group>"; };
+		5D973AE3285FE53200B77010 /* AR Session 24.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 24.mov"; sourceTree = "<group>"; };
+		5D973AE4285FE78800B77010 /* AR Session 23 record 45.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 23 record 45.mov"; sourceTree = "<group>"; };
+		5D973AE5285FE81100B77010 /* AR Session 24 training 45.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 24 training 45.mov"; sourceTree = "<group>"; };
 		5DB09B5E285F592800FA60CE /* AVPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerView.swift; sourceTree = "<group>"; };
+		5DB09B60285FAFA600FA60CE /* AR Session 6.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 6.mov"; sourceTree = "<group>"; };
+		5DB09B61285FB33300FA60CE /* AR Session 14.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 14.mov"; sourceTree = "<group>"; };
+		5DB09B62285FB4A800FA60CE /* AR Session 17.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 17.mov"; sourceTree = "<group>"; };
+		5DB09B63285FB65200FA60CE /* AR Session 18.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 18.mov"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +161,17 @@
 		5D23E61E284421AB0003BAD3 = {
 			isa = PBXGroup;
 			children = (
+				5D973AE5285FE81100B77010 /* AR Session 24 training 45.mov */,
+				5D973AE4285FE78800B77010 /* AR Session 23 record 45.mov */,
+				5D973AE3285FE53200B77010 /* AR Session 24.mov */,
+				5D973AE2285FE3C100B77010 /* AR Session 23.mov */,
+				5D973AE1285FC56D00B77010 /* AR Session 22.mov */,
+				5D973AE0285FC03B00B77010 /* AR Session 21.mov */,
+				5D973ADE285FBB7D00B77010 /* AR Session 19.mov */,
+				5DB09B63285FB65200FA60CE /* AR Session 18.mov */,
+				5DB09B62285FB4A800FA60CE /* AR Session 17.mov */,
+				5DB09B61285FB33300FA60CE /* AR Session 14.mov */,
+				5DB09B60285FAFA600FA60CE /* AR Session 6.mov */,
 				5D23E64F284D1E9C0003BAD3 /* AR Session 7.mov */,
 				5D23E64E284D069E0003BAD3 /* AR Session 4.mov */,
 				5D23E64D284D06970003BAD3 /* AR Session 5.mov */,
@@ -581,6 +603,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSLocationUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arkit;
@@ -612,6 +637,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSLocationUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = arkit;

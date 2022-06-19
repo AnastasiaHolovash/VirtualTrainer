@@ -39,7 +39,8 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
-      allowLocationSimulation = "YES">
+      allowLocationSimulation = "YES"
+      allowDeviceSensorReplayData = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
@@ -51,7 +52,7 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <DeviceSensorReplayFileReference
-         identifier = "../../AR Session 2.mov">
+         identifier = "../../AR Session 24 training 45.mov">
       </DeviceSensorReplayFileReference>
    </LaunchAction>
    <ProfileAction

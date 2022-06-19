@@ -31,11 +31,14 @@ final class FirestoreClient: ObservableObject {
 
     func subscribeOnAllExercises() {
         allExercisesCancellable = FirestoreClient.exercisesCollection
+            .order(by: "sentAt", descending: true)
             .snapshotPublisher()
             .tryMap { snapshot -> [Exercise] in
-                try snapshot.documents.map { document in
-                    try document.data(as: Exercise.self)
+                let exersises = try snapshot.documents.map { document in
+                    return try document.data(as: Exercise.self)
                 }
+                print(exersises.map { $0.sentAt })
+                return exersises
             }
             .catch { error -> Just<[Exercise]> in
                 print(error.localizedDescription)
@@ -47,7 +50,7 @@ final class FirestoreClient: ObservableObject {
             }
     }
 
-    func addNewExercise(newExercise: NewExercise) {
+    func addNewExercise(newExercise: NewExercise, completion: @escaping () -> Void) {
         let newDocument = FirestoreClient.exercisesCollection
             .document()
         let id = newDocument.documentID
@@ -70,13 +73,13 @@ final class FirestoreClient: ObservableObject {
                         return
                     }
                     print("SETTTT")
+                    completion()
                 }
             } catch {
                 print(error)
             }
         }
     }
-
 
     func uploadVideoWithPhoto(
         id: String,
@@ -140,6 +143,14 @@ final class FirestoreClient: ObservableObject {
             print(videoDownloadURL)
             print(photoDownloadURL)
         }
+    }
+
+    func deleteExercise(exercise: Exercise) {
+        FirestoreClient.exercisesCollection
+            .document(exercise.id)
+            .delete() { error in
+                print(error?.localizedDescription ?? "Deleted")
+            }
     }
 
 }
