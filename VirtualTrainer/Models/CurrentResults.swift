@@ -34,7 +34,7 @@ extension CurrentResults {
     }
 
     var speedState: SpeedState? {
-        print(speed)
+//        print(speed)
         switch speed {
         case 0.01...0.9:
             return .fast

@@ -195,6 +195,8 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             comparisonFrameValue = jointModelTransformsCurrent
             previous = []
 
+            print("\nN = ", numberOfIterations, "        count = ", iterationsResults[iterationsResults.count - 2].count)
+
             isRecording = false
         }
 
