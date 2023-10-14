@@ -9,7 +9,6 @@ import SwiftUI
 import RealityKit
 import ARKit
 import Combine
-import Vision
 
 struct ARTrackingViewContainer: UIViewRepresentable {
 
@@ -145,6 +144,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             if couldDetectEndOfIteration,
                let last = lastTargetFrame {
                 let resultValue = jointModelTransformsCurrent.compare(to: last)
+                print("! Compare with last exercise frame \(resultValue * 100)% ")
 
                 if resultValue.isCloseToEqual {
                     if previous.isEmpty {
@@ -204,7 +204,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         private func updateCurrentResults() {
             let iteration = iterationsResults[numberOfIterations - 1]
-            if iteration.count > exerciseFramesCount / 3 * 2 {
+            if iteration.count > exerciseFramesCount / 2 {
                 let score = iteration.reduce(0.0, +) / Float(iteration.count)
                 let iterationResults = IterationResults(
                     number: iterations.count + 1,

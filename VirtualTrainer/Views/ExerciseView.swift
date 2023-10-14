@@ -77,7 +77,7 @@ struct ExerciseView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary)
 
-                    Text("Complexity ♦ Low")
+                    Text("Складність " + exercise.complexity.description)
                         .font(.title3)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary.opacity(0.5))

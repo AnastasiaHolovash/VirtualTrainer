@@ -69,6 +69,10 @@
 		5D0FF1A1284FB0B4002ABAB2 /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
 		5D1E5C9728516274008A9469 /* NewExerciseRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewExerciseRequest.swift; sourceTree = "<group>"; };
 		5D1E5C9928516288008A9469 /* NewExercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewExercise.swift; sourceTree = "<group>"; };
+		5D21B8E02860B3F10061DE3C /* AR Session denys 45 training.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session denys 45 training.mov"; sourceTree = "<group>"; };
+		5D21B8E12860BE9C0061DE3C /* AR Session denys 45 training 2.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session denys 45 training 2.mov"; sourceTree = "<group>"; };
+		5D21B8E22860BF4B0061DE3C /* AR Session denys 45 record.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session denys 45 record.mov"; sourceTree = "<group>"; };
+		5D21B8E32860C1FE0061DE3C /* AR Session denys 45 training 3.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session denys 45 training 3.mov"; sourceTree = "<group>"; };
 		5D23E627284421AB0003BAD3 /* VirtualTrainer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTrainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D23E62A284421AB0003BAD3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5D23E62C284421AB0003BAD3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -163,6 +167,10 @@
 		5D23E61E284421AB0003BAD3 = {
 			isa = PBXGroup;
 			children = (
+				5D21B8E32860C1FE0061DE3C /* AR Session denys 45 training 3.mov */,
+				5D21B8E22860BF4B0061DE3C /* AR Session denys 45 record.mov */,
+				5D21B8E12860BE9C0061DE3C /* AR Session denys 45 training 2.mov */,
+				5D21B8E02860B3F10061DE3C /* AR Session denys 45 training.mov */,
 				5D973AE728605F4900B77010 /* AR Session nastia training 45.mov */,
 				5D973AE628605E7600B77010 /* AR Session nastia record 45.mov */,
 				5D973AE5285FE81100B77010 /* AR Session 24 training 45.mov */,

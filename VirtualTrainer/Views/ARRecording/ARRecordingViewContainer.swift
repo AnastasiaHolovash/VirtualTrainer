@@ -92,6 +92,9 @@ struct ARRecordingViewContainer: UIViewRepresentable {
                 let transforms = bodyAnchor.skeleton.jointModelTransforms
                 jointModelTransformsCurrent = trackingJointNamesRawValues.map { transforms[$0] }
 
+                print("Right hand joint: \n")
+                jointModelTransformsCurrent.last?.printf()
+
                 if isTrainingInProgress && !isRecording {
                     print("\n***** Check If STARTED *****")
                     _ = self.checkIfExerciseStarted()
@@ -150,14 +153,20 @@ struct ARRecordingViewContainer: UIViewRepresentable {
         // MARK: - Сropp Recorded Data
 
         private func cropOneIteration() {
-            let previousChecked = exerciseFrames.last
+            var previousChecked = exerciseFrames.last
             let (frameIndex, _) = exerciseFrames.reversed().enumerated().first { index, frame in
                 guard index < exerciseFrames.count - 1,
                       let previous = previousChecked
                 else {
                     return false
                 }
-
+                print("index", index)
+//                if let newPreviousChecked = exerciseFrames.reversed()[safe: index - 1] {
+//                    previousChecked = newPreviousChecked
+//                } else {
+////                    assertionFailure("Something wrong with index")
+//                    return false
+//                }
                 let resultValue = frame.compare(to: previous)
                 let result = resultValue.isStartStopMovement
 
@@ -176,4 +185,12 @@ struct ARRecordingViewContainer: UIViewRepresentable {
         }
     }
 
+}
+
+extension Collection {
+
+    /// Returns the element at the specified index if it is within bounds, otherwise nil.
+    subscript (safe index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
+    }
 }
