@@ -96,7 +96,7 @@ struct ARRecordingViewContainer: UIViewRepresentable {
                 jointModelTransformsCurrent.last?.printf()
 
                 if isTrainingInProgress && !isRecording {
-                    print("\n***** Check If STARTED *****")
+                    print("\n----- Check If STARTED -----")
                     _ = self.checkIfExerciseStarted()
                 }
 
@@ -153,7 +153,7 @@ struct ARRecordingViewContainer: UIViewRepresentable {
         // MARK: - Сropp Recorded Data
 
         private func cropOneIteration() {
-            var previousChecked = exerciseFrames.last
+            let previousChecked = exerciseFrames.last
             let (frameIndex, _) = exerciseFrames.reversed().enumerated().first { index, frame in
                 guard index < exerciseFrames.count - 1,
                       let previous = previousChecked

@@ -11,14 +11,10 @@ import Combine
 class AppModel: ObservableObject {
 
     @Published var apiClient: FirestoreClient = FirestoreClient()
-
     @Published var showNav: Bool = true
-
     @Published var showAddExercise: Bool = false
-
     @Published var showDetail: Bool = false
     @Published var selectedExercise: String?
-
     @Published var showResults: Bool = false
     @Published var startTraining: Bool = false
 

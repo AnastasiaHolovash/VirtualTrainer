@@ -69,7 +69,7 @@ struct HomeView: View {
                 }
             )
         }
-        .onChange(of: model.showDetail) { value in
+        .onChange(of: model.showDetail) { _, value in
             withAnimation {
                 model.showNav.toggle()
                 showStatusBar.toggle()

@@ -35,7 +35,7 @@ final class FirestoreClient: ObservableObject {
         allExercisesCancellable = FirestoreClient.exercisesCollection
             .order(by: "sentAt", descending: true)
             .snapshotPublisher()
-            .tryMap { [self] snapshot -> [Exercise] in
+            .tryMap { snapshot -> [Exercise] in
                 let exercises = try snapshot.documents.map { document -> Exercise in
                     print(document.metadata)
                     let ex = try document.data(as: Exercise.self)

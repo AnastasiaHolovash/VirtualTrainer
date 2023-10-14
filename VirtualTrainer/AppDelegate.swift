@@ -19,7 +19,6 @@ struct YourApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(appModel)
-
         }
     }
 }

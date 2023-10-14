@@ -37,14 +37,14 @@ extension Array where Element == simd_float4x4 {
                 1 - abs(value) / 2
             }
 
-            // ------ Matrix Printing  ------
+//             ------ Matrix Printing  ------
 //            print("\nComparison Value:")
 //            comparisonFrameValue.printf()
 //            print("\nCurrent Value:")
 //            jointModelTransformsCurrent.printf()
 //            print("\nDifference:")
 //            difference.printf()
-            // ------------------------------
+//             ------------------------------
 
             return simd4x4ResultArray.averageValue
         }

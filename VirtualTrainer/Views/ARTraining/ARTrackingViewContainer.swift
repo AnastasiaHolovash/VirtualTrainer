@@ -80,8 +80,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             GlobalConstants.trackingJointNames.map { $0.rawValue }
         }()
 
-        private var wasRecorded = false
-
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
             for anchor in anchors {
                 guard let bodyAnchor = anchor as? ARBodyAnchor else { continue }
@@ -90,7 +88,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 jointModelTransformsCurrent = trackingJointNamesRawValues.map {  transforms[$0] }
 
                 if isTrainingInProgress && !isRecording {
-                    print("\n***** Check If STARTED *****")
+                    print("\n----- Check If STARTED -----")
                     _ = self.checkIfExerciseStarted()
                 }
 
@@ -140,7 +138,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
         private func compareTrainingWithTarget() {
             let lastTargetFrame = exerciseFramesLoaded.last
 
-            // Detection end of iteration
+            // Detecting end of iteration
             if couldDetectEndOfIteration,
                let last = lastTargetFrame {
                 let resultValue = jointModelTransformsCurrent.compare(to: last)

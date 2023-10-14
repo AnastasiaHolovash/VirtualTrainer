@@ -51,7 +51,7 @@ struct TrainingResultView: View {
         }
         .zIndex(1)
         .onAppear { fadeIn() }
-        .onChange(of: model.showDetail) { show in
+        .onChange(of: model.showDetail) { _, show in
            fadeOut()
         }
     }

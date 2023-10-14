@@ -41,7 +41,7 @@ struct ARTrainingView : View {
             .edgesIgnoringSafeArea(.all)
 
             ARTrainingOverlayView(currentResults: $currentResults, currentTraining: $currentTraining)
-                .onChange(of: currentResults.playPauseButtonState) { newValue in
+                .onChange(of: currentResults.playPauseButtonState) { _, newValue in
                     switch newValue {
                     case .play:
                         startTimer()
@@ -50,13 +50,13 @@ struct ARTrainingView : View {
                         stopTimer()
                     }
                 }
-                .onChange(of: timerValue) { newValue in
+                .onChange(of: timerValue) { _, newValue in
                     currentResults.timer = newValue
                 }
-                .onChange(of: iterations) { newValue in
+                .onChange(of: iterations) { _, newValue in
                     currentTraining.iterations = newValue
                 }
-                .onChange(of: isRecording) { newValue in
+                .onChange(of: isRecording) { _, newValue in
                     switch isRecording {
                     case true:
                         currentTraining.startTime = Date()

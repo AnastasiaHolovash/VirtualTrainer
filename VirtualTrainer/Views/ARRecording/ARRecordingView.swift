@@ -30,17 +30,17 @@ struct ARRecordingView: View {
             .edgesIgnoringSafeArea(.all)
 
             ARRecordingOverlayView(model: $recordingData)
-                .onChange(of: recordingData.playPauseButtonState, perform: { newValue in
+                .onChange(of: recordingData.playPauseButtonState, { _, newValue in
                     switch newValue {
                     case .play:
                         startTimer()
-                        
+
                     case .pause:
                         isRecording.toggle()
                         stopTimer()
                     }
                 })
-                .onChange(of: timerValue) { newValue in
+                .onChange(of: timerValue) { _, newValue in
                     recordingData.timer = newValue
                 }
         }
