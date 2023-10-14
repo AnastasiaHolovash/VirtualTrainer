@@ -54,6 +54,8 @@ struct ARTrackingViewContainer: UIViewRepresentable {
         /// True if recording training/exercise data is started
         private var isRecording: Bool = false
         private var exerciseFramesLoaded: Frames = []
+        private var exerciseIterations: [Frames] = [[]]
+        private var exerciseIterationsResult: [Float] = []
         private var exerciseFramesCount: Int = 0
         private var comparisonFrameValue: Frame = []
 
@@ -114,6 +116,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
             let result = resultValue.isStartStopMovement
             print("---- Compare ---- \(resultValue * 100)% ----- \(result)")
+//            jointModelTransformsCurrent.newValue(arraySimd4x4: comparisonFrameValue)
 
             isRecording = result
 
@@ -136,13 +139,12 @@ struct ARTrackingViewContainer: UIViewRepresentable {
         var previous: Frame = []
 
         private func compareTrainingWithTarget() {
-            let lastTargetFrame = exerciseFramesLoaded.last
-
             // Detecting end of iteration
             if couldDetectEndOfIteration,
-               let last = lastTargetFrame {
+               let last = exerciseFramesLoaded.last {
                 let resultValue = jointModelTransformsCurrent.compare(to: last)
                 print("! Compare with last exercise frame \(resultValue * 100)% ")
+//                jointModelTransformsCurrent.newValue(arraySimd4x4: last)
 
                 if resultValue.isCloseToEqual {
                     if previous.isEmpty {
@@ -151,6 +153,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                     } else {
                         let resultValue2 = jointModelTransformsCurrent.compare(to: previous)
                         print("---- Compare with previous ---- \(resultValue2 * 100)% -----")
+//                        jointModelTransformsCurrent.newValue(arraySimd4x4: previous)
                         previous = jointModelTransformsCurrent
 
                         if resultValue2.isVeryCloseToEqual {
@@ -163,7 +166,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
             if currentNumberOfStaticFrames == GlobalConstants.staticPositionIndicator {
                 // Start detection start of iteration
-                print("\nNew iteration initiated by User")
+                print("\n--- New iteration initiated by User")
                 iterationsResults[numberOfIterations].removeLast(GlobalConstants.staticPositionIndicator - 1)
                 startDetectionStartOfIteration()
                 updateCurrentResults()
@@ -172,8 +175,9 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
 
                 let resultValue = jointModelTransformsCurrent.compare(to: targetFrame)
-                print("---- Compare With Target ---- \(resultValue * 100)% ----- \(exerciseFramesIndex)")
+//                print("---- Compare With Target ---- \(resultValue * 100)% ----- \(exerciseFramesIndex)")
                 iterationsResults[numberOfIterations].append(resultValue)
+                exerciseIterations[numberOfIterations].append(jointModelTransformsCurrent)
 
                 if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
                     exerciseFramesIndex += 1
@@ -183,6 +187,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         private func startDetectionStartOfIteration() {
             iterationsResults.append([])
+            exerciseIterations.append([])
             numberOfIterations += 1
 
             exerciseFramesIndex = GlobalConstants.exerciseFramesFirstIndex
@@ -193,7 +198,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             comparisonFrameValue = jointModelTransformsCurrent
             previous = []
 
-            print("\nN = ", numberOfIterations, "        count = ", iterationsResults[iterationsResults.count - 2].count)
+            print("\n--- N = ", numberOfIterations, "        count = ", iterationsResults[iterationsResults.count - 2].count)
 
             isRecording = false
         }
@@ -209,7 +214,15 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                     score: score,
                     speed: Float(exerciseFramesCount) / Float(iteration.count)
                 )
-
+                // ---------
+                let newResult = compareIteration(
+                    target: exerciseFramesLoaded,
+                    training: exerciseIterations[numberOfIterations - 1]
+                )
+                print("---- N = \(numberOfIterations - 1)     OLD RESULT: \(score)")
+                print("---- N = \(numberOfIterations - 1)     NEN RESULT: \(newResult)")
+                exerciseIterationsResult.append(newResult)
+                // ---------
                 iterations.append(iterationResults)
                 currentResults.update(with: numberOfIterations, iteration: iterationResults)
             }

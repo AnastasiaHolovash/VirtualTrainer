@@ -139,8 +139,9 @@ struct ARRecordingViewContainer: UIViewRepresentable {
             let resultValue = jointModelTransformsCurrent.compare(to: comparisonFrameValue)
 
             let result = resultValue.isStartStopMovement
-            print("---- Compare ---- \(resultValue * 100)% ----- \(result)")
-
+            print("---- Compare ---- \(resultValue)% ----- \(result) --- \(comparisonFrameValue)")
+//            jointModelTransformsCurrent.newValue(arraySimd4x4: comparisonFrameValue)
+            
             if result {
                 exerciseFrames = [comparisonFrameValue]
             }
@@ -170,7 +171,8 @@ struct ARRecordingViewContainer: UIViewRepresentable {
                 let resultValue = frame.compare(to: previous)
                 let result = resultValue.isStartStopMovement
 
-                print("\n---- Compare ---- \(resultValue * 100)% ----- \(result)")
+                print("\n---- Compare ---- \(resultValue)% ----- \(result)")
+//                frame.newValue(arraySimd4x4: previous)
 
                 return result
             } ?? (exerciseFrames.count - 1, exerciseFrames.last)

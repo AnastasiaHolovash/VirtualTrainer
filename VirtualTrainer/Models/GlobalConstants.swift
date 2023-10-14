@@ -8,10 +8,13 @@
 import Foundation
 
 enum GlobalConstants {
-    static let timerStartTime: Int = 3
-    static let startStopMovementRange: ClosedRange<Float> = 0...0.992
+    static let timerStartTime: Int = 0
+    static let startStopMovementRange: ClosedRange<Float> = 0...0.995
+//    static let startStopMovementRange: ClosedRange<Float> = 0...0.9
     static let closeToEqualRange: ClosedRange<Float> = 0.955...1
+//    static let closeToEqualRange: ClosedRange<Float> = 0.88...1
     static let veryCloseToEqualRange: ClosedRange<Float> = 0.999...1
+//    static let veryCloseToEqualRange: ClosedRange<Float> = 0.97...1
     static let characterOffset: SIMD3<Float> = [-0.5, 0, 0]
     static let characterScale: SIMD3<Float> = [1.0, 1.0, 1.0]
     static let framesComparisonAccuracy: Float = 0.2
@@ -20,6 +23,12 @@ enum GlobalConstants {
     static let staticPositionIndicator: Int = 16
     /// Based on difference between moment of detection and recorded frames
     static let exerciseFramesFirstIndex: Int = 1
+    static let maxErrorPossible: Float = 0.623538
+    static let trackingJointNumber: Float = 18
+    static let sqrt12: Float = 3.464101615137755
+    static let maxErrorPossibleСoefficient = GlobalConstants.trackingJointNumber
+        * GlobalConstants.sqrt12
+        / 100
 
     static let trackingJointNames : [ARSkeletonJoint] = [
         .hips_joint,
