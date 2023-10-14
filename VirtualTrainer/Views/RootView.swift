@@ -9,9 +9,8 @@ import SwiftUI
 import UIKit
 import AVKit
 
-struct ContentView: View {
+struct RootView: View {
     @EnvironmentObject var model: AppModel
-
 
     var body: some View {
         NavigationView {
@@ -34,6 +33,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        RootView()
     }
 }

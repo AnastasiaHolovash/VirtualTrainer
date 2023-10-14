@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>229045038196-9cbpf1d6o1ubfvk3ld8o78j3g5mlg7u4.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.229045038196-9cbpf1d6o1ubfvk3ld8o78j3g5mlg7u4</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCOPlRTm5UW6068yk-wBOYPcqm8lFuiZrs</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.anastasiiaHolovash.VirtualTrainer</string>
+	<string>com.anastasiiaHolovash.VirtualTrainer2</string>
 	<key>PROJECT_ID</key>
 	<string>virtualtrainer-2c161</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:229045038196:ios:bef5b18cd888e34c92f521</string>
+	<string>1:229045038196:ios:52767df6b3914d3992f521</string>
 </dict>
 </plist>
