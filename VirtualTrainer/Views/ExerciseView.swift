@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct ExerciseView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
@@ -18,13 +19,17 @@ struct ExerciseView: View {
 
     var body: some View {
         ZStack {
-            if model.showResults {
-                TrainingResultView(training: $model.currentTraining)
-            }
-
             ScrollView {
                 cover
-                    .overlay(PlayButton())
+                    .overlay(
+                        NavigationLink(destination: {
+                            AVPlayerView(videoURL: URL(string: exercise.videoURL)!)
+                                .navigationBarHidden(true)
+                                .background(Color.black)
+                        }, label: {
+                            PlayButton()
+                        })
+                    )
                 content
                     .padding(.vertical, 80)
             }
@@ -44,14 +49,14 @@ struct ExerciseView: View {
         .zIndex(1)
     }
 
-    var cover: some View {
+    private var cover: some View {
         VStack {
             Spacer()
         }
         .frame(maxWidth: .infinity)
         .frame(height: 500)
         .background(
-            Image(exercise.image)
+            WebImage(url: URL(string: exercise.photoURL))
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .accessibility(hidden: true)
@@ -67,13 +72,12 @@ struct ExerciseView: View {
         .overlay(
             VStack(spacing: 8) {
                 VStack(alignment: .leading, spacing: 8) {
-
                     Text(exercise.name)
                         .font(.title).bold()
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary)
 
-                    Text("Complexity ♦ Low")
+                    Text("Складність " + exercise.complexity.description)
                         .font(.title3)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary.opacity(0.5))
@@ -98,7 +102,7 @@ struct ExerciseView: View {
                     .blendMode(.softLight)
 
                     NavigationLink {
-                        ARTrainingView(currentResults: CurrentResults())
+                        ARTrainingView(with: self.exercise)
                             .navigationBarHidden(true)
                     } label: {
                         Text("Почати")
@@ -124,14 +128,14 @@ struct ExerciseView: View {
 
     }
 
-    func close() {
+    private func close() {
         withAnimation(.closeCard.delay(0.2)) {
             model.showDetail = false
-            model.selectedExercise = 0
+            model.selectedExercise = nil
         }
     }
 
-    var content: some View {
+    private var content: some View {
         VStack(alignment: .leading, spacing: 30) {
             Text("Рекомендації")
                 .font(.title).bold()

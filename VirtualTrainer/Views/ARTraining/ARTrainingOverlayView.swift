@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct ARTrainingOverlayView: View {
-    @Binding var model: CurrentResults
+    @Binding var currentResults: CurrentResults
+    @Binding var currentTraining: Training
 
     var body: some View {
         ZStack {
-            if model.timer < GlobalConstants.timerStartTime + 1 {
-                Text("\(model.timer)")
+            if currentResults.timer <= GlobalConstants.timerStartTime && currentResults.playPauseButtonState == .play {
+                Text("\(currentResults.timer)")
                     .animatableFont(size: 100, weight: .semibold)
                     .background(
                         PlayShape()
@@ -25,7 +26,7 @@ struct ARTrainingOverlayView: View {
                     .frame(width: 200, height: 200)
                     .background(.ultraThinMaterial)
                     .cornerRadius(100)
-                    .modifier(OutlineOverlay(cornerRadius: 60))
+                    .modifier(OutlineOverlay(cornerRadius: 100))
             }
 
             VStack {
@@ -43,15 +44,19 @@ struct ARTrainingOverlayView: View {
                             .cornerRadius(20)
                             .blendMode(.softLight)
 
-                            Button {
-
-                            } label: {
-                                Text("Готово")
-                                    .font(.body).bold()
-                            }
-                            .padding()
-                            .foregroundColor(Color(hex: "281B5A").opacity(0.8))
-                            .cornerRadius(20)
+                            NavigationLink(
+                                destination: {
+                                    TrainingResultView(training: $currentTraining)
+                                        .navigationBarHidden(true)
+                                },
+                                label: {
+                                    Text("Готово")
+                                        .font(.body).bold()
+                                        .padding()
+                                        .foregroundColor(Color(hex: "281B5A").opacity(0.8))
+                                        .cornerRadius(20)
+                                }
+                            )
                         }
                         .frame(width: 100, height: 50, alignment: .center)
                         .padding(.horizontal, 20)
@@ -63,14 +68,24 @@ struct ARTrainingOverlayView: View {
 
                 HStack(spacing: 8) {
                     VStack(spacing: 6) {
-                        Text(model.quality)
+                        Text(currentResults.quality)
                             .font(.system(size: 16))
                         HStack {
                             Image(systemName: "tortoise.fill")
                                 .font(.system(size: 15))
-                            Rectangle()
-                                .frame(width: 40, height: 3)
-                                .cornerRadius(1.5)
+
+                            ZStack(alignment: currentResults.speedState?.speedAlignment ?? .center) {
+                                Rectangle()
+                                    .frame(width: 40, height: 3)
+                                    .cornerRadius(1.5)
+
+                                if currentResults.speedState != nil {
+                                    Circle()
+                                        .frame(width: 10, height: 10)
+                                        .foregroundColor(.purple)
+                                }
+                            }
+
                             Image(systemName: "hare.fill")
                                 .font(.system(size: 15))
                         }
@@ -83,15 +98,15 @@ struct ARTrainingOverlayView: View {
                             .backgroundStyle(cornerRadius: 20)
                     )
 
-                    PlayPauseButton(state: $model.playPauseButtonState)
+                    PlayPauseButton(state: $currentResults.playPauseButtonState)
                         .onTapGesture {
-                            model.playPauseButtonState = model.playPauseButtonState.toggle()
+                            currentResults.playPauseButtonState = currentResults.playPauseButtonState.toggle()
                         }
 
                     VStack(spacing: 6) {
-                        Text("\(model.iterationCount) разів")
+                        Text("\(currentResults.iterationCount) разів")
                             .font(.system(size: 16, weight: .bold))
-                        Text(model.seconds.durationDescription)
+                        Text(currentResults.currentSecondsFormated)
                             .font(.system(size: 16))
                     }
                     .padding(8)
@@ -105,6 +120,23 @@ struct ARTrainingOverlayView: View {
             }
         }
     }
+}
+
+extension CurrentResults.SpeedState {
+
+    var speedAlignment: Alignment {
+        switch self {
+        case .fast:
+            return .leading
+
+        case .normal:
+            return .center
+
+        case .slow:
+            return .trailing
+        }
+    }
+
 }
 
 //struct ARTrainingOverlayView_Previews: PreviewProvider {

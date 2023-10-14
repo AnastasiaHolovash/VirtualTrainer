@@ -6,14 +6,16 @@
 //
 
 import SwiftUI
+import FirebaseCore
+import FirebaseFirestore
 
 struct HomeView: View {
-    var columns = [GridItem(.adaptive(minimum: 300), spacing: 20)]
+    private var columns = [GridItem(.adaptive(minimum: 300), spacing: 20)]
 
-    @State var show = false
-    @State var showStatusBar = true
-    @State var showCourse = false
-    @State var contentHasScrolled = false
+    @State private var show = false
+    @State private var showStatusBar = true
+    @State private var showCourse = false
+    @State private var contentHasScrolled = false
 
     @EnvironmentObject var model: AppModel
     @Namespace var namespace
@@ -35,7 +37,7 @@ struct HomeView: View {
 
                 if model.showDetail {
                     LazyVGrid(columns: columns, spacing: 20) {
-                        ForEach(model.exercises) { course in
+                        ForEach(model.apiClient.exercises) { course in
                             Rectangle()
                                 .fill(.white)
                                 .frame(height: 360)
@@ -66,9 +68,8 @@ struct HomeView: View {
                         .accessibility(hidden: true)
                 }
             )
-
         }
-        .onChange(of: model.showDetail) { value in
+        .onChange(of: model.showDetail) { _, value in
             withAnimation {
                 model.showNav.toggle()
                 showStatusBar.toggle()
@@ -78,23 +79,31 @@ struct HomeView: View {
         .statusBar(hidden: !showStatusBar)
     }
 
-    var detail: some View {
-        ForEach(model.exercises) { exercise in
-            if exercise.index == model.selectedExercise {
+    private var detail: some View {
+        ForEach(model.apiClient.exercises, id: \.id) { exercise in
+            if exercise.id == model.selectedExercise {
                 ExerciseView(namespace: namespace, exercise: exercise)
             }
         }
     }
 
-    var course: some View {
-        ForEach(model.exercises) { exercise in
+    private var course: some View {
+        ForEach(model.apiClient.exercises, id: \.id) { exercise in
             ExerciseItem(namespace: namespace, exercise: exercise)
                 .accessibilityElement(children: .combine)
                 .accessibilityAddTraits(.isButton)
+                .contextMenu {
+                        Button {
+                            model.apiClient.deleteExercise(exercise: exercise)
+                            print("Change country setting")
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
         }
     }
 
-    var scrollDetection: some View {
+    private var scrollDetection: some View {
         GeometryReader { proxy in
             let offset = proxy.frame(in: .named("scroll")).minY
             Color.clear.preference(key: ScrollPreferenceKey.self, value: offset)

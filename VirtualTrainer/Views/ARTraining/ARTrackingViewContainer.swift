@@ -9,14 +9,13 @@ import SwiftUI
 import RealityKit
 import ARKit
 import Combine
-import Vision
 
 struct ARTrackingViewContainer: UIViewRepresentable {
 
-    @Binding var jointModelTransforms: Frame
+    var exercise: Exercise
     @Binding var isRecording: Bool
     @Binding var currentResults: CurrentResults
-    @Binding var comparisonFrameValue: Frame
+    @Binding var iterations: [IterationResults]
 
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero, cameraMode: .ar, automaticallyConfigureSession: true)
@@ -24,17 +23,16 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         let configuration = ARBodyTrackingConfiguration()
         arView.session.run(configuration)
-        arView.scene.addAnchor(context.coordinator.characterAnchor)
 
         return arView
     }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(
-            jointModelTransforms: $jointModelTransforms,
+            exercise: exercise,
             isRecording: $isRecording,
             currentResults: $currentResults,
-            comparisonFrameValue: $comparisonFrameValue
+            iterations: $iterations
         )
     }
 
@@ -45,45 +43,42 @@ struct ARTrackingViewContainer: UIViewRepresentable {
     // MARK: - Coordinator
 
     class Coordinator: NSObject, ARSessionDelegate {
-        let characterAnchor = AnchorEntity()
 
-        @Binding var jointModelTransformsCurrent: Frame
+        private var jointModelTransformsCurrent: Frame = []
         @Binding var currentResults: CurrentResults
-        @Binding var comparisonFrameValue: Frame
+
         /// True if timer is out
         @Binding var isTrainingInProgress: Bool
+        @Binding var iterations: [IterationResults]
 
         /// True if recording training/exercise data is started
-        var isRecording: Bool = false
-        var exerciseFramesLoaded: Frames = []
-        var exerciseFramesCount: Int = 0
+        private var isRecording: Bool = false
+        private var exerciseFramesLoaded: Frames = []
+        private var exerciseFramesCount: Int = 0
+        private var comparisonFrameValue: Frame = []
 
-        var iterations: [IterationResults] = []
 
         init(
-            jointModelTransforms: Binding<[simd_float4x4]>,
+            exercise: Exercise,
             isRecording: Binding<Bool>,
             currentResults: Binding<CurrentResults>,
-            comparisonFrameValue: Binding<Frame>
+            iterations: Binding<[IterationResults]>
         ) {
-            _jointModelTransformsCurrent = jointModelTransforms
             _isTrainingInProgress = isRecording
             _currentResults = currentResults
-            _comparisonFrameValue = comparisonFrameValue
+            _iterations = iterations
 
             super.init()
 
-            exerciseFramesLoaded = Defaults.shared.getExerciseTargetFrames()
+            exerciseFramesLoaded = exercise.simdFrames
             exerciseFramesCount = exerciseFramesLoaded.count
         }
 
         // MARK: - Delegate method
 
-        let trackingJointNamesRawValues: [Int] = {
+        private let trackingJointNamesRawValues: [Int] = {
             GlobalConstants.trackingJointNames.map { $0.rawValue }
         }()
-
-        var wasRecorded = false
 
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
             for anchor in anchors {
@@ -93,7 +88,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 jointModelTransformsCurrent = trackingJointNamesRawValues.map {  transforms[$0] }
 
                 if isTrainingInProgress && !isRecording {
-                    print("\n***** Check If STARTED *****")
+                    print("\n----- Check If STARTED -----")
                     _ = self.checkIfExerciseStarted()
                 }
 
@@ -103,16 +98,13 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 if !isTrainingInProgress && isRecording {
                     print("--- STOP Recording ---")
                     isRecording.toggle()
-
-                    makeTrainingDescription(from: iterationsResults)
-
                 }
             }
         }
 
         // MARK: - Check If Started
 
-        func checkIfExerciseStarted() -> Bool {
+        private func checkIfExerciseStarted() -> Bool {
             guard !comparisonFrameValue.isEmpty else {
                 comparisonFrameValue = jointModelTransformsCurrent
                 return false
@@ -143,18 +135,16 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         var previous: Frame = []
 
-        func compareTrainingWithTarget() {
+        private func compareTrainingWithTarget() {
             let lastTargetFrame = exerciseFramesLoaded.last
 
-            // Detection end of iteration
+            // Detecting end of iteration
             if couldDetectEndOfIteration,
                let last = lastTargetFrame {
                 let resultValue = jointModelTransformsCurrent.compare(to: last)
-                //                print("Could Detect End Of Iteration with --- resultValue: \(resultValue)")
+                print("! Compare with last exercise frame \(resultValue * 100)% ")
 
                 if resultValue.isCloseToEqual {
-                    //                    print("Could Detect End Of Iteration with --- resultValue: \(resultValue)")
-
                     if previous.isEmpty {
                         previous = jointModelTransformsCurrent
                         currentNumberOfStaticFrames = 1
@@ -167,7 +157,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                             currentNumberOfStaticFrames += 1
                         }
                     }
-
                     print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
                 }
             }
@@ -192,7 +181,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             }
         }
 
-        func startDetectionStartOfIteration() {
+        private func startDetectionStartOfIteration() {
             iterationsResults.append([])
             numberOfIterations += 1
 
@@ -204,49 +193,27 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             comparisonFrameValue = jointModelTransformsCurrent
             previous = []
 
+            print("\nN = ", numberOfIterations, "        count = ", iterationsResults[iterationsResults.count - 2].count)
+
             isRecording = false
         }
 
-        func updateCurrentResults() {
+        // MARK: - Update results
+
+        private func updateCurrentResults() {
             let iteration = iterationsResults[numberOfIterations - 1]
-            if iteration.count > exerciseFramesCount / 3 * 2 {
+            if iteration.count > exerciseFramesCount / 2 {
                 let score = iteration.reduce(0.0, +) / Float(iteration.count)
                 let iterationResults = IterationResults(
                     number: iterations.count + 1,
                     score: score,
-                    speed: Float(iteration.count) / Float(exerciseFramesCount)
+                    speed: Float(exerciseFramesCount) / Float(iteration.count)
                 )
 
                 iterations.append(iterationResults)
                 currentResults.update(with: numberOfIterations, iteration: iterationResults)
             }
         }
-
-        func makeTrainingDescription(from results: [[Float]]) {
-            //            var iterations: [IterationResults] = []
-
-            results.enumerated().forEach { index, iteration in
-                if iteration.count > exerciseFramesCount / 3 * 2 {
-                    let score = iteration.reduce(0.0, +) / Float(iteration.count)
-                    //                    iterations.append(IterationResults(
-                    //                        number: iterations.count + 1,
-                    //                        score: score,
-                    //                        speed: Float(iteration.count) / Float(exerciseFramesCount)
-                    //                    ))
-
-                    print("Score of \(index + 1) Iteration: \(Int(score * 100))%")
-                    print(iterations.last!.speedDescription)
-                    //                    print(iteration)
-                }
-            }
-
-            let numberOfIterations = iterations.count
-            print("Number Of Iterations: \(numberOfIterations)\n")
-
-            let score = iterations.reduce(0.0) { $0 + $1.score } / Float(numberOfIterations)
-            print("\nGeneral score: \(Int(score * 100))%")
-        }
-
     }
 
 }

@@ -12,7 +12,14 @@ struct AddExerciseView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var model: AppModel
 
-    @Binding var exercise: NewExercise
+    @State var exercise = NewExercise()
+    @State var isLoading: Bool = false
+
+    private enum Field: Int, CaseIterable {
+        case name
+        case recommendations
+    }
+    @FocusState private var focusedField: Field?
 
     var body: some View {
         ZStack {
@@ -20,7 +27,7 @@ struct AddExerciseView: View {
                 cover
                     .overlay(NavigationLink(
                         destination: {
-                            ARRecordingView(recordingData: RecordingData())
+                            ARRecordingView(exercise: $exercise)
                                 .navigationBarHidden(true)
                         },
                         label: {
@@ -32,7 +39,8 @@ struct AddExerciseView: View {
             }
             .coordinateSpace(name: "scroll")
             .background(Color("Background"))
-            .ignoresSafeArea()
+            .ignoresSafeArea(.container, edges: .all)
+            .ignoresSafeArea(.keyboard, edges: .top)
 
             Button {
                 close()
@@ -42,17 +50,25 @@ struct AddExerciseView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .padding(20)
         }
+        .toolbar {
+            ToolbarItem(placement: .keyboard) {
+                HStack {
+                    Spacer()
+                    Button("Готово") { focusedField = nil }
+                }
+            }
+        }
         .zIndex(1)
     }
 
-    var cover: some View {
+    private var cover: some View {
         VStack {
             Spacer()
         }
         .frame(maxWidth: .infinity)
         .frame(height: 500)
         .background(
-            Image("Background 2")
+            Image(uiImage: exercise.localVideoURL?.previewImageForLocalVideo ?? UIImage(named: "Background 2")!)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .accessibility(hidden: true)
@@ -73,6 +89,7 @@ struct AddExerciseView: View {
                         .font(.title.bold())
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary)
+                        .focused($focusedField, equals: .name)
 
                     HStack {
                         Text("Складність")
@@ -91,7 +108,7 @@ struct AddExerciseView: View {
                                 label: { Text(Complexity.easy.description) }
                             )
                         } label: {
-                            Text((exercise.complexity == nil ? "♦ Обрати" : exercise.complexity?.description) ?? "")
+                            Text(exercise.complexity.description)
                         }
                     }
                     .font(.title3)
@@ -114,13 +131,13 @@ struct AddExerciseView: View {
 
     }
 
-    func close() {
+    private func close() {
         withAnimation(.closeCard.delay(0.2)) {
             model.showAddExercise = false
         }
     }
 
-    var content: some View {
+    private var content: some View {
         VStack(alignment: .leading, spacing: 30) {
             Text("Рекомендації")
                 .font(.title).bold()
@@ -128,6 +145,7 @@ struct AddExerciseView: View {
             TextEditor(text: $exercise.recommendations)
                 .frame(height: 100)
                 .cornerRadius(20)
+                .focused($focusedField, equals: .recommendations)
 
             ZStack {
                 angularGradient
@@ -140,11 +158,24 @@ struct AddExerciseView: View {
                 .blendMode(.softLight)
 
                 Button {
-
+                    isLoading = true
+                    model.apiClient.addNewExercise(newExercise: exercise) {
+                        isLoading = false
+                        close()
+                    }
                 } label: {
-                    Text("Готово")
-                        .font(.title2).bold()
-                        .frame(maxWidth: .infinity)
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .foregroundColor(.white)
+                            .tint(.white)
+                            .opacity(isLoading ? 1 : 0)
+                            .progressViewStyle(.circular)
+                            .animation(.default, value: isLoading)
+
+                        Text("Готово")
+                            .font(.title2).bold()
+                    }
+                    .frame(maxWidth: .infinity)
 
                 }
                 .padding()
@@ -163,7 +194,7 @@ struct AddExerciseView: View {
         .padding(20)
     }
 
-    var angularGradient: some View {
+    private var angularGradient: some View {
         RoundedRectangle(cornerRadius: 20)
             .fill(.clear)
             .overlay(AngularGradient(
@@ -179,13 +210,13 @@ struct AddExerciseView: View {
     }
 }
 
-#if DEBUG
-struct AddExerciseView_Previews: PreviewProvider {
-    @Namespace static var namespace
-
-    static var previews: some View {
-        AddExerciseView(exercise: .constant(NewExercise(name: "", complexity: .easy, recommendations: "", image: "", frames: [])))
-    }
-}
-#endif
+//#if DEBUG
+//struct AddExerciseView_Previews: PreviewProvider {
+//    @Namespace static var namespace
+//
+//    static var previews: some View {
+//        AddExerciseView(exercise: .constant(NewExercise(name: "", complexity: .easy, recommendations: "", image: "", frames: [])))
+//    }
+//}
+//#endif
 

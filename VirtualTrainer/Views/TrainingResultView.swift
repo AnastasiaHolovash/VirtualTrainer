@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct TrainingResultView: View {
     @Binding var training: Training
@@ -45,11 +46,12 @@ struct TrainingResultView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .padding(20)
+            .padding(.vertical, 30)
             .ignoresSafeArea()
         }
         .zIndex(1)
         .onAppear { fadeIn() }
-        .onChange(of: model.showDetail) { show in
+        .onChange(of: model.showDetail) { _, show in
            fadeOut()
         }
     }
@@ -64,7 +66,7 @@ struct TrainingResultView: View {
             .frame(maxWidth: .infinity)
             .frame(height: scrollY > 0 ? 500 + scrollY : 500)
             .background(
-                Image(training.exercise.image)
+                WebImage(url: URL(string: training.exercise.photoURL))
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .offset(y: scrollY > 0 ? -scrollY : 0)
@@ -91,7 +93,7 @@ struct TrainingResultView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary)
 
-                    Text("\(training.iterationsNumber) разів - \(training.duration.durationDescription)".uppercased())
+                    Text("\(training.iterationsNumber) разів - \(training.duration)".uppercased())
                         .font(.footnote).bold()
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(.primary.opacity(0.7))
@@ -161,7 +163,7 @@ struct TrainingResultView: View {
         }
         withAnimation(.closeCard.delay(0.2)) {
             model.showDetail = false
-            model.selectedExercise = 0
+            model.selectedExercise = nil
         }
     }
 
@@ -212,12 +214,13 @@ struct TrainingResultView: View {
     }
 }
 
+/*
 struct TrainingResultView_Previews: PreviewProvider {
     @Namespace static var namespace
 
     static var previews: some View {
-        TrainingResultView(training: .constant(Training(exercise: exerciseMock, iterations: [iterationResultsMock, iterationResultsMock,iterationResultsMock], duration: 4855)))
+        TrainingResultView(training: .constant(Training(exercise: exerciseMock, iterations: [iterationResultsMock1, iterationResultsMock1, iterationResultsMock1])))
             .environmentObject(AppModel())
     }
 }
-
+*/

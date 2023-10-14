@@ -10,8 +10,9 @@ import Foundation
 struct Training {
     let id = UUID()
     let exercise: Exercise
-    let iterations: [IterationResults]
-    let duration: Int
+    var iterations: [IterationResults]
+    var startTime: Date
+    var endTime: Date
 }
 
 extension Training {
@@ -21,22 +22,30 @@ extension Training {
     }
 
     var score: Float {
-        iterations.reduce(0.0) { $0 + $1.normalisedScore } / Float(iterationsNumber)
+        iterations.reduce(0.0) { $0 + $1.normalisedQuality } / Float(iterationsNumber)
     }
 
     var scoreDescription: String {
+        guard !iterations.isEmpty else {
+            return "0%"
+        }
         return "\(Int(score.roundedToTwoDigits * 100))%"
     }
-}
 
-extension Int {
-
-    var durationDescription: String {
-        let date = Date(timeIntervalSince1970: TimeInterval(self / 1000))
-
-        let formatter = DateFormatter()
-        formatter.timeZone = TimeZone(identifier: "UTC")
-        formatter.dateFormat = "HH:mm:ss"
-        return formatter.string(from: date)
+    var duration: String {
+        let differenceInSeconds = endTime.timeIntervalSince(startTime)
+        return dateFormatter.string(from: differenceInSeconds) ?? ""
     }
+
+    init(with exercise: Exercise) {
+        self.exercise = exercise
+        self.iterations = []
+        self.startTime = Date()
+        self.endTime = Date()
+    }
+
+    mutating func update(with iterations: [IterationResults]) {
+        self.iterations = iterations
+    }
+
 }

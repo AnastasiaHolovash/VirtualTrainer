@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct IterationResults {
+struct IterationResults: Equatable {
     let number: Int
     let score: Float
     let speed: Float
@@ -17,11 +17,11 @@ struct IterationResults {
         case 0.9...1.1:
             return "Нормальна швидкість"
 
-        case ...0.9:
-            return "Швидше у \((1 / speed).roundedToTwoDigits) разів"
-
         case 1.1...:
-            return "Повільніше у \(speed.roundedToTwoDigits) разів"
+            return "Швидше на \(Int((speed - 1) * 100))%"
+
+        case ...0.9:
+            return "Повільніше на \(Int((1 - speed) * 100))%"
 
         default:
             return ""
@@ -32,13 +32,40 @@ struct IterationResults {
         (score - 0.5) / 0.5
     }
 
-    var scoreDescription: String {
-        return "\(Int(normalisedScore * 100))%"
+    var normalisedQuality: Float {
+        normalisedScore - abs(speed - 1.0)
     }
 
-    var quality: String {
-        return "Хороша якість"
+    var scoreDescription: String {
+        return "\(Int(normalisedQuality * 100))%"
     }
+
+    var quality: Quality {
+        switch normalisedQuality {
+        case 0.9...1.0:
+            return .veryGood
+
+        case 0.8...0.9:
+            return .good
+
+        case 0.7...0.8:
+            return .normal
+
+        default:
+            return .notGood
+        }
+    }
+}
+
+extension IterationResults {
+
+    enum Quality: String {
+        case veryGood = "Чудово"
+        case good = "Добре"
+        case normal = "Нормально"
+        case notGood = "Погано"
+    }
+
 }
 
 extension Float {
@@ -48,5 +75,3 @@ extension Float {
     }
 
 }
-
-let iterationResultsMock = IterationResults(number: 3, score: 0.9, speed: 0.9)

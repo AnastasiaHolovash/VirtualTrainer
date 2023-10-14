@@ -8,16 +8,16 @@
 import Foundation
 
 enum GlobalConstants {
-    static let timerStartTime: Int = 5
-    static let startStopMovementRange: ClosedRange<Float> = 0...0.995
-    static let closeToEqualRange: ClosedRange<Float> = 0.9...1
+    static let timerStartTime: Int = 3
+    static let startStopMovementRange: ClosedRange<Float> = 0...0.992
+    static let closeToEqualRange: ClosedRange<Float> = 0.955...1
     static let veryCloseToEqualRange: ClosedRange<Float> = 0.999...1
     static let characterOffset: SIMD3<Float> = [-0.5, 0, 0]
     static let characterScale: SIMD3<Float> = [1.0, 1.0, 1.0]
     static let framesComparisonAccuracy: Float = 0.2
     static let couldDetectEndOfIterationIndicator: Float = 0.5
     /// Number of frames in static position
-    static let staticPositionIndicator: Int = 4
+    static let staticPositionIndicator: Int = 16
     /// Based on difference between moment of detection and recorded frames
     static let exerciseFramesFirstIndex: Int = 1
 
@@ -42,13 +42,4 @@ enum GlobalConstants {
         .right_hand_joint
     ]
 
-}
-
-extension GlobalConstants {
-
-    enum Mode {
-        case recording
-        case training
-    }
-    
 }

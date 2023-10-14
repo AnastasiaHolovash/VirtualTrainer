@@ -13,37 +13,34 @@ import Vision
 
 struct ARRecordingView: View {
     
-    @State var jointModelTransforms: Frame = []
-    @State var timerValue: Int = GlobalConstants.timerStartTime
-    
-    @State var timerCancellable: AnyCancellable? = nil
+    @State private var timerValue: Int = GlobalConstants.timerStartTime
+    @State private var timerCancellable: AnyCancellable? = nil
+
     @State var isRecording: Bool = false
-    @State var comparisonFrameValue: Frame = []
-    
-    @State var recordingData: RecordingData
+    @State var recordingData = RecordingData()
+    @Binding var exercise: NewExercise
     
     var body: some View {
         ZStack {
-            ARViewContainer(
-                jointModelTransforms: $jointModelTransforms,
+            ARRecordingViewContainer(
+                exercise: $exercise,
                 isRecording: $isRecording,
-                recordingData: $recordingData,
-                comparisonFrameValue: $comparisonFrameValue
+                recordingData: $recordingData
             )
             .edgesIgnoringSafeArea(.all)
-            
+
             ARRecordingOverlayView(model: $recordingData)
-                .onChange(of: recordingData.playPauseButtonState, perform: { newValue in
+                .onChange(of: recordingData.playPauseButtonState, { _, newValue in
                     switch newValue {
                     case .play:
                         startTimer()
-                        
+
                     case .pause:
                         isRecording.toggle()
                         stopTimer()
                     }
                 })
-                .onChange(of: timerValue) { newValue in
+                .onChange(of: timerValue) { _, newValue in
                     recordingData.timer = newValue
                 }
         }
@@ -52,7 +49,7 @@ struct ARRecordingView: View {
         }
     }
     
-    func startTimer() {
+    private func startTimer() {
         timerCancellable = Timer.publish(every: 1, on: .main, in: .default)
             .autoconnect()
             .receive(on: DispatchQueue.main)
@@ -69,7 +66,7 @@ struct ARRecordingView: View {
             })
     }
     
-    func stopTimer() {
+    private func stopTimer() {
         timerCancellable?.cancel()
     }
 }

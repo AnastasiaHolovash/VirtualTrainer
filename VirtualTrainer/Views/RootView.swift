@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
+import UIKit
+import AVKit
 
-struct ContentView: View {
+struct RootView: View {
     @EnvironmentObject var model: AppModel
-    @State var newExercise = NewExercise()
 
     var body: some View {
         NavigationView {
@@ -20,7 +21,7 @@ struct ContentView: View {
                     }
 
                 if model.showAddExercise {
-                    AddExerciseView(exercise: $newExercise)
+                    AddExerciseView()
                         .accessibilityIdentifier("Identifier")
                 }
             }
@@ -32,7 +33,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
-            .environmentObject(AppModel())
+        RootView()
     }
 }

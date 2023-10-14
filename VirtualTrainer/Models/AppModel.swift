@@ -10,37 +10,28 @@ import Combine
 
 class AppModel: ObservableObject {
 
+    @Published var apiClient: FirestoreClient = FirestoreClient()
     @Published var showNav: Bool = true
-
     @Published var showAddExercise: Bool = false
-
     @Published var showDetail: Bool = false
-    @Published var selectedExercise: Int = 0
-
+    @Published var selectedExercise: String?
     @Published var showResults: Bool = false
     @Published var startTraining: Bool = false
-    @Published var currentTraining: Training = Training(
-        exercise: exerciseMock,
-        iterations: [iterationResultsMock, iterationResultsMock,iterationResultsMock],
-        duration: 4855
-    )
 
-    @Published var exercises: [Exercise] = [
-        Exercise(
-            index: 1,
-            name: "Squatting",
-            complexity: .normal,
-            recommendations: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-            image: "squatting",
-            frames: []
-        ),
-        Exercise(
-            index: 2,
-            name: "Other Exercise",
-            complexity: .normal,
-            recommendations: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-            image: "squatting",
-            frames: []
-        )
-    ]
+    var apiClientCancellable: AnyCancellable? = nil
+
+    init() {
+        apiClientCancellable = apiClient.objectWillChange.sink { [weak self] _ in
+            self?.objectWillChange.send()
+        }
+    }
 }
+
+let iterationResultsMock1 = IterationResults(number: 1, score: 0.97, speed: 0.9)
+let iterationResultsMock2 = IterationResults(number: 2, score: 0.96, speed: 1.3)
+let iterationResultsMock3 = IterationResults(number: 3, score: 0.96, speed: 1.2)
+let iterationResultsMock4 = IterationResults(number: 4, score: 0.95, speed: 1.0)
+let iterationResultsMock5 = IterationResults(number: 5, score: 0.90, speed: 1.1)
+let iterationResultsMock6 = IterationResults(number: 6, score: 0.95, speed: 1.2)
+let iterationResultsMock7 = IterationResults(number: 7, score: 0.95, speed: 1.3)
+let iterationResultsMock8 = IterationResults(number: 8, score: 0.93, speed: 1.3)

@@ -6,18 +6,79 @@
 //
 
 import Foundation
+import ARKit
+import Firebase
+import FirebaseFirestore
+import FirebaseFirestoreSwift
 
-struct Exercise: Identifiable {
-    let id = UUID()
-    let index: Int
+struct Exercise: Identifiable, Equatable {
+    let id: String
     let name: String
     let complexity: Complexity
     let recommendations: String
-    let image: String
-    let frames: Frames
+    let videoURL: String
+    let photoURL: String
+    let frames: [FirebaseFrame]
+    var sentAt: Timestamp?
+
+    var simdFrames: Frames {
+        frames.map { $0.simdArray }
+    }
+
+//    static func == (lhs: Exercise, rhs: Exercise) {
+//        return lhs.id == rhs.id
+//    }
 }
 
-enum Complexity {
+struct FirebaseFrame: Codable, Equatable {
+    var values: [FirebaseSIMD4x4]
+
+    var simdArray: Frame {
+        values.map { $0.simd }
+    }
+
+    init(simdArray: [simd_float4x4]) {
+        self.values = simdArray.map(FirebaseSIMD4x4.init(simd:))
+    }
+}
+
+struct FirebaseSIMD4x4: Codable, Equatable {
+    let column0: [Float]
+    let colomn1: [Float]
+    let colomn2: [Float]
+    let colomn3: [Float]
+
+    init(simd: simd_float4x4) {
+        column0 = simd.columns.0.array
+        colomn1 = simd.columns.1.array
+        colomn2 = simd.columns.2.array
+        colomn3 = simd.columns.3.array
+    }
+
+    var simd: simd_float4x4 {
+        return simd_float4x4.init([column0.simd4, colomn1.simd4, colomn2.simd4, colomn3.simd4])
+    }
+}
+
+extension Array where Element == Float {
+    var simd4: SIMD4<Float> {
+        SIMD4(x: self[0], y: self[1], z: self[2], w: self[3])
+    }
+}
+
+extension SIMD4 where Scalar == Float {
+    var array: [Float] {
+        [x, y, z, w]
+    }
+
+//    var
+}
+
+extension Exercise: Codable {
+
+}
+
+enum Complexity: String, Codable, Equatable {
     case easy
     case normal
     case hard
@@ -34,20 +95,14 @@ enum Complexity {
     }
 }
 
-struct NewExercise: Identifiable {
-    let id = UUID()
-    var name: String = ""
-    var complexity: Complexity?
-    var recommendations: String = ""
-    var image: String?
-    var frames: Frames = []
-}
 
 let exerciseMock = Exercise(
-    index: 0,
-    name: "Squatting",
+    id: UUID().uuidString,
+    name: "Присідання",
     complexity: .normal,
     recommendations: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    image: "squatting",
+//    image: "squatting",
+    videoURL: "",
+    photoURL: "",
     frames: []
 )
