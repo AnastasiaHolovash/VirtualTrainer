@@ -19,7 +19,12 @@ struct ARTrainingOverlayView: View {
                     .background(
                         PlayShape()
                             .fill(
-                                .angularGradient(colors: [.blue, .red, .blue], center: .center, startAngle: .degrees(0), endAngle: .degrees(360))
+                                .angularGradient(
+                                    colors: [.blue, .red, .blue],
+                                    center: .center,
+                                    startAngle: .degrees(0),
+                                    endAngle: .degrees(360)
+                                )
                             )
                             .blur(radius: 12)
                     )

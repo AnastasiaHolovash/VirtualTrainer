@@ -61,6 +61,7 @@
 		5DB09B5F285F592800FA60CE /* AVPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB09B5E285F592800FA60CE /* AVPlayerView.swift */; };
 		5DE64A2F2ADABCA900275503 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5DE64A2E2ADABCA900275503 /* GoogleService-Info.plist */; };
 		5DF6563028500AC20091C64E /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5DF6562F28500AC20091C64E /* SDWebImageSwiftUI */; };
+		5DF67A892ADC2F5A006947A9 /* TimerObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF67A882ADC2F5A006947A9 /* TimerObject.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -138,6 +139,7 @@
 		5DB09B62285FB4A800FA60CE /* AR Session 17.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 17.mov"; sourceTree = "<group>"; };
 		5DB09B63285FB65200FA60CE /* AR Session 18.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 18.mov"; sourceTree = "<group>"; };
 		5DE64A2E2ADABCA900275503 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		5DF67A882ADC2F5A006947A9 /* TimerObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerObject.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -292,6 +294,7 @@
 				5D23E661284D56660003BAD3 /* Modifiers.swift */,
 				5D23E654284D4D2D0003BAD3 /* NavigationBar.swift */,
 				5D23E65F284D561B0003BAD3 /* SportHumanView.swift */,
+				5DF67A882ADC2F5A006947A9 /* TimerObject.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -467,6 +470,7 @@
 				5D23E662284D56660003BAD3 /* Modifiers.swift in Sources */,
 				5DB09B5F285F592800FA60CE /* AVPlayerView.swift in Sources */,
 				5D23E66B284D59D20003BAD3 /* CircularView.swift in Sources */,
+				5DF67A892ADC2F5A006947A9 /* TimerObject.swift in Sources */,
 				5D23E65E284D55350003BAD3 /* Animations.swift in Sources */,
 				5D23E68C284E46C10003BAD3 /* ARTrackingViewContainer.swift in Sources */,
 				5D23E67D284E2FBA0003BAD3 /* ARTrainingOverlayView.swift in Sources */,

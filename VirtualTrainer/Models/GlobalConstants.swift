@@ -25,10 +25,9 @@ enum GlobalConstants {
     static let exerciseFramesFirstIndex: Int = 1
     static let maxErrorPossible: Float = 0.623538
     static let trackingJointNumber: Float = 18
-    static let sqrt12: Float = 3.464101615137755
-    static let maxErrorPossibleСoefficient = GlobalConstants.trackingJointNumber
-        * GlobalConstants.sqrt12
-        / 100
+//    static let sqrt12: Float = 3.464101615137755
+//    static let maxErrorPossible: Float = 6.6 * trackingJointNumber
+    static let maxErrorPossibleСoefficient = 6.6 * trackingJointNumber / 100 / 2
 
     static let trackingJointNames : [ARSkeletonJoint] = [
         .hips_joint,

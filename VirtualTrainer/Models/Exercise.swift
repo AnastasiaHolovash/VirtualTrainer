@@ -24,10 +24,6 @@ struct Exercise: Identifiable, Equatable {
     var simdFrames: Frames {
         frames.map { $0.simdArray }
     }
-
-//    static func == (lhs: Exercise, rhs: Exercise) {
-//        return lhs.id == rhs.id
-//    }
 }
 
 struct FirebaseFrame: Codable, Equatable {
@@ -61,17 +57,19 @@ struct FirebaseSIMD4x4: Codable, Equatable {
 }
 
 extension Array where Element == Float {
+
     var simd4: SIMD4<Float> {
         SIMD4(x: self[0], y: self[1], z: self[2], w: self[3])
     }
+
 }
 
 extension SIMD4 where Scalar == Float {
+
     var array: [Float] {
         [x, y, z, w]
     }
 
-//    var
 }
 
 extension Exercise: Codable {

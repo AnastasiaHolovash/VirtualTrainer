@@ -28,12 +28,8 @@ struct IterationResults: Equatable {
         }
     }
 
-    var normalisedScore: Float {
-        (score - 0.5) / 0.5
-    }
-
     var normalisedQuality: Float {
-        normalisedScore - abs(speed - 1.0)
+        score > 0 ? score : 0
     }
 
     var scoreDescription: String {

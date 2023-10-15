@@ -162,17 +162,11 @@ struct ARRecordingViewContainer: UIViewRepresentable {
                     return false
                 }
                 print("index", index)
-//                if let newPreviousChecked = exerciseFrames.reversed()[safe: index - 1] {
-//                    previousChecked = newPreviousChecked
-//                } else {
-////                    assertionFailure("Something wrong with index")
-//                    return false
-//                }
+
                 let resultValue = frame.compare(to: previous)
                 let result = resultValue.isStartStopMovement
 
                 print("\n---- Compare ---- \(resultValue)% ----- \(result)")
-//                frame.newValue(arraySimd4x4: previous)
 
                 return result
             } ?? (exerciseFrames.count - 1, exerciseFrames.last)

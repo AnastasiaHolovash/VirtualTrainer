@@ -99,7 +99,7 @@ extension simd_float4x4 {
 func calculateFrameDistance(frame1: Frame, frame2: Frame) -> Float {
     var totalDistance: Float = 0.0
 
-    let jointCount = Swift.min(frame1.count, frame2.count) // Ensure we don't go out of bounds
+    let jointCount = Swift.min(frame1.count, frame2.count)
 
     for j in 0..<jointCount {
         let translation1 = frame1[j].columns.3
@@ -115,7 +115,73 @@ func calculateFrameDistance(frame1: Frame, frame2: Frame) -> Float {
     return totalDistance
 }
 
-func dtw(x1: [Frame], x2: [Frame]) -> Float {
+private func calculateTranslationAndRotationDistance(frame1: Frame, frame2: Frame) -> Float {
+    var totalDistance: Float = 0.0
+
+    let jointCount = Swift.min(frame1.count, frame2.count)
+
+    for j in 0..<jointCount {
+        // Calculate translational distance
+        let translation1 = frame1[j].columns.3
+        let translation2 = frame2[j].columns.3
+
+        let dx = Float(translation1.x - translation2.x)
+        let dy = Float(translation1.y - translation2.y)
+        let dz = Float(translation1.z - translation2.z)
+
+        totalDistance += sqrt(max(0, dx*dx + dy*dy + dz*dz)) // Ensure non-negative inside sqrt
+
+        // Calculate rotational distance (angle between two rotation matrices)
+        let rotation1 = simd_quatf(frame1[j])
+        let rotation2 = simd_quatf(frame2[j])
+        let dotProduct = dot(rotation1.vector, rotation2.vector)
+        let clampedDotProduct = min(max(dotProduct, -1), 1) // Clamp between -1 and 1
+        let angleBetweenQuaternions = 2 * acos(abs(clampedDotProduct))
+        totalDistance += Float(angleBetweenQuaternions)
+    }
+
+    print("--- totalDistance \(totalDistance)")
+    return totalDistance
+}
+
+
+
+private func applyExponentialSmoothing(frames: [Frame], alpha: Float = 0.8) -> [Frame] {
+    var smoothedFrames: [Frame] = []
+    guard let firstFrame = frames.first else {
+        return smoothedFrames
+    }
+
+    var previousSmoothedFrame = firstFrame
+    smoothedFrames.append(previousSmoothedFrame)
+
+    for frame in frames.dropFirst() {
+        var newSmoothedFrame: Frame = []
+
+        for matrixIndex in 0..<frame.count {
+            var newSmoothedMatrix = simd_float4x4()
+
+            for row in 0..<4 {
+                for column in 0..<4 {
+                    let previousValue = previousSmoothedFrame[matrixIndex][row][column]
+                    let currentValue = frame[matrixIndex][row][column]
+                    let smoothedValue = alpha * currentValue + (1 - alpha) * previousValue
+
+                    newSmoothedMatrix[row][column] = smoothedValue
+                }
+            }
+
+            newSmoothedFrame.append(newSmoothedMatrix)
+        }
+
+        previousSmoothedFrame = newSmoothedFrame
+        smoothedFrames.append(previousSmoothedFrame)
+    }
+
+    return smoothedFrames
+}
+
+private func dtw(x1: [Frame], x2: [Frame]) -> Float {
     let n1 = x1.count
     let n2 = x2.count
 
@@ -130,7 +196,7 @@ func dtw(x1: [Frame], x2: [Frame]) -> Float {
         var lastValue = Float.infinity
 
         for j in 0..<n2 {
-            let cost = calculateFrameDistance(frame1: x1[i], frame2: x2[j])
+            let cost = calculateTranslationAndRotationDistance(frame1: x1[i], frame2: x2[j])
 
             let minimum = min(min(row0[j] + cost, row0[j + 1] + cost), lastValue + cost)
             lastValue = minimum
@@ -143,9 +209,13 @@ func dtw(x1: [Frame], x2: [Frame]) -> Float {
     return row0[n2]
 }
 
+
 func compareIteration(target: [Frame], training: [Frame]) -> Float {
-    let maxError: Float = Float(min(target.count, training.count)) * GlobalConstants.maxErrorPossibleСoefficient
-    let result = dtw(x1: target, x2: training)
+    let smoothedData = applyExponentialSmoothing(frames: training)
+//    let smoothedData = training
+    let maxError = Float(min(smoothedData.count, training.count)) * GlobalConstants.maxErrorPossibleСoefficient
+    print("------- maxError: \(maxError)")
+    let result = dtw(x1: smoothedData, x2: training)
     print("--- DTW: \(result)")
     return (100 - result / maxError) / 100
 }
