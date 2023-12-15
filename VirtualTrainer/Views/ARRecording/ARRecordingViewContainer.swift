@@ -92,8 +92,8 @@ struct ARRecordingViewContainer: UIViewRepresentable {
                 let transforms = bodyAnchor.skeleton.jointModelTransforms
                 jointModelTransformsCurrent = trackingJointNamesRawValues.map { transforms[$0] }
 
-                print("Right hand joint: \n")
-                jointModelTransformsCurrent.last?.printf()
+//                print("Right hand joint: \n")
+//                jointModelTransformsCurrent.last?.printf()
 
                 if isTrainingInProgress && !isRecording {
                     print("\n----- Check If STARTED -----")
@@ -139,7 +139,7 @@ struct ARRecordingViewContainer: UIViewRepresentable {
             let resultValue = jointModelTransformsCurrent.compare(to: comparisonFrameValue)
 
             let result = resultValue.isStartStopMovement
-            print("---- Compare ---- \(resultValue)% ----- \(result) --- \(comparisonFrameValue)")
+//            print("---- Compare ---- \(resultValue)% ----- \(result) --- \(comparisonFrameValue)")
 //            jointModelTransformsCurrent.newValue(arraySimd4x4: comparisonFrameValue)
             
             if result {
@@ -178,6 +178,8 @@ struct ARRecordingViewContainer: UIViewRepresentable {
 
             // Saving new frames to model
             exercise.frames = croppedFrames
+
+            let smoothedData = applyExponentialSmoothing(frames: croppedFrames)
         }
     }
 

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import RealityKit
 import ARKit
 import Combine
 import Vision
@@ -146,7 +145,7 @@ private func calculateTranslationAndRotationDistance(frame1: Frame, frame2: Fram
 
 
 
-private func applyExponentialSmoothing(frames: [Frame], alpha: Float = 0.8) -> [Frame] {
+func applyExponentialSmoothing(frames: [Frame], alpha: Float = 0.8) -> [Frame] {
     var smoothedFrames: [Frame] = []
     guard let firstFrame = frames.first else {
         return smoothedFrames
@@ -215,7 +214,7 @@ func compareIteration(target: [Frame], training: [Frame]) -> Float {
 //    let smoothedData = training
     let maxError = Float(min(smoothedData.count, training.count)) * GlobalConstants.maxErrorPossibleСoefficient
     print("------- maxError: \(maxError)")
-    let result = dtw(x1: smoothedData, x2: training)
+    let result = dtw(x1: smoothedData, x2: target)
     print("--- DTW: \(result)")
     return (100 - result / maxError) / 100
 }

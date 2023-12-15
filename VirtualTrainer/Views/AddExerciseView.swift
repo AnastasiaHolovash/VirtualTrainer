@@ -8,10 +8,7 @@
 import SwiftUI
 
 struct AddExerciseView: View {
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var model: AppModel
-
     @State var exercise = NewExercise()
     @State var isLoading: Bool = false
 
@@ -37,7 +34,6 @@ struct AddExerciseView: View {
                 content
                     .padding(.vertical, 30)
             }
-            .coordinateSpace(name: "scroll")
             .background(Color("Background"))
             .ignoresSafeArea(.container, edges: .all)
             .ignoresSafeArea(.keyboard, edges: .top)
@@ -77,7 +73,7 @@ struct AddExerciseView: View {
             RoundedRectangle(cornerRadius: 0)
         )
         .overlay(
-            Image(horizontalSizeClass == .compact ? "Waves 1" : "Waves 2")
+            Image("Waves 1")
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .accessibility(hidden: true)
         )
