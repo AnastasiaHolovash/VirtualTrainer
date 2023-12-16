@@ -167,8 +167,9 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 // Start detection start of iteration
                 print("\n--- New iteration initiated by User")
                 iterationsResults[numberOfIterations].removeLast(GlobalConstants.staticPositionIndicator - 1)
-                startDetectionStartOfIteration()
-                updateCurrentResults()
+                let shouldBeRecorded = iterationsResults[numberOfIterations].count > exerciseFramesCount / 2
+                startDetectionStartOfIteration(shouldBeRecorded: shouldBeRecorded)
+                updateCurrentResults(shouldBeRecorded: shouldBeRecorded)
             } else {
                 // Recording results
                 let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
@@ -183,10 +184,15 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             }
         }
 
-        private func startDetectionStartOfIteration() {
+        private func startDetectionStartOfIteration(shouldBeRecorded: Bool) {
+            if !shouldBeRecorded {
+                iterationsResults.removeLast()
+                exerciseIterations.removeLast()
+            } else {
+                numberOfIterations += 1
+            }
             iterationsResults.append([])
             exerciseIterations.append([])
-            numberOfIterations += 1
 
             exerciseFramesIndex = GlobalConstants.exerciseFramesFirstIndex
 
@@ -196,32 +202,31 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             comparisonFrameValue = jointModelTransformsCurrent
             previous = []
 
-            print("\n--- N = ", numberOfIterations, "        count = ", iterationsResults[iterationsResults.count - 2].count)
-
             isRecording = false
             timerObject.stop()
         }
 
         // MARK: - Update results
 
-        private func updateCurrentResults() {
-            let iteration = iterationsResults[numberOfIterations - 1]
-
-            // TODO: New check for key points
-            if iteration.count > exerciseFramesCount / 2 {
-                let iterationScore = compareIteration(
-                    target: exerciseFramesLoaded,
-                    training: exerciseIterations[numberOfIterations - 1]
-                )
-                let iterationResults = IterationResults(
-                    number: iterations.count + 1,
-                    score: iterationScore,
-                    speed: Float(2 / timerObject.elapsedSeconds)
-                )
-                print("---- N = \(numberOfIterations - 1)     NEN RESULT: \(iterationScore)")
-                iterations.append(iterationResults)
-                currentResults.update(with: numberOfIterations, iteration: iterationResults)
+        private func updateCurrentResults(shouldBeRecorded: Bool) {
+            guard numberOfIterations > 0,
+                  shouldBeRecorded else {
+                return
             }
+
+            let iterationScore = compareIteration(
+                target: exerciseFramesLoaded,
+                training: exerciseIterations[numberOfIterations - 1]
+            )
+            let iterationResults = IterationResults(
+                number: iterations.count + 1,
+                score: iterationScore,
+                speed: Float(2 / timerObject.elapsedSeconds)
+            )
+            print("---- N = \(numberOfIterations - 1)     NEN RESULT: \(iterationScore)")
+            iterations.append(iterationResults)
+            currentResults.update(with: numberOfIterations, iteration: iterationResults)
+
         }
     }
 
