@@ -29,6 +29,11 @@ struct IterationRow: View {
                 Text(iteration.speedDescription)
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
+                if let errorsDescription = iteration.errorsDescription {
+                    Text(errorsDescription)
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
             }
             Spacer()
         }

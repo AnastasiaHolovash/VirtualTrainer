@@ -49,3 +49,11 @@ extension Training {
     }
 
 }
+
+private extension Float {
+
+    var roundedToTwoDigits: Float {
+        (self * 100).rounded() / 100
+    }
+
+}
