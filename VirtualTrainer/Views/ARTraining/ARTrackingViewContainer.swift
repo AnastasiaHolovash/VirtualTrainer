@@ -55,7 +55,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
         private var isRecording: Bool = false
         private var exerciseFramesLoaded: Frames = []
         private var exerciseIterations: [Frames] = [[]]
-        private var exerciseIterationsResult: [Float] = []
         private var exerciseFramesCount: Int = 0
         private var comparisonFrameValue: Frame = []
 
@@ -146,7 +145,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                let last = exerciseFramesLoaded.last {
                 let resultValue = jointModelTransformsCurrent.compare(to: last)
                 print("! Compare with last exercise frame \(resultValue * 100)% ")
-//                jointModelTransformsCurrent.newValue(arraySimd4x4: last)
 
                 if resultValue.isCloseToEqual {
                     if previous.isEmpty {
@@ -155,7 +153,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                     } else {
                         let resultValue2 = jointModelTransformsCurrent.compare(to: previous)
                         print("---- Compare with previous ---- \(resultValue2 * 100)% -----")
-//                        jointModelTransformsCurrent.newValue(arraySimd4x4: previous)
                         previous = jointModelTransformsCurrent
 
                         if resultValue2.isVeryCloseToEqual {
@@ -177,7 +174,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
 
                 let resultValue = jointModelTransformsCurrent.compare(to: targetFrame)
-//                print("---- Compare With Target ---- \(resultValue * 100)% ----- \(exerciseFramesIndex)")
                 iterationsResults[numberOfIterations].append(resultValue)
                 exerciseIterations[numberOfIterations].append(jointModelTransformsCurrent)
 
@@ -223,14 +219,9 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                     speed: Float(2 / timerObject.elapsedSeconds)
                 )
                 print("---- N = \(numberOfIterations - 1)     NEN RESULT: \(iterationScore)")
-                exerciseIterationsResult.append(iterationScore)
                 iterations.append(iterationResults)
                 currentResults.update(with: numberOfIterations, iteration: iterationResults)
             }
-
-//            print("-------------------------------")
-//            print(exerciseIterations[numberOfIterations - 1])
-//            print("-------------------------------")
         }
     }
 
