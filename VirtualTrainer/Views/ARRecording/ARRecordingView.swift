@@ -12,61 +12,76 @@ import Combine
 import Vision
 
 struct ARRecordingView: View {
-    
-    @State private var timerValue: Int = GlobalConstants.timerStartTime
-    @State private var timerCancellable: AnyCancellable? = nil
+    @StateObject private var viewModel: ARRecordingViewModel
 
-    @State var isRecording: Bool = false
-    @State var recordingData = RecordingData()
-    @Binding var exercise: NewExercise
-    
+    init(exercise: NewExercise) {
+        _viewModel = StateObject(wrappedValue: ARRecordingViewModel(exercise: exercise))
+    }
+
     var body: some View {
         ZStack {
-            ARRecordingViewContainer(
-                exercise: $exercise,
-                isRecording: $isRecording,
-                recordingData: $recordingData
-            )
-            .edgesIgnoringSafeArea(.all)
+            ARRecordingViewContainer(arRecordingViewModel: viewModel)
+                .edgesIgnoringSafeArea(.all)
 
-            ARRecordingOverlayView(model: $recordingData)
-                .onChange(of: recordingData.playPauseButtonState, { _, newValue in
-                    switch newValue {
-                    case .play:
-                        startTimer()
-
-                    case .pause:
-                        isRecording.toggle()
-                        stopTimer()
-                    }
-                })
-                .onChange(of: timerValue) { _, newValue in
-                    recordingData.timer = newValue
+            ARRecordingOverlayView(model: $viewModel.recordingData)
+                .onChange(of: viewModel.recordingData.playPauseButtonState) {
+                    viewModel.handlePlayPauseButtonChange()
+                }
+                .onChange(of: viewModel.timerValue) {
+                    viewModel.recordingData.timer = viewModel.timerValue
                 }
         }
         .onAppear {
-            recordingData.timer = GlobalConstants.timerStartTime
+            viewModel.recordingData.timer = GlobalConstants.timerStartTime
         }
     }
-    
-    private func startTimer() {
+}
+
+class ARRecordingViewModel: ObservableObject {
+    @Published var timerValue: Int = GlobalConstants.timerStartTime
+    @Published var isTrainingInProgress: Bool = false
+    @Published var recordingData = RecordingData()
+    var exercise: NewExercise
+
+    private var timerCancellable: AnyCancellable?
+
+    init(exercise: NewExercise) {
+        self.exercise = exercise
+    }
+
+    // MARK: - Timer Methods
+
+    func startTimer() {
         timerCancellable = Timer.publish(every: 1, on: .main, in: .default)
             .autoconnect()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { _ in
-                switch timerValue {
-                case 0:
-                    timerValue = GlobalConstants.timerStartTime + 1
-                    stopTimer()
-                    isRecording.toggle()
-                    
-                default:
-                    timerValue -= 1
-                }
-            })
+            .sink { [weak self] _ in
+                self?.updateTimer()
+            }
     }
-    
-    private func stopTimer() {
+
+    func stopTimer() {
         timerCancellable?.cancel()
+        isTrainingInProgress.toggle()
+    }
+
+    func handlePlayPauseButtonChange() {
+        switch recordingData.playPauseButtonState {
+        case .play:
+            startTimer()
+        case .pause:
+            stopTimer()
+        }
+    }
+
+    // MARK: - Private Methods
+
+    private func updateTimer() {
+        if timerValue == 0 {
+            timerValue = GlobalConstants.timerStartTime + 1
+            stopTimer()
+        } else {
+            timerValue -= 1
+        }
     }
 }
+

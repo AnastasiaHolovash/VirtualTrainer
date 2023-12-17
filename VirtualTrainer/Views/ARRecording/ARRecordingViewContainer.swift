@@ -12,9 +12,7 @@ import Combine
 
 struct ARRecordingViewContainer: UIViewRepresentable {
 
-    @Binding var exercise: NewExercise
-    @Binding var isRecording: Bool
-    @Binding var recordingData: RecordingData
+    @ObservedObject var arRecordingViewModel: ARRecordingViewModel
 
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero, cameraMode: .ar, automaticallyConfigureSession: true)
@@ -27,11 +25,7 @@ struct ARRecordingViewContainer: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(
-            exercise: $exercise,
-            isRecording: $isRecording,
-            recordingData: $recordingData
-        )
+        Coordinator(arRecordingViewModel: arRecordingViewModel)
     }
 
     func updateUIView(_ uiView: ARView, context: Context) {
@@ -41,49 +35,41 @@ struct ARRecordingViewContainer: UIViewRepresentable {
     // MARK: - Coordinator
 
     class Coordinator: NSObject, ARSessionDelegate {
-        private var jointModelTransformsCurrent: Frame = []
-        private var comparisonFrameValue: Frame = []
 
-        @Binding var recordingData: RecordingData
-        /// True if timer is out
-        @Binding var isTrainingInProgress: Bool {
+        @ObservedObject var arRecordingViewModel: ARRecordingViewModel
+        private let recorder = Recorder()
+
+        private var isRecording: Bool = false
+        private var isTrainingInProgress: Bool {
             willSet {
+                arRecordingViewModel.isTrainingInProgress = isTrainingInProgress
                 if isTrainingInProgress {
                     recorder.start()
                 }
             }
         }
-
-        @Binding var exercise: NewExercise
-
-        /// True if recording exercise data is started
-        private var isRecording: Bool = false
-        private var exerciseFrames: Frames = []
-        private let recorder = Recorder()
-
-        init(
-            exercise: Binding<NewExercise>,
-            isRecording: Binding<Bool>,
-            recordingData: Binding<RecordingData>
-        ) {
-            _exercise = exercise
-            _isTrainingInProgress = isRecording
-            _recordingData = recordingData
-
-            super.init()
-
-            recorder.setup { [weak self] url in
-                self?.exercise.localVideoURL = url
-            }
-        }
-
-        // MARK: - Delegate method
-
         private let trackingJointNamesRawValues: [Int] = {
             GlobalConstants.trackingJointNames.map { $0.rawValue }
         }()
 
-        private var wasRecorded = false
+
+        private var jointModelTransformsCurrent: Frame = []
+        private var comparisonFrameValue: Frame = []
+        private var exerciseFrames: Frames = []
+
+
+        init(arRecordingViewModel: ARRecordingViewModel) {
+            self.isTrainingInProgress = arRecordingViewModel.isTrainingInProgress
+            self.arRecordingViewModel = arRecordingViewModel
+            
+            super.init()
+
+            recorder.setup { [weak self] url in
+                self?.arRecordingViewModel.exercise.localVideoURL = url
+            }
+        }
+
+        // MARK: - Delegate method
 
         func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
             for anchor in anchors {
@@ -98,7 +84,6 @@ struct ARRecordingViewContainer: UIViewRepresentable {
                 }
 
                 if isTrainingInProgress && isRecording {
-                    wasRecorded = true
                     exerciseFrames.append(jointModelTransformsCurrent)
                     print(exerciseFrames.count)
 
@@ -173,7 +158,7 @@ struct ARRecordingViewContainer: UIViewRepresentable {
             let smoothedData = applyExponentialSmoothing(frames: croppedFrames)
 
             // Saving new frames to model
-            exercise.frames = smoothedData
+            arRecordingViewModel.exercise.frames = smoothedData
         }
     }
 
@@ -185,4 +170,5 @@ extension Collection {
     subscript (safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
     }
+
 }

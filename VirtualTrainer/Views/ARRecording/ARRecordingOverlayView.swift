@@ -70,9 +70,3 @@ struct ARRecordingOverlayView: View {
         }
     }
 }
-
-struct ARRecordingOverlayView_Previews: PreviewProvider {
-    static var previews: some View {
-        ARRecordingOverlayView(model: .constant(.init(playPauseButtonState: .pause, timer: 2)))
-    }
-}
