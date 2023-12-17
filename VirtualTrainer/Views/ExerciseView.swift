@@ -159,13 +159,3 @@ var angularGradient: some View {
         .padding(6)
         .blur(radius: 20)
 }
-
-#if DEBUG
-struct ExerciseView_Previews: PreviewProvider {
-    @Namespace static var namespace
-
-    static var previews: some View {
-        ExerciseView(namespace: namespace, exercise: exerciseMock)
-    }
-}
-#endif

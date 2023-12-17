@@ -32,9 +32,7 @@ struct ARRecordingViewContainer: UIViewRepresentable {
         )
     }
 
-    func updateUIView(_ uiView: ARView, context: Context) {
-
-    }
+    func updateUIView(_ uiView: ARView, context: Context) { }
 
     // MARK: - Coordinator
 
@@ -59,14 +57,14 @@ struct ARRecordingViewContainer: UIViewRepresentable {
 
             super.init()
 
-            recorder.setup { [weak self] url in
+            recorder.setup { [weak self] url, duration in
                 self?.exercise.localVideoURL = url
+                self?.exercise.duration = duration
                 self?.writeExerciseResult()
             }
 
             arRecordingViewModel.$isTrainingInProgress
                 .sink { [weak self] value in
-                    print("--- isTrainingInProgress: \(value)")
                     if value {
                         self?.recorder.start()
                     }
@@ -84,14 +82,12 @@ struct ARRecordingViewContainer: UIViewRepresentable {
                 let jointModelTransformsCurrent = trackingJointNamesRawValues.map { transforms[$0] }
 
                 if arRecordingViewModel.isTrainingInProgress && !isRecording {
-                    print("\n----- Check If STARTED -----")
                     isRecording = arRecordingDataProcessor.checkIfExerciseStarted(
                         currentFrame: jointModelTransformsCurrent
                     )
                 }
 
                 if arRecordingViewModel.isTrainingInProgress && isRecording {
-                    print("\n----- recording -----")
                     arRecordingDataProcessor.updateExerciseFrames(currentFrame: jointModelTransformsCurrent)
 
                     if let capturedImage = session.currentFrame?.capturedImage {
@@ -103,16 +99,10 @@ struct ARRecordingViewContainer: UIViewRepresentable {
                 }
 
                 if !arRecordingViewModel.isTrainingInProgress && isRecording {
-                    print("--- STOP Recording ---")
                     isRecording.toggle()
-//                    exercise.frames = arRecordingDataProcessor.cropOneIteration()
-
-//                    print("---- arRecordingViewModel.exercise.frames ----- \n \(exercise.frames)")
-//                    arRecordingDataProcessor.clearData()
                 }
 
                 if !arRecordingViewModel.isTrainingInProgress && recorder.isRecording {
-                    print("--- recorder.stop() ---")
                     recorder.stop()
                 }
             }

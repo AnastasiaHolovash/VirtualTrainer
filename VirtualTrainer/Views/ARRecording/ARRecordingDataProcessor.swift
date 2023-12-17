@@ -41,12 +41,9 @@ class ARRecordingDataProcessor {
             else {
                 return false
             }
-            print("index", index)
 
             let resultValue = frame.compare(to: previous)
             let result = resultValue.isStartStopMovement
-
-            print("\n---- Compare ---- \(resultValue)% ----- \(result)")
 
             return result
         } ?? (exerciseFrames.count - 1, exerciseFrames.last)
@@ -54,10 +51,7 @@ class ARRecordingDataProcessor {
         let lastFrameIndex = frameIndex > 1 ? exerciseFrames.count - (frameIndex - 1) : exerciseFrames.count - 1
         let croppedFrames: Frames = Array(exerciseFrames[0...lastFrameIndex])
 
-        print("Size: \(croppedFrames.count)")
         let smoothedData = ARDataProcessingAlgorithms.applyExponentialSmoothing(frames: croppedFrames)
-
-        // Saving new frames to model
         return smoothedData
     }
 

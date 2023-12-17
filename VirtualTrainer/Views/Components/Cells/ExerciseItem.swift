@@ -78,16 +78,6 @@ struct ExerciseItem: View {
 }
 let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("test.mov")
 
-#if DEBUG
-struct CardItem_Previews: PreviewProvider {
-    @Namespace static var namespace
-
-    static var previews: some View {
-        ExerciseItem(namespace: namespace, exercise: exerciseMock)
-            .environmentObject(AppModel())
-    }
-}
-#endif
 
 extension AVAsset {
 

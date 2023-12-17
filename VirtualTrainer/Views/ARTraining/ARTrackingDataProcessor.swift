@@ -24,6 +24,7 @@ class ARTrackingDataProcessor {
 
     private var exerciseFramesLoaded: Frames
     private var exerciseFramesCount: Int
+    private var exerciseDuration: Float
 
     private var exerciseIterations: [Frames] = [[]]
     private var numberOfIterations: Int { exerciseIterations.count - 1 }
@@ -38,6 +39,7 @@ class ARTrackingDataProcessor {
     init(exercise: Exercise) {
         self.exerciseFramesLoaded = exercise.simdFrames
         self.exerciseFramesCount = exerciseFramesLoaded.count
+        self.exerciseDuration = exercise.duration ?? 2
     }
 
     // MARK: - Accessible Methods
@@ -87,7 +89,7 @@ class ARTrackingDataProcessor {
 
     func updateCurrentResults(
         shouldBeRecorded: Bool,
-        iterationDuration: Int,
+        iterationDuration: Float,
         completion: @escaping (IterationResults?) -> Void
     ) {
         guard numberOfIterations > 0,
@@ -97,6 +99,9 @@ class ARTrackingDataProcessor {
         }
 
         let number = exerciseIterations.count - 1
+        let exerciseDuration = self.exerciseDuration
+
+        print("--- \(exerciseDuration) / \(iterationDuration) = \(exerciseDuration / iterationDuration)")
         compareIteration(
             target: exerciseFramesLoaded,
             training: exerciseIterations[numberOfIterations - 1]
@@ -104,7 +109,7 @@ class ARTrackingDataProcessor {
             completion(IterationResults(
                 number: number,
                 score: iterationScore,
-                speed: Float(2 / iterationDuration)
+                speed: exerciseDuration / iterationDuration
             ))
         }
     }

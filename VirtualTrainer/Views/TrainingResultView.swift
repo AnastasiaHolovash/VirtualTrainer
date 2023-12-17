@@ -11,7 +11,6 @@ import SDWebImageSwiftUI
 struct TrainingResultView: View {
     let training: Training
     @State var viewState: CGSize = .zero
-    @State var showSection = false
     @State var appear = [false, false, false]
 
     @EnvironmentObject var model: AppModel
@@ -213,14 +212,3 @@ struct TrainingResultView: View {
         }
     }
 }
-
-/*
-struct TrainingResultView_Previews: PreviewProvider {
-    @Namespace static var namespace
-
-    static var previews: some View {
-        TrainingResultView(training: .constant(Training(exercise: exerciseMock, iterations: [iterationResultsMock1, iterationResultsMock1, iterationResultsMock1])))
-            .environmentObject(AppModel())
-    }
-}
-*/

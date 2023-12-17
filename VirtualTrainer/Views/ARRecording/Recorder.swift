@@ -13,9 +13,11 @@ import UIKit
 class Recorder {
 
     private let clock = CMClockGetHostTimeClock()
+    private var startTime: CMTime?
+    private var endTime: CMTime?
 
     private var url: URL?
-    private var completion: ((URL) -> Void)?
+    private var completion: ((URL, Float) -> Void)?
 
     var assetWriter: AVAssetWriter?
     var assetWriterInput: AVAssetWriterInput?
@@ -38,7 +40,7 @@ class Recorder {
         }
     }
 
-    func setup(completion: @escaping (URL) -> Void) {
+    func setup(completion: @escaping (URL, Float) -> Void) {
         guard
             let outputMovieURL = FileManager.default.urls(
                 for: .documentDirectory,
@@ -87,6 +89,7 @@ class Recorder {
         guard let assetWriter = assetWriter else {
             return
         }
+        startTime = CMClockGetTime(clock)
         assetWriter.startWriting()
         assetWriter.startSession(atSourceTime: CMClockGetTime(clock))
 
@@ -108,20 +111,24 @@ class Recorder {
     }
 
     func stop() {
-        guard
-            let assetWriterInput = assetWriterInput,
-            let assetWriter = assetWriter
+        endTime = CMClockGetTime(clock)
+        
+        guard let assetWriterInput,
+              let assetWriter,
+              let endTime,
+              let startTime
         else {
             return
         }
 
         assetWriterInput.markAsFinished()
         isRecording = false
+        let durationInSeconds = Float(CMTimeGetSeconds(CMTimeSubtract(endTime, startTime)))
         assetWriter.finishWriting { [weak self] in
             guard let self = self, let url = self.url else {
                 return
             }
-            self.completion?(url)
+            self.completion?(url, durationInSeconds)
         }
     }
 
