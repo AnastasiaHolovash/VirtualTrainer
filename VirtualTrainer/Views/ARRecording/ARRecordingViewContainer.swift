@@ -13,6 +13,7 @@ import Combine
 struct ARRecordingViewContainer: UIViewRepresentable {
 
     @ObservedObject var arRecordingViewModel: ARRecordingViewModel
+    @Binding var exercise: NewExercise
 
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero, cameraMode: .ar, automaticallyConfigureSession: true)
@@ -25,7 +26,10 @@ struct ARRecordingViewContainer: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(arRecordingViewModel: arRecordingViewModel)
+        Coordinator(
+            arRecordingViewModel: arRecordingViewModel,
+            exercise: $exercise
+        )
     }
 
     func updateUIView(_ uiView: ARView, context: Context) {
@@ -37,31 +41,37 @@ struct ARRecordingViewContainer: UIViewRepresentable {
     class Coordinator: NSObject, ARSessionDelegate {
 
         @ObservedObject var arRecordingViewModel: ARRecordingViewModel
+        @Binding var exercise: NewExercise
         private let recorder = Recorder()
         private let arRecordingDataProcessor = ARRecordingDataProcessor()
-
         private var isRecording: Bool = false
-        private var isTrainingInProgress: Bool {
-            willSet {
-                arRecordingViewModel.isTrainingInProgress = isTrainingInProgress
-                if isTrainingInProgress {
-                    recorder.start()
-                }
-            }
-        }
         private let trackingJointNamesRawValues: [Int] = {
             GlobalConstants.trackingJointNames.map { $0.rawValue }
         }()
+        private var cancellable = Set<AnyCancellable>()
 
-        init(arRecordingViewModel: ARRecordingViewModel) {
-            self.isTrainingInProgress = arRecordingViewModel.isTrainingInProgress
+        init(
+            arRecordingViewModel: ARRecordingViewModel,
+            exercise: Binding<NewExercise>
+        ) {
             self.arRecordingViewModel = arRecordingViewModel
-            
+            _exercise = exercise
+
             super.init()
 
             recorder.setup { [weak self] url in
-                self?.arRecordingViewModel.exercise.localVideoURL = url
+                self?.exercise.localVideoURL = url
+                self?.writeExerciseResult()
             }
+
+            arRecordingViewModel.$isTrainingInProgress
+                .sink { [weak self] value in
+                    print("--- isTrainingInProgress: \(value)")
+                    if value {
+                        self?.recorder.start()
+                    }
+                }
+                .store(in: &cancellable)
         }
 
         // MARK: - Delegate method
@@ -73,13 +83,15 @@ struct ARRecordingViewContainer: UIViewRepresentable {
                 let transforms = bodyAnchor.skeleton.jointModelTransforms
                 let jointModelTransformsCurrent = trackingJointNamesRawValues.map { transforms[$0] }
 
-                if isTrainingInProgress && !isRecording {
+                if arRecordingViewModel.isTrainingInProgress && !isRecording {
+                    print("\n----- Check If STARTED -----")
                     isRecording = arRecordingDataProcessor.checkIfExerciseStarted(
                         currentFrame: jointModelTransformsCurrent
                     )
                 }
 
-                if isTrainingInProgress && isRecording {
+                if arRecordingViewModel.isTrainingInProgress && isRecording {
+                    print("\n----- recording -----")
                     arRecordingDataProcessor.updateExerciseFrames(currentFrame: jointModelTransformsCurrent)
 
                     if let capturedImage = session.currentFrame?.capturedImage {
@@ -90,16 +102,25 @@ struct ARRecordingViewContainer: UIViewRepresentable {
                     }
                 }
 
-                if !isTrainingInProgress && isRecording {
+                if !arRecordingViewModel.isTrainingInProgress && isRecording {
+                    print("--- STOP Recording ---")
                     isRecording.toggle()
-                    arRecordingViewModel.exercise.frames = arRecordingDataProcessor.cropOneIteration()
-                    arRecordingDataProcessor.clearData()
+//                    exercise.frames = arRecordingDataProcessor.cropOneIteration()
+
+//                    print("---- arRecordingViewModel.exercise.frames ----- \n \(exercise.frames)")
+//                    arRecordingDataProcessor.clearData()
                 }
 
-                if !isTrainingInProgress && recorder.isRecording {
+                if !arRecordingViewModel.isTrainingInProgress && recorder.isRecording {
+                    print("--- recorder.stop() ---")
                     recorder.stop()
                 }
             }
+        }
+
+        private func writeExerciseResult() {
+            exercise.frames = arRecordingDataProcessor.cropOneIteration()
+            arRecordingDataProcessor.clearData()
         }
     }
 

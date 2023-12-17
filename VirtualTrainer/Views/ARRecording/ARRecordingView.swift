@@ -12,16 +12,16 @@ import Combine
 import Vision
 
 struct ARRecordingView: View {
-    @StateObject private var viewModel: ARRecordingViewModel
-
-    init(exercise: NewExercise) {
-        _viewModel = StateObject(wrappedValue: ARRecordingViewModel(exercise: exercise))
-    }
+    @StateObject private var viewModel = ARRecordingViewModel()
+    @Binding var exercise: NewExercise
 
     var body: some View {
         ZStack {
-            ARRecordingViewContainer(arRecordingViewModel: viewModel)
-                .edgesIgnoringSafeArea(.all)
+            ARRecordingViewContainer(
+                arRecordingViewModel: viewModel,
+                exercise: $exercise
+            )
+            .edgesIgnoringSafeArea(.all)
 
             ARRecordingOverlayView(model: $viewModel.recordingData)
                 .onChange(of: viewModel.recordingData.playPauseButtonState) {
@@ -41,13 +41,8 @@ class ARRecordingViewModel: ObservableObject {
     @Published var timerValue: Int = GlobalConstants.timerStartTime
     @Published var isTrainingInProgress: Bool = false
     @Published var recordingData = RecordingData()
-    var exercise: NewExercise
 
     private var timerCancellable: AnyCancellable?
-
-    init(exercise: NewExercise) {
-        self.exercise = exercise
-    }
 
     // MARK: - Timer Methods
 
@@ -61,14 +56,15 @@ class ARRecordingViewModel: ObservableObject {
 
     func stopTimer() {
         timerCancellable?.cancel()
-        isTrainingInProgress.toggle()
     }
 
     func handlePlayPauseButtonChange() {
         switch recordingData.playPauseButtonState {
         case .play:
             startTimer()
+       
         case .pause:
+            isTrainingInProgress.toggle()
             stopTimer()
         }
     }
@@ -79,6 +75,7 @@ class ARRecordingViewModel: ObservableObject {
         if timerValue == 0 {
             timerValue = GlobalConstants.timerStartTime + 1
             stopTimer()
+            isTrainingInProgress.toggle()
         } else {
             timerValue -= 1
         }
