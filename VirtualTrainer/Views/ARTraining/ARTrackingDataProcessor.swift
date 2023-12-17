@@ -140,4 +140,20 @@ class ARTrackingDataProcessor {
         exerciseIterations[numberOfIterations].removeLast(GlobalConstants.staticPositionIndicator - 1)
     }
 
+    private func compareIteration(target: [Frame], training: [Frame]) -> IterationScore {
+        let smoothedData = applyExponentialSmoothing(frames: training)
+        let maxError = Float(min(smoothedData.count, training.count)) * GlobalConstants.maxErrorPossibleСoefficient
+        let result2 = dtw(x1: smoothedData, x2: target)
+        let reducedResult2 = result2.reduce(0, +)
+
+        print("------- maxError: \(maxError)")
+        print("--- DTW2: \(result2)")
+        print("--- DTW2: \(reducedResult2)      \((100 - reducedResult2 / maxError) / 100)")
+
+        return IterationScore(
+            total: (100 - reducedResult2 / maxError) / 100,
+            joints: result2
+        )
+    }
+
 }

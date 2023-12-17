@@ -61,6 +61,8 @@
 		5D9F1AA72B2F1AAC003C83CF /* ARTrackingDataProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9F1AA62B2F1AAC003C83CF /* ARTrackingDataProcessor.swift */; };
 		5D9F1AA92B2F41CA003C83CF /* ARTrainingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9F1AA82B2F41CA003C83CF /* ARTrainingViewModel.swift */; };
 		5D9F1AAB2B2F4EE4003C83CF /* ARRecordingDataProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9F1AAA2B2F4EE4003C83CF /* ARRecordingDataProcessor.swift */; };
+		5D9F1AAD2B2F50A8003C83CF /* IterationScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9F1AAC2B2F50A8003C83CF /* IterationScore.swift */; };
+		5D9F1AB02B2F513F003C83CF /* ARDataProcessingAlgorithms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9F1AAF2B2F513F003C83CF /* ARDataProcessingAlgorithms.swift */; };
 		5DB09B5F285F592800FA60CE /* AVPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB09B5E285F592800FA60CE /* AVPlayerView.swift */; };
 		5DE64A2F2ADABCA900275503 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5DE64A2E2ADABCA900275503 /* GoogleService-Info.plist */; };
 		5DF6563028500AC20091C64E /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5DF6562F28500AC20091C64E /* SDWebImageSwiftUI */; };
@@ -139,6 +141,8 @@
 		5D9F1AA62B2F1AAC003C83CF /* ARTrackingDataProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrackingDataProcessor.swift; sourceTree = "<group>"; };
 		5D9F1AA82B2F41CA003C83CF /* ARTrainingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrainingViewModel.swift; sourceTree = "<group>"; };
 		5D9F1AAA2B2F4EE4003C83CF /* ARRecordingDataProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARRecordingDataProcessor.swift; sourceTree = "<group>"; };
+		5D9F1AAC2B2F50A8003C83CF /* IterationScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterationScore.swift; sourceTree = "<group>"; };
+		5D9F1AAF2B2F513F003C83CF /* ARDataProcessingAlgorithms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARDataProcessingAlgorithms.swift; sourceTree = "<group>"; };
 		5DB09B5E285F592800FA60CE /* AVPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerView.swift; sourceTree = "<group>"; };
 		5DB09B60285FAFA600FA60CE /* AR Session 6.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 6.mov"; sourceTree = "<group>"; };
 		5DB09B61285FB33300FA60CE /* AR Session 14.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 14.mov"; sourceTree = "<group>"; };
@@ -259,6 +263,7 @@
 				5D23E695284EAE3A0003BAD3 /* RecordingData.swift */,
 				5D1E5C9728516274008A9469 /* NewExerciseRequest.swift */,
 				5D1E5C9928516288008A9469 /* NewExercise.swift */,
+				5D9F1AAC2B2F50A8003C83CF /* IterationScore.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -278,6 +283,7 @@
 			children = (
 				5D23E67B284E2F240003BAD3 /* ARRecording */,
 				5D23E68A284E46990003BAD3 /* ARTraining */,
+				5D9F1AAE2B2F5106003C83CF /* ARDataProcessingAlgorithms */,
 				5D23E669284D59970003BAD3 /* Components */,
 				5D23E673284D795B0003BAD3 /* AddExerciseView.swift */,
 				5D23E62C284421AB0003BAD3 /* RootView.swift */,
@@ -365,6 +371,14 @@
 				5D23E6A1284EC2A20003BAD3 /* FirestoreClient.swift */,
 			);
 			path = Client;
+			sourceTree = "<group>";
+		};
+		5D9F1AAE2B2F5106003C83CF /* ARDataProcessingAlgorithms */ = {
+			isa = PBXGroup;
+			children = (
+				5D9F1AAF2B2F513F003C83CF /* ARDataProcessingAlgorithms.swift */,
+			);
+			path = ARDataProcessingAlgorithms;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -460,6 +474,7 @@
 				5D23E653284D4AF90003BAD3 /* HomeView.swift in Sources */,
 				5D23E651284D2E050003BAD3 /* IterationResults.swift in Sources */,
 				5D23E68E284E482E0003BAD3 /* CurrentResults.swift in Sources */,
+				5D9F1AAD2B2F50A8003C83CF /* IterationScore.swift in Sources */,
 				5D23E670284D5FC20003BAD3 /* AnimatableFontModifier.swift in Sources */,
 				5D23E655284D4D2D0003BAD3 /* NavigationBar.swift in Sources */,
 				5D23E66E284D5A200003BAD3 /* ColorExtension.swift in Sources */,
@@ -490,6 +505,7 @@
 				5D0FF19E284FA5B3002ABAB2 /* Test.swift in Sources */,
 				5D23E65A284D530E0003BAD3 /* PreferenceKey.swift in Sources */,
 				5D23E690284E4B260003BAD3 /* UINavigationControllerExtension.swift in Sources */,
+				5D9F1AB02B2F513F003C83CF /* ARDataProcessingAlgorithms.swift in Sources */,
 				5D9F1AA72B2F1AAC003C83CF /* ARTrackingDataProcessor.swift in Sources */,
 				5D9F1AA92B2F41CA003C83CF /* ARTrainingViewModel.swift in Sources */,
 				5D23E67A284E13260003BAD3 /* IterationRow.swift in Sources */,
