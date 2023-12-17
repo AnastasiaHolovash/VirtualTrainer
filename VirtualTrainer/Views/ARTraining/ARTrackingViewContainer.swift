@@ -44,7 +44,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
     class Coordinator: NSObject, ARSessionDelegate {
 
-        private var jointModelTransformsCurrent: Frame = []
         @Binding var currentResults: CurrentResults
 
         /// True if timer is out
@@ -53,7 +52,10 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         /// True if recording training/exercise data is started
         private var isRecording: Bool = false
+        @ObservedObject var timerObject = TimerObject()
+
         private var exerciseFramesLoaded: Frames = []
+
         private var exerciseIterations: [Frames] = [[]]
         private var exerciseFramesCount: Int = 0
         private var comparisonFrameValue: Frame = []
@@ -86,18 +88,19 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 guard let bodyAnchor = anchor as? ARBodyAnchor else { continue }
 
                 let transforms = bodyAnchor.skeleton.jointModelTransforms
-                jointModelTransformsCurrent = trackingJointNamesRawValues.map {  transforms[$0] }
+                let jointModelTransformsCurrent = trackingJointNamesRawValues.map {  transforms[$0] }
 
                 if isTrainingInProgress && !isRecording {
-                    print("\n----- Check If STARTED -----")
-                    if self.checkIfExerciseStarted() {
+                    isRecording = checkIfExerciseStarted(currentFrame: jointModelTransformsCurrent)
+                    if isRecording {
                         timerObject.start()
                     }
                 }
 
                 if isTrainingInProgress && isRecording {
-                    compareTrainingWithTarget()
+                    compareTrainingWithTarget(currentFrame: jointModelTransformsCurrent)
                 }
+
                 if !isTrainingInProgress && isRecording {
                     print("--- STOP Recording ---")
                     isRecording.toggle()
@@ -107,18 +110,14 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
         // MARK: - Check If Started
 
-        private func checkIfExerciseStarted() -> Bool {
+        private func checkIfExerciseStarted(currentFrame: Frame) -> Bool {
             guard !comparisonFrameValue.isEmpty else {
-                comparisonFrameValue = jointModelTransformsCurrent
+                comparisonFrameValue = currentFrame
                 return false
             }
 
-            let resultValue = jointModelTransformsCurrent.compare(to: comparisonFrameValue)
-
+            let resultValue = currentFrame.compare(to: comparisonFrameValue)
             let result = resultValue.isStartStopMovement
-            print("---- Compare ---- \(resultValue * 100)% ----- \(result)")
-
-            isRecording = result
 
             return result
         }
@@ -137,58 +136,105 @@ struct ARTrackingViewContainer: UIViewRepresentable {
         var previousValueOfStaticFrame: Float = 0.0
 
         var previous: Frame = []
-        @ObservedObject var timerObject = TimerObject()
 
-        private func compareTrainingWithTarget() {
-            // Detecting end of iteration
-            if couldDetectEndOfIteration,
-               let last = exerciseFramesLoaded.last {
-                let resultValue = jointModelTransformsCurrent.compare(to: last)
-                print("! Compare with last exercise frame \(resultValue * 100)% ")
-
-                if resultValue.isCloseToEqual {
-                    if previous.isEmpty {
-                        previous = jointModelTransformsCurrent
-                        currentNumberOfStaticFrames = 1
-                    } else {
-                        let resultValue2 = jointModelTransformsCurrent.compare(to: previous)
-                        print("---- Compare with previous ---- \(resultValue2 * 100)% -----")
-                        previous = jointModelTransformsCurrent
-
-                        if resultValue2.isVeryCloseToEqual {
-                            currentNumberOfStaticFrames += 1
-                        }
-                    }
-                    print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
-                }
+        private func detectEndOfIteration(currentFrame: Frame) {
+            guard let last = exerciseFramesLoaded.last else {
+                return
             }
+            let resultValue = currentFrame.compare(to: last)
+            print("! Compare with last exercise frame \(resultValue * 100)% ")
 
-            if currentNumberOfStaticFrames == GlobalConstants.staticPositionIndicator {
-                // Start detection start of iteration
-                print("\n--- New iteration initiated by User")
-                iterationsResults[numberOfIterations].removeLast(GlobalConstants.staticPositionIndicator - 1)
-                let shouldBeRecorded = iterationsResults[numberOfIterations].count > exerciseFramesCount / 2
-                startDetectionStartOfIteration(shouldBeRecorded: shouldBeRecorded)
-                updateCurrentResults(shouldBeRecorded: shouldBeRecorded)
-            } else {
-                // Recording results
-                let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
+            if resultValue.isCloseToEqual {
+                if previous.isEmpty {
+                    previous = currentFrame
+                    currentNumberOfStaticFrames = 1
+                } else {
+                    let resultValue2 = currentFrame.compare(to: previous)
+                    previous = currentFrame
 
-                let resultValue = jointModelTransformsCurrent.compare(to: targetFrame)
-                iterationsResults[numberOfIterations].append(resultValue)
-                exerciseIterations[numberOfIterations].append(jointModelTransformsCurrent)
-
-                if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
-                    exerciseFramesIndex += 1
+                    if resultValue2.isVeryCloseToEqual {
+                        currentNumberOfStaticFrames += 1
+                    }
                 }
+                print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
             }
         }
 
-        private func startDetectionStartOfIteration(shouldBeRecorded: Bool) {
+        var couldDetectStartOfIteration: Bool {
+            currentNumberOfStaticFrames == GlobalConstants.staticPositionIndicator
+        }
+
+        private func detectIfNextIterationStarted(
+            currentFrame: Frame,
+            shouldBeRecorded: Bool
+        ) {
+            print("\n--- New iteration initiated by User")
+            startDetectionStartOfIteration(
+                currentFrame: currentFrame,
+                shouldBeRecorded: shouldBeRecorded
+            )
+        }
+
+        private func removeStaticFramesFromLastIteration() {
+            iterationsResults[numberOfIterations].removeLast(GlobalConstants.staticPositionIndicator - 1)
+        }
+
+        var isShouldBeRecorded: Bool {
+            let result = iterationsResults[numberOfIterations].count > exerciseFramesCount / 2
+            print("---- isShouldBeRecorded: \(result)    iterationCount: \(iterationsResults[numberOfIterations].count)")
+            print("---- iterationsCount: \(iterationsResults.count)")
+            return result
+        }
+
+        private func compareTrainingWithTarget(currentFrame: Frame) {
+            // Detecting end of iteration
+            if couldDetectEndOfIteration {
+                detectEndOfIteration(currentFrame: currentFrame)
+            }
+
+            if couldDetectStartOfIteration {
+                // Start detection start of iteration
+                print("--- couldDetectStartOfIteration")
+                removeStaticFramesFromLastIteration()
+                let shouldBeRecorded = isShouldBeRecorded
+                detectIfNextIterationStarted(currentFrame: currentFrame, shouldBeRecorded: shouldBeRecorded)
+                isRecording = false
+                timerObject.stop()
+                if let iterationResults = updateCurrentResults(
+                    shouldBeRecorded: shouldBeRecorded,
+                    iterationDuration: timerObject.elapsedSeconds
+                ) {
+                    iterations.append(iterationResults)
+                    currentResults.update(with: numberOfIterations, iteration: iterationResults)
+                }
+            } else {
+                recordingResults(currentFrame: currentFrame)
+            }
+        }
+
+        private func recordingResults(
+            currentFrame: Frame
+        ) {
+            let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
+
+            let resultValue = currentFrame.compare(to: targetFrame)
+            iterationsResults[numberOfIterations].append(resultValue)
+            exerciseIterations[numberOfIterations].append(currentFrame)
+
+            if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
+                exerciseFramesIndex += 1
+            }
+        }
+
+        private func startDetectionStartOfIteration(
+            currentFrame: Frame,
+            shouldBeRecorded: Bool
+        ) {
             if !shouldBeRecorded {
                 iterationsResults.removeLast()
                 exerciseIterations.removeLast()
             } else {
+                print("---- numberOfIterations APDATED to: \(numberOfIterations + 1)")
                 numberOfIterations += 1
             }
             iterationsResults.append([])
@@ -199,21 +245,22 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             currentNumberOfStaticFrames = 0
             previousValueOfStaticFrame = 0.0
 
-            comparisonFrameValue = jointModelTransformsCurrent
+            comparisonFrameValue = currentFrame
             previous = []
-
-            isRecording = false
-            timerObject.stop()
         }
 
         // MARK: - Update results
 
-        private func updateCurrentResults(shouldBeRecorded: Bool) {
+        private func updateCurrentResults(
+            shouldBeRecorded: Bool,
+            iterationDuration: Int
+        ) -> IterationResults? {
+            print("---- updateCurrentResults shouldBeRecorded: \(shouldBeRecorded) numberOfIterations: \(numberOfIterations)")
             guard numberOfIterations > 0,
                   shouldBeRecorded else {
-                return
+                return nil
             }
-
+            print("---- updateCurrentResults 2")
             let iterationScore = compareIteration(
                 target: exerciseFramesLoaded,
                 training: exerciseIterations[numberOfIterations - 1]
@@ -221,13 +268,23 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             let iterationResults = IterationResults(
                 number: iterations.count + 1,
                 score: iterationScore,
-                speed: Float(2 / timerObject.elapsedSeconds)
+                speed: Float(2 / iterationDuration)
             )
             print("---- N = \(numberOfIterations - 1)     NEN RESULT: \(iterationScore)")
-            iterations.append(iterationResults)
-            currentResults.update(with: numberOfIterations, iteration: iterationResults)
-
+            return iterationResults
         }
+    }
+
+}
+
+class ARDataProcessor {
+
+    var exerciseFramesLoaded: Frames
+    var exerciseFramesCount: Int
+
+    init(exercise: Exercise) {
+        self.exerciseFramesLoaded = exercise.simdFrames
+        self.exerciseFramesCount = exerciseFramesLoaded.count
     }
 
 }
