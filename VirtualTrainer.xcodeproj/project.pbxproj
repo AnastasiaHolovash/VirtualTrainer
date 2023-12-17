@@ -60,6 +60,7 @@
 		5D23E6A2284EC2A20003BAD3 /* FirestoreClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E6A1284EC2A20003BAD3 /* FirestoreClient.swift */; };
 		5D9F1AA72B2F1AAC003C83CF /* ARTrackingDataProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9F1AA62B2F1AAC003C83CF /* ARTrackingDataProcessor.swift */; };
 		5D9F1AA92B2F41CA003C83CF /* ARTrainingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9F1AA82B2F41CA003C83CF /* ARTrainingViewModel.swift */; };
+		5D9F1AAB2B2F4EE4003C83CF /* ARRecordingDataProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9F1AAA2B2F4EE4003C83CF /* ARRecordingDataProcessor.swift */; };
 		5DB09B5F285F592800FA60CE /* AVPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB09B5E285F592800FA60CE /* AVPlayerView.swift */; };
 		5DE64A2F2ADABCA900275503 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5DE64A2E2ADABCA900275503 /* GoogleService-Info.plist */; };
 		5DF6563028500AC20091C64E /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5DF6562F28500AC20091C64E /* SDWebImageSwiftUI */; };
@@ -137,6 +138,7 @@
 		5D973AE728605F4900B77010 /* AR Session nastia training 45.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session nastia training 45.mov"; sourceTree = "<group>"; };
 		5D9F1AA62B2F1AAC003C83CF /* ARTrackingDataProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrackingDataProcessor.swift; sourceTree = "<group>"; };
 		5D9F1AA82B2F41CA003C83CF /* ARTrainingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrainingViewModel.swift; sourceTree = "<group>"; };
+		5D9F1AAA2B2F4EE4003C83CF /* ARRecordingDataProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARRecordingDataProcessor.swift; sourceTree = "<group>"; };
 		5DB09B5E285F592800FA60CE /* AVPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerView.swift; sourceTree = "<group>"; };
 		5DB09B60285FAFA600FA60CE /* AR Session 6.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 6.mov"; sourceTree = "<group>"; };
 		5DB09B61285FB33300FA60CE /* AR Session 14.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 14.mov"; sourceTree = "<group>"; };
@@ -319,6 +321,7 @@
 				5D23E680284E3EAD0003BAD3 /* ARRecordingOverlayView.swift */,
 				5D23E686284E41A30003BAD3 /* ARRecordingView.swift */,
 				5D23E693284EA6400003BAD3 /* ARRecordingViewContainer.swift */,
+				5D9F1AAA2B2F4EE4003C83CF /* ARRecordingDataProcessor.swift */,
 				5D0FF1A1284FB0B4002ABAB2 /* Recorder.swift */,
 			);
 			path = ARRecording;
@@ -465,6 +468,7 @@
 				5D23E657284D4D780003BAD3 /* AppModel.swift in Sources */,
 				5D23E687284E41A30003BAD3 /* ARRecordingView.swift in Sources */,
 				5D23E674284D795B0003BAD3 /* AddExerciseView.swift in Sources */,
+				5D9F1AAB2B2F4EE4003C83CF /* ARRecordingDataProcessor.swift in Sources */,
 				5D23E681284E3EAD0003BAD3 /* ARRecordingOverlayView.swift in Sources */,
 				5D23E666284D59130003BAD3 /* CloseButton.swift in Sources */,
 				5D23E696284EAE3A0003BAD3 /* RecordingData.swift in Sources */,

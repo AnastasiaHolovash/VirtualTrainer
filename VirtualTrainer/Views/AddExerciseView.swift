@@ -24,7 +24,7 @@ struct AddExerciseView: View {
                 cover
                     .overlay(NavigationLink(
                         destination: {
-                            ARRecordingView(exercise: $exercise)
+                            ARRecordingView(exercise: exercise)
                                 .navigationBarHidden(true)
                         },
                         label: {
