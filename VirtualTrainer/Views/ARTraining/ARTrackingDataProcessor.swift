@@ -78,7 +78,6 @@ class ARTrackingDataProcessor {
     func recordingResults(
         currentFrame: Frame
     ) {
-        let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
         exerciseIterations[numberOfIterations].append(currentFrame)
 
         if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
@@ -88,21 +87,26 @@ class ARTrackingDataProcessor {
 
     func updateCurrentResults(
         shouldBeRecorded: Bool,
-        iterationDuration: Int
-    ) -> IterationResults? {
+        iterationDuration: Int,
+        completion: @escaping (IterationResults?) -> Void
+    ) {
         guard numberOfIterations > 0,
               shouldBeRecorded else {
-            return nil
+            completion(nil)
+            return
         }
-        let iterationScore = compareIteration(
+
+        let number = exerciseIterations.count - 1
+        compareIteration(
             target: exerciseFramesLoaded,
             training: exerciseIterations[numberOfIterations - 1]
-        )
-        return IterationResults(
-            number: exerciseIterations.count - 1,
-            score: iterationScore,
-            speed: Float(2 / iterationDuration)
-        )
+        ) { iterationScore in
+            completion(IterationResults(
+                number: number,
+                score: iterationScore,
+                speed: Float(2 / iterationDuration)
+            ))
+        }
     }
 
     // MARK: - Private Methods
@@ -140,20 +144,26 @@ class ARTrackingDataProcessor {
         exerciseIterations[numberOfIterations].removeLast(GlobalConstants.staticPositionIndicator - 1)
     }
 
-    private func compareIteration(target: [Frame], training: [Frame]) -> IterationScore {
-        let smoothedData = ARDataProcessingAlgorithms.applyExponentialSmoothing(frames: training)
-        let maxError = Float(min(smoothedData.count, training.count)) * GlobalConstants.maxErrorPossibleСoefficient
-        let result2 = ARDataProcessingAlgorithms.dtw(x1: smoothedData, x2: target)
-        let reducedResult2 = result2.reduce(0, +)
+    private func compareIteration(target: [Frame], training: [Frame], completion: @escaping (IterationScore) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let smoothedData = ARDataProcessingAlgorithms.applyExponentialSmoothing(frames: training)
+            let maxError = Float(min(smoothedData.count, training.count)) * GlobalConstants.maxErrorPossibleСoefficient
+            let result2 = ARDataProcessingAlgorithms.dtw(x1: smoothedData, x2: target)
+            let reducedResult2 = result2.reduce(0, +)
 
-        print("------- maxError: \(maxError)")
-        print("--- DTW2: \(result2)")
-        print("--- DTW2: \(reducedResult2)      \((100 - reducedResult2 / maxError) / 100)")
+            print("------- maxError: \(maxError)")
+            print("--- DTW2: \(result2)")
+            print("--- DTW2: \(reducedResult2)      \((100 - reducedResult2 / maxError) / 100)")
 
-        return IterationScore(
-            total: (100 - reducedResult2 / maxError) / 100,
-            joints: result2
-        )
+            let iterationScore = IterationScore(
+                total: (100 - reducedResult2 / maxError) / 100,
+                joints: result2
+            )
+
+            DispatchQueue.main.async {
+                completion(iterationScore)
+            }
+        }
     }
 
 }

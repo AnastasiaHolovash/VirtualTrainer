@@ -101,12 +101,13 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 let previousShouldBeRecorded = arDataProcessor.detectIfNextIterationStarted(currentFrame: currentFrame)
                 isRecording = false
                 timerObject.stop()
-                if let iterationResults = arDataProcessor.updateCurrentResults(
+                arDataProcessor.updateCurrentResults(
                     shouldBeRecorded: previousShouldBeRecorded,
                     iterationDuration: timerObject.elapsedSeconds
-                ) {
-                    arTrainingViewModel.iterations.append(iterationResults)
-                    arTrainingViewModel.currentResults.update(with: iterationResults)
+                ) { [weak self] iterationResults in
+                    guard let iterationResults else { return }
+                    self?.arTrainingViewModel.iterations.append(iterationResults)
+                    self?.arTrainingViewModel.currentResults.update(with: iterationResults)
                 }
             } else {
                 arDataProcessor.recordingResults(currentFrame: currentFrame)
