@@ -12,10 +12,11 @@ import Combine
 
 struct ARTrackingViewContainer: UIViewRepresentable {
 
-    var exercise: Exercise
-    @Binding var isRecording: Bool
-    @Binding var currentResults: CurrentResults
-    @Binding var iterations: [IterationResults]
+    // MARK: - Accessible Properties
+
+    @ObservedObject var arTrainingViewModel: ARTrainingViewModel
+
+    // MARK: - Lifecycle
 
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(
@@ -32,12 +33,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(
-            exercise: exercise,
-            isRecording: $isRecording,
-            currentResults: $currentResults,
-            iterations: $iterations
-        )
+        Coordinator(arTrainingViewModel: arTrainingViewModel)
     }
 
     func updateUIView(_ uiView: ARView, context: Context) { }
@@ -46,32 +42,24 @@ struct ARTrackingViewContainer: UIViewRepresentable {
 
     class Coordinator: NSObject, ARSessionDelegate {
 
-        @Binding var currentResults: CurrentResults
+        // MARK: - Accessible Properties
 
-        /// True if timer is out
-        @Binding var isTrainingInProgress: Bool
-        @Binding var iterations: [IterationResults]
+        @ObservedObject var arTrainingViewModel: ARTrainingViewModel
 
-        /// True if recording training/exercise data is started
+        // MARK: - Private Properties
+
         private var isRecording: Bool = false
-        @ObservedObject var timerObject = TimerObject()
+        private var timerObject = TimerObject()
         private let arDataProcessor: ARTrackingDataProcessor
-
         private let trackingJointNamesRawValues: [Int] = {
             GlobalConstants.trackingJointNames.map { $0.rawValue }
         }()
 
-        init(
-            exercise: Exercise,
-            isRecording: Binding<Bool>,
-            currentResults: Binding<CurrentResults>,
-            iterations: Binding<[IterationResults]>
-        ) {
-            _isTrainingInProgress = isRecording
-            _currentResults = currentResults
-            _iterations = iterations
+        // MARK: - Lifecycle
 
-            arDataProcessor = ARTrackingDataProcessor(exercise: exercise)
+        init(arTrainingViewModel: ARTrainingViewModel) {
+            self.arTrainingViewModel = arTrainingViewModel
+            self.arDataProcessor = ARTrackingDataProcessor(exercise: arTrainingViewModel.exercise)
 
             super.init()
         }
@@ -85,23 +73,25 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 let transforms = bodyAnchor.skeleton.jointModelTransforms
                 let jointModelTransformsCurrent = trackingJointNamesRawValues.map {  transforms[$0] }
 
-                if isTrainingInProgress && !isRecording {
+                if arTrainingViewModel.isTrainingInProgress && !isRecording {
                     isRecording = arDataProcessor.checkIfExerciseStarted(currentFrame: jointModelTransformsCurrent)
                     if isRecording {
                         timerObject.start()
                     }
                 }
 
-                if isTrainingInProgress && isRecording {
+                if arTrainingViewModel.isTrainingInProgress && isRecording {
                     compareTrainingWithTarget(currentFrame: jointModelTransformsCurrent)
                 }
 
-                if !isTrainingInProgress && isRecording {
+                if !arTrainingViewModel.isTrainingInProgress && isRecording {
                     isRecording.toggle()
                 }
             }
         }
 
+        // MARK: - Private Methods
+        
         private func compareTrainingWithTarget(currentFrame: Frame) {
             if arDataProcessor.couldDetectEndOfIteration {
                 arDataProcessor.detectEndOfIteration(currentFrame: currentFrame)
@@ -115,8 +105,8 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                     shouldBeRecorded: previousShouldBeRecorded,
                     iterationDuration: timerObject.elapsedSeconds
                 ) {
-                    iterations.append(iterationResults)
-                    currentResults.update(with: iterationResults)
+                    arTrainingViewModel.iterations.append(iterationResults)
+                    arTrainingViewModel.currentResults.update(with: iterationResults)
                 }
             } else {
                 arDataProcessor.recordingResults(currentFrame: currentFrame)

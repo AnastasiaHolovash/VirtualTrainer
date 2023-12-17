@@ -59,6 +59,7 @@
 		5D23E69F284EB7570003BAD3 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 5D23E69E284EB7570003BAD3 /* FirebaseStorageCombine-Community */; };
 		5D23E6A2284EC2A20003BAD3 /* FirestoreClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D23E6A1284EC2A20003BAD3 /* FirestoreClient.swift */; };
 		5D9F1AA72B2F1AAC003C83CF /* ARTrackingDataProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9F1AA62B2F1AAC003C83CF /* ARTrackingDataProcessor.swift */; };
+		5D9F1AA92B2F41CA003C83CF /* ARTrainingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9F1AA82B2F41CA003C83CF /* ARTrainingViewModel.swift */; };
 		5DB09B5F285F592800FA60CE /* AVPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB09B5E285F592800FA60CE /* AVPlayerView.swift */; };
 		5DE64A2F2ADABCA900275503 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5DE64A2E2ADABCA900275503 /* GoogleService-Info.plist */; };
 		5DF6563028500AC20091C64E /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 5DF6562F28500AC20091C64E /* SDWebImageSwiftUI */; };
@@ -135,6 +136,7 @@
 		5D973AE628605E7600B77010 /* AR Session nastia record 45.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session nastia record 45.mov"; sourceTree = "<group>"; };
 		5D973AE728605F4900B77010 /* AR Session nastia training 45.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session nastia training 45.mov"; sourceTree = "<group>"; };
 		5D9F1AA62B2F1AAC003C83CF /* ARTrackingDataProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrackingDataProcessor.swift; sourceTree = "<group>"; };
+		5D9F1AA82B2F41CA003C83CF /* ARTrainingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrainingViewModel.swift; sourceTree = "<group>"; };
 		5DB09B5E285F592800FA60CE /* AVPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerView.swift; sourceTree = "<group>"; };
 		5DB09B60285FAFA600FA60CE /* AR Session 6.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 6.mov"; sourceTree = "<group>"; };
 		5DB09B61285FB33300FA60CE /* AR Session 14.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 14.mov"; sourceTree = "<group>"; };
@@ -347,6 +349,7 @@
 			children = (
 				5D23E67C284E2FBA0003BAD3 /* ARTrainingOverlayView.swift */,
 				5D23E684284E41940003BAD3 /* ARTrainingView.swift */,
+				5D9F1AA82B2F41CA003C83CF /* ARTrainingViewModel.swift */,
 				5D23E68B284E46C10003BAD3 /* ARTrackingViewContainer.swift */,
 				5D9F1AA62B2F1AAC003C83CF /* ARTrackingDataProcessor.swift */,
 			);
@@ -484,6 +487,7 @@
 				5D23E65A284D530E0003BAD3 /* PreferenceKey.swift in Sources */,
 				5D23E690284E4B260003BAD3 /* UINavigationControllerExtension.swift in Sources */,
 				5D9F1AA72B2F1AAC003C83CF /* ARTrackingDataProcessor.swift in Sources */,
+				5D9F1AA92B2F41CA003C83CF /* ARTrainingViewModel.swift in Sources */,
 				5D23E67A284E13260003BAD3 /* IterationRow.swift in Sources */,
 				5D0FF1A0284FA726002ABAB2 /* Test2.swift in Sources */,
 				5D23E689284E42E30003BAD3 /* ProcessingARDataExtension.swift in Sources */,

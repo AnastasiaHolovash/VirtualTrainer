@@ -74,8 +74,7 @@ struct DoneButton: View {
 
     var body: some View {
         Text("Готово")
-            .font(.body).bold()
-            .padding()
+            .font(.system(size: 18, weight: .bold))
             .frame(width: 100, height: 50, alignment: .center)
             .panelStyle()
             .padding(.horizontal, 20)
