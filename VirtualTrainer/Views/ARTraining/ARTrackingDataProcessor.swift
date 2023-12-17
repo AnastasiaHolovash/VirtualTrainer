@@ -141,9 +141,9 @@ class ARTrackingDataProcessor {
     }
 
     private func compareIteration(target: [Frame], training: [Frame]) -> IterationScore {
-        let smoothedData = applyExponentialSmoothing(frames: training)
+        let smoothedData = ARDataProcessingAlgorithms.applyExponentialSmoothing(frames: training)
         let maxError = Float(min(smoothedData.count, training.count)) * GlobalConstants.maxErrorPossibleСoefficient
-        let result2 = dtw(x1: smoothedData, x2: target)
+        let result2 = ARDataProcessingAlgorithms.dtw(x1: smoothedData, x2: target)
         let reducedResult2 = result2.reduce(0, +)
 
         print("------- maxError: \(maxError)")

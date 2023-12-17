@@ -55,7 +55,7 @@ class ARRecordingDataProcessor {
         let croppedFrames: Frames = Array(exerciseFrames[0...lastFrameIndex])
 
         print("Size: \(croppedFrames.count)")
-        let smoothedData = applyExponentialSmoothing(frames: croppedFrames)
+        let smoothedData = ARDataProcessingAlgorithms.applyExponentialSmoothing(frames: croppedFrames)
 
         // Saving new frames to model
         return smoothedData

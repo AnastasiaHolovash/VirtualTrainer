@@ -32,34 +32,6 @@ extension ARDataProcessingAlgorithms {
         return totalDistance
     }
 
-    //private func calculateTranslationAndRotationDistance(frame1: Frame, frame2: Frame) -> Float {
-    //    var totalDistance: Float = 0.0
-    //
-    //    let jointCount = Swift.min(frame1.count, frame2.count)
-    //
-    //    for j in 0..<jointCount {
-    //        // Calculate translational distance
-    //        let translation1 = frame1[j].columns.3
-    //        let translation2 = frame2[j].columns.3
-    //
-    //        let dx = Float(translation1.x - translation2.x)
-    //        let dy = Float(translation1.y - translation2.y)
-    //        let dz = Float(translation1.z - translation2.z)
-    //
-    //        totalDistance += sqrt(max(0, dx*dx + dy*dy + dz*dz)) // Ensure non-negative inside sqrt
-    //
-    //        // Calculate rotational distance (angle between two rotation matrices)
-    //        let rotation1 = simd_quatf(frame1[j])
-    //        let rotation2 = simd_quatf(frame2[j])
-    //        let dotProduct = dot(rotation1.vector, rotation2.vector)
-    //        let clampedDotProduct = min(max(dotProduct, -1), 1) // Clamp between -1 and 1
-    //        let angleBetweenQuaternions = 2 * acos(abs(clampedDotProduct))
-    //        totalDistance += Float(angleBetweenQuaternions)
-    //    }
-    //
-    //    return totalDistance
-    //}
-
     static func applyExponentialSmoothing(frames: [Frame], alpha: Float = 0.8) -> [Frame] {
         var smoothedFrames: [Frame] = []
         guard let firstFrame = frames.first else {
@@ -94,35 +66,6 @@ extension ARDataProcessingAlgorithms {
 
         return smoothedFrames
     }
-
-    //private func dtw(x1: [Frame], x2: [Frame]) -> Float {
-    //    let n1 = x1.count
-    //    let n2 = x2.count
-    //
-    //    var row0 = Array(repeating: Float.infinity, count: n2 + 1)
-    //    row0[0] = 0
-    //
-    //    var row1 = Array(repeating: Float(0), count: n2 + 1)
-    //
-    //    for i in 0..<n1 {
-    //        row1[0] = .infinity
-    //
-    //        var lastValue = Float.infinity
-    //
-    //        for j in 0..<n2 {
-    //            let cost = calculateTranslationAndRotationDistance(frame1: x1[i], frame2: x2[j])
-    //
-    //            let minimum = min(min(row0[j] + cost, row0[j + 1] + cost), lastValue + cost)
-    //            lastValue = minimum
-    //            row1[j + 1] = lastValue
-    //        }
-    //
-    //        swap(&row0, &row1)
-    //    }
-    //
-    //    return row0[n2]
-    //}
-
 
     private static func jointDistance(joint1: simd_float4x4, joint2: simd_float4x4) -> Float {
         var totalDistance: Float = 0.0
