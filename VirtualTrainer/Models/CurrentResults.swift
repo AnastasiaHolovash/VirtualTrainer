@@ -19,11 +19,8 @@ struct CurrentResults {
 
 extension CurrentResults {
 
-    mutating func update(
-        with numberOfIteration: Int,
-        iteration: IterationResults
-    ) {
-        iterationCount = numberOfIteration
+    mutating func update(with iteration: IterationResults) {
+        iterationCount = iteration.number
         speed = iteration.speed
         quality = iteration.quality.rawValue
     }
