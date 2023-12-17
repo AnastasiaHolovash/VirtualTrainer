@@ -40,33 +40,36 @@ struct ARTrainingView : View {
             )
             .edgesIgnoringSafeArea(.all)
 
-            ARTrainingOverlayView(currentResults: $currentResults, currentTraining: $currentTraining)
-                .onChange(of: currentResults.playPauseButtonState) { _, newValue in
-                    switch newValue {
-                    case .play:
-                        startTimer()
+            ARTrainingOverlayView(
+                currentResults: $currentResults,
+                currentTraining: currentTraining
+            )
+            .onChange(of: currentResults.playPauseButtonState) { _, newValue in
+                switch newValue {
+                case .play:
+                    startTimer()
 
-                    case .pause:
-                        stopTimer()
-                    }
+                case .pause:
+                    stopTimer()
                 }
-                .onChange(of: timerValue) { _, newValue in
-                    currentResults.timer = newValue
-                }
-                .onChange(of: iterations) { _, newValue in
-                    currentTraining.iterations = newValue
-                }
-                .onChange(of: isRecording) { _, newValue in
-                    switch isRecording {
-                    case true:
-                        currentTraining.startTime = Date()
-                        startTimeCounter()
+            }
+            .onChange(of: timerValue) { _, newValue in
+                currentResults.timer = newValue
+            }
+            .onChange(of: iterations) { _, newValue in
+                currentTraining.iterations = newValue
+            }
+            .onChange(of: isRecording) { _, newValue in
+                switch isRecording {
+                case true:
+                    currentTraining.startTime = Date()
+                    startTimeCounter()
 
-                    case false:
-                        currentTraining.endTime = Date()
-                        stopTimeCounter()
-                    }
+                case false:
+                    currentTraining.endTime = Date()
+                    stopTimeCounter()
                 }
+            }
         }
         .onAppear {
             currentResults.timer = GlobalConstants.timerStartTime

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PlayPauseButton: View {
-    @Binding var state: PlayPauseButtonState
+    var state: PlayPauseButtonState
 
     var body: some View {
         VStack {
@@ -65,7 +65,7 @@ enum PlayPauseButtonState {
 #if DEBUG
 struct PlayPauseButton_Previews: PreviewProvider {
     static var previews: some View {
-        PlayPauseButton(state: .constant(.play))
+        PlayPauseButton(state: .play)
     }
 }
 #endif

@@ -62,7 +62,7 @@ struct ARRecordingOverlayView: View {
 
                 Spacer()
 
-                PlayPauseButton(state: $model.playPauseButtonState)
+                PlayPauseButton(state: model.playPauseButtonState)
                     .onTapGesture {
                         model.playPauseButtonState = model.playPauseButtonState.toggle()
                     }

@@ -55,7 +55,6 @@ extension CurrentResults {
 
 }
 
-
 var dateFormatter: DateComponentsFormatter = {
     let formatter = DateComponentsFormatter()
     formatter.unitsStyle = .positional
@@ -64,3 +63,4 @@ var dateFormatter: DateComponentsFormatter = {
     formatter.allowsFractionalUnits = true
     return formatter
 }()
+

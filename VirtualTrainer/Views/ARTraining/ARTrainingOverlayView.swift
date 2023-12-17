@@ -9,126 +9,120 @@ import SwiftUI
 
 struct ARTrainingOverlayView: View {
     @Binding var currentResults: CurrentResults
-    @Binding var currentTraining: Training
+    let currentTraining: Training
 
     var body: some View {
         ZStack {
-            if currentResults.timer <= GlobalConstants.timerStartTime && currentResults.playPauseButtonState == .play {
-                Text("\(currentResults.timer)")
-                    .animatableFont(size: 100, weight: .semibold)
-                    .background(
-                        PlayShape()
-                            .fill(
-                                .angularGradient(
-                                    colors: [.blue, .red, .blue],
-                                    center: .center,
-                                    startAngle: .degrees(0),
-                                    endAngle: .degrees(360)
-                                )
-                            )
-                            .blur(radius: 12)
-                    )
-                    .frame(width: 200, height: 200)
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(100)
-                    .modifier(OutlineOverlay(cornerRadius: 100))
-            }
+            TimerView(currentResults: currentResults)
 
-            VStack {
-                HStack {
-                    Spacer()
+            ControlPanelView(
+                currentResults: $currentResults,
+                currentTraining: currentTraining
+            )
+        }
+    }
+}
 
-                    ZStack {
-                        ZStack {
-                            angularGradient
-                            LinearGradient(gradient: Gradient(
-                                colors: [Color(.systemBackground).opacity(1), Color(.systemBackground).opacity(0.6)]),
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                            .cornerRadius(20)
-                            .blendMode(.softLight)
+struct TimerView: View {
+    let currentResults: CurrentResults
 
-                            NavigationLink(
-                                destination: {
-                                    TrainingResultView(training: $currentTraining)
-                                        .navigationBarHidden(true)
-                                },
-                                label: {
-                                    Text("Готово")
-                                        .font(.body).bold()
-                                        .padding()
-                                        .foregroundColor(Color(hex: "281B5A").opacity(0.8))
-                                        .cornerRadius(20)
-                                }
-                            )
-                        }
-                        .frame(width: 100, height: 50, alignment: .center)
-                        .padding(.horizontal, 20)
-                    }
+    var body: some View {
+        if currentResults.timer <= GlobalConstants.timerStartTime && currentResults.playPauseButtonState == .play {
+            Text("\(currentResults.timer)")
+                .animatableFont(size: 100, weight: .semibold)
+                .timerStyle()
+        }
+    }
+}
 
-                }
+struct ControlPanelView: View {
+    @Binding var currentResults: CurrentResults
+    let currentTraining: Training
 
+    var body: some View {
+        VStack {
+            HStack {
                 Spacer()
 
-                HStack(spacing: 8) {
-                    VStack(spacing: 6) {
-                        Text(currentResults.quality)
-                            .font(.system(size: 16))
-                        HStack {
-                            Image(systemName: "tortoise.fill")
-                                .font(.system(size: 15))
-
-                            ZStack(alignment: currentResults.speedState?.speedAlignment ?? .center) {
-                                Rectangle()
-                                    .frame(width: 40, height: 3)
-                                    .cornerRadius(1.5)
-
-                                if currentResults.speedState != nil {
-                                    Circle()
-                                        .frame(width: 10, height: 10)
-                                        .foregroundColor(.purple)
-                                }
-                            }
-
-                            Image(systemName: "hare.fill")
-                                .font(.system(size: 15))
-                        }
+                NavigationLink(
+                    destination: TrainingResultView(training: currentTraining)
+                        .navigationBarHidden(true),
+                    label: {
+                        DoneButton(currentTraining: currentTraining)
                     }
-                    .padding(8)
-                    .frame(width: 120, height: 60)
-                    .background(
-                        Rectangle()
-                            .fill(.ultraThinMaterial)
-                            .backgroundStyle(cornerRadius: 20)
-                    )
+                )
+            }
 
-                    PlayPauseButton(state: $currentResults.playPauseButtonState)
-                        .onTapGesture {
-                            currentResults.playPauseButtonState = currentResults.playPauseButtonState.toggle()
-                        }
+            Spacer()
 
-                    VStack(spacing: 6) {
-                        Text("\(currentResults.iterationCount) разів")
-                            .font(.system(size: 16, weight: .bold))
-                        Text(currentResults.currentSecondsFormated)
-                            .font(.system(size: 16))
+            HStack(spacing: 8) {
+                SpeedQualityView(currentResults: currentResults)
+
+                PlayPauseButton(state: currentResults.playPauseButtonState)
+                    .onTapGesture {
+                        currentResults.playPauseButtonState = currentResults.playPauseButtonState.toggle()
                     }
-                    .padding(8)
-                    .frame(width: 120, height: 60)
-                    .background(
-                        Rectangle()
-                            .fill(.ultraThinMaterial)
-                            .backgroundStyle(cornerRadius: 20)
-                    )
+
+                IterationCountView(currentResults: currentResults)
+            }
+        }
+    }
+}
+
+struct DoneButton: View {
+    let currentTraining: Training
+
+    var body: some View {
+        Text("Готово")
+            .font(.body).bold()
+            .padding()
+            .frame(width: 100, height: 50, alignment: .center)
+            .panelStyle()
+            .padding(.horizontal, 20)
+    }
+}
+
+struct SpeedQualityView: View {
+    var currentResults: CurrentResults
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Text(currentResults.quality)
+                .font(.system(size: 16))
+
+            HStack {
+                Image(systemName: "tortoise.fill")
+                    .font(.system(size: 15))
+
+                SpeedIndicator(currentResults: currentResults)
+
+                Image(systemName: "hare.fill")
+                    .font(.system(size: 15))
+            }
+        }
+        .panelStyle()
+    }
+
+    private struct SpeedIndicator: View {
+        var currentResults: CurrentResults
+
+        var body: some View {
+            ZStack(alignment: currentResults.speedState?.speedAlignment ?? .center) {
+                Rectangle()
+                    .frame(width: 40, height: 3)
+                    .cornerRadius(1.5)
+
+                if let speedState = currentResults.speedState {
+                    Circle()
+                        .frame(width: 10, height: 10)
+                        .foregroundColor(.purple)
                 }
             }
         }
     }
 }
 
-extension CurrentResults.SpeedState {
-
+private extension CurrentResults.SpeedState {
     var speedAlignment: Alignment {
         switch self {
         case .fast:
@@ -141,11 +135,55 @@ extension CurrentResults.SpeedState {
             return .trailing
         }
     }
-
 }
 
-//struct ARTrainingOverlayView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ARTrainingOverlayView(model: .constant(.init(quality: "Нормально", speed: 0.9, iterationCount: 5, seconds: 1990028, timer: 0, playPauseButtonState: .play)))
-//    }
-//}
+struct IterationCountView: View {
+    let currentResults: CurrentResults
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Text("\(currentResults.iterationCount) разів")
+                .font(.system(size: 16, weight: .bold))
+            Text(currentResults.currentSecondsFormated)
+                .font(.system(size: 16))
+        }
+        .padding(8)
+        .frame(width: 120, height: 60)
+        .panelStyle()
+    }
+}
+
+extension View {
+
+    func panelStyle() -> some View {
+        self
+            .padding(8)
+            .frame(width: 120, height: 60)
+            .background(
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                    .backgroundStyle(cornerRadius: 20)
+            )
+    }
+
+    func timerStyle() -> some View {
+        self
+            .background(
+                PlayShape()
+                    .fill(
+                        .angularGradient(
+                            colors: [.blue, .red, .blue],
+                            center: .center,
+                            startAngle: .degrees(0),
+                            endAngle: .degrees(360)
+                        )
+                    )
+                    .blur(radius: 12)
+            )
+            .frame(width: 200, height: 200)
+            .background(.ultraThinMaterial)
+            .cornerRadius(100)
+            .modifier(OutlineOverlay(cornerRadius: 100))
+    }
+
+}

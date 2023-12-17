@@ -18,7 +18,11 @@ struct ARTrackingViewContainer: UIViewRepresentable {
     @Binding var iterations: [IterationResults]
 
     func makeUIView(context: Context) -> ARView {
-        let arView = ARView(frame: .zero, cameraMode: .ar, automaticallyConfigureSession: true)
+        let arView = ARView(
+            frame: .zero,
+            cameraMode: .ar,
+            automaticallyConfigureSession: true
+        )
         arView.session.delegate = context.coordinator
 
         let configuration = ARBodyTrackingConfiguration()
@@ -36,9 +40,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
         )
     }
 
-    func updateUIView(_ uiView: ARView, context: Context) {
-
-    }
+    func updateUIView(_ uiView: ARView, context: Context) { }
 
     // MARK: - Coordinator
 
@@ -95,7 +97,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 }
 
                 if !isTrainingInProgress && isRecording {
-                    print("--- STOP Recording ---")
                     isRecording.toggle()
                 }
             }
@@ -107,7 +108,6 @@ struct ARTrackingViewContainer: UIViewRepresentable {
             }
 
             if arDataProcessor.couldDetectStartOfIteration {
-                print("--- couldDetectStartOfIteration")
                 let previousShouldBeRecorded = arDataProcessor.detectIfNextIterationStarted(currentFrame: currentFrame)
                 isRecording = false
                 timerObject.stop()

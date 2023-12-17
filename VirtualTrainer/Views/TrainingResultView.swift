@@ -9,7 +9,7 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct TrainingResultView: View {
-    @Binding var training: Training
+    let training: Training
     @State var viewState: CGSize = .zero
     @State var showSection = false
     @State var appear = [false, false, false]
