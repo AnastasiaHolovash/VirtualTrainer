@@ -26,11 +26,9 @@ class ARTrackingDataProcessor {
     private var exerciseFramesCount: Int
 
     private var exerciseIterations: [Frames] = [[]]
-//    private var exerciseIterationsResults: [[Float]] = [[]]
-
+    private var numberOfIterations: Int { exerciseIterations.count - 1 }
     private var comparisonFrameValue: Frame = []
     private var exerciseFramesIndex = GlobalConstants.exerciseFramesFirstIndex
-    private var numberOfIterations = 0
     private var currentNumberOfStaticFrames = 0
     private var previousValueOfStaticFrame: Float = 0.0
     private var previous: Frame = []
@@ -50,42 +48,27 @@ class ARTrackingDataProcessor {
             return false
         }
 
-        let resultValue = currentFrame.compare(to: comparisonFrameValue)
-        let result = resultValue.isStartStopMovement
-
-        return result
+        return currentFrame
+            .compare(to: comparisonFrameValue)
+            .isStartStopMovement
     }
 
     func detectEndOfIteration(currentFrame: Frame) {
         guard let last = exerciseFramesLoaded.last else {
             return
         }
-        let resultValue = currentFrame.compare(to: last)
-        print("! Compare with last exercise frame \(resultValue * 100)% ")
 
-        if resultValue.isCloseToEqual {
-            if previous.isEmpty {
-                previous = currentFrame
-                currentNumberOfStaticFrames = 1
-            } else {
-                let resultValue2 = currentFrame.compare(to: previous)
-                previous = currentFrame
-
-                if resultValue2.isVeryCloseToEqual {
-                    currentNumberOfStaticFrames += 1
-                }
-            }
-            print("    currentNumberOfStaticFrames = \(currentNumberOfStaticFrames)")
+        if currentFrame.compare(to: last).isCloseToEqual {
+            updateStaticFramesCount(currentFrame: currentFrame)
         }
     }
 
     func detectIfNextIterationStarted(
         currentFrame: Frame
     ) -> Bool {
-        print("\n--- New iteration initiated by User")
         removeStaticFramesFromLastIteration()
         let shouldBeRecorded = exerciseIterations[numberOfIterations].count > exerciseFramesCount / 2
-        startDetectionStartOfIteration(
+        prepareDataForNextIteration(
             currentFrame: currentFrame,
             shouldBeRecorded: shouldBeRecorded
         )
@@ -96,9 +79,6 @@ class ARTrackingDataProcessor {
         currentFrame: Frame
     ) {
         let targetFrame = exerciseFramesLoaded[exerciseFramesIndex]
-
-//        let resultValue = currentFrame.compare(to: targetFrame)
-//        exerciseIterationsResults[numberOfIterations].append(resultValue)
         exerciseIterations[numberOfIterations].append(currentFrame)
 
         if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
@@ -110,46 +90,48 @@ class ARTrackingDataProcessor {
         shouldBeRecorded: Bool,
         iterationDuration: Int
     ) -> IterationResults? {
-        print("---- updateCurrentResults shouldBeRecorded: \(shouldBeRecorded) numberOfIterations: \(numberOfIterations)")
         guard numberOfIterations > 0,
               shouldBeRecorded else {
             return nil
         }
-        print("---- updateCurrentResults 2")
         let iterationScore = compareIteration(
             target: exerciseFramesLoaded,
             training: exerciseIterations[numberOfIterations - 1]
         )
-        let iterationResults = IterationResults(
+        return IterationResults(
             number: exerciseIterations.count - 1,
             score: iterationScore,
             speed: Float(2 / iterationDuration)
         )
-        print("---- N = \(numberOfIterations - 1)     NEN RESULT: \(iterationScore)")
-        return iterationResults
     }
 
     // MARK: - Private Methods
 
-    private func startDetectionStartOfIteration(
+    private func updateStaticFramesCount(currentFrame: Frame) {
+        if previous.isEmpty {
+            previous = currentFrame
+            currentNumberOfStaticFrames = 1
+        } else {
+            let resultValue2 = currentFrame.compare(to: previous)
+            previous = currentFrame
+
+            if resultValue2.isVeryCloseToEqual {
+                currentNumberOfStaticFrames += 1
+            }
+        }
+    }
+
+    private func prepareDataForNextIteration(
         currentFrame: Frame,
         shouldBeRecorded: Bool
     ) {
         if !shouldBeRecorded {
-//            exerciseIterationsResults.removeLast()
             exerciseIterations.removeLast()
-        } else {
-            print("---- numberOfIterations APDATED to: \(numberOfIterations + 1)")
-            numberOfIterations += 1
         }
-//        exerciseIterationsResults.append([])
         exerciseIterations.append([])
-
         exerciseFramesIndex = GlobalConstants.exerciseFramesFirstIndex
-
         currentNumberOfStaticFrames = 0
         previousValueOfStaticFrame = 0.0
-
         comparisonFrameValue = currentFrame
         previous = []
     }
