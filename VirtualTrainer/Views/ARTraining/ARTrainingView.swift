@@ -11,83 +11,115 @@ import ARKit
 import Combine
 import Vision
 
-struct ARTrainingView : View {
-
-    @State private var timerValue: Int = GlobalConstants.timerStartTime
-
-    @State private var timerCancellable: AnyCancellable? = nil
-    @State private var timeCounterCancellable: AnyCancellable? = nil
-    @State var isRecording: Bool = false
-    @State var iterations: [IterationResults] = []
-
-    @State var currentResults = CurrentResults()
-    @State var currentTraining: Training
-
-    let exercise: Exercise
+struct ARTrainingView: View {
+    @StateObject private var viewModel: ARTrainingViewModel
 
     init(with exercise: Exercise) {
-        self.exercise = exercise
-        self._currentTraining = .init(wrappedValue: Training(with: exercise))
+        _viewModel = StateObject(wrappedValue: ARTrainingViewModel(exercise: exercise))
     }
 
     var body: some View {
         ZStack {
             ARTrackingViewContainer(
-                exercise: exercise,
-                isRecording: $isRecording,
-                currentResults: $currentResults,
-                iterations: $iterations
+                exercise: viewModel.exercise,
+                isRecording: $viewModel.isRecording,
+                currentResults: $viewModel.currentResults,
+                iterations: $viewModel.iterations
             )
             .edgesIgnoringSafeArea(.all)
 
             ARTrainingOverlayView(
-                currentResults: $currentResults,
-                currentTraining: currentTraining
+                currentResults: $viewModel.currentResults,
+                currentTraining: viewModel.currentTraining
             )
-            .onChange(of: currentResults.playPauseButtonState) { _, newValue in
-                switch newValue {
-                case .play:
-                    startTimer()
-
-                case .pause:
-                    stopTimer()
-                }
+            .onChange(of: viewModel.currentResults.playPauseButtonState) {
+                viewModel.handlePlayPauseButtonChange()
             }
-            .onChange(of: timerValue) { _, newValue in
-                currentResults.timer = newValue
+            .onChange(of: viewModel.timerValue) {
+                viewModel.handleTimerValueChange()
             }
-            .onChange(of: iterations) { _, newValue in
-                currentTraining.iterations = newValue
+            .onChange(of: viewModel.iterations) {
+                viewModel.handleIterationsChange()
             }
-            .onChange(of: isRecording) { _, newValue in
-                switch isRecording {
-                case true:
-                    currentTraining.startTime = Date()
-                    startTimeCounter()
-
-                case false:
-                    currentTraining.endTime = Date()
-                    stopTimeCounter()
-                }
+            .onChange(of: viewModel.isRecording) {
+                viewModel.handleRecordingStateChange()
             }
         }
         .onAppear {
-            currentResults.timer = GlobalConstants.timerStartTime
+            viewModel.currentResults.timer = GlobalConstants.timerStartTime
         }
     }
+}
+
+
+
+class ARTrainingViewModel: ObservableObject {
+    @Published var timerValue: Int = GlobalConstants.timerStartTime
+    @Published var isRecording: Bool = false
+    @Published var iterations: [IterationResults] = []
+    @Published var currentResults = CurrentResults()
+    @Published var currentTraining: Training
+
+    private var timerCancellable: AnyCancellable?
+    private var timeCounterCancellable: AnyCancellable?
+    let exercise: Exercise
+
+    init(exercise: Exercise) {
+        self.exercise = exercise
+        self.currentTraining = Training(with: exercise)
+    }
+
+    func handlePlayPauseButtonChange() {
+        switch currentResults.playPauseButtonState {
+        case .play:
+            startTimer()
+        
+        case .pause:
+            stopTimer()
+        }
+    }
+
+    func handleTimerValueChange() {
+        currentResults.timer = timerValue
+        if timerValue == 0 {
+            // Logic for what should happen when the timer reaches 0
+            // e.g., automatically start recording
+            isRecording = true
+            startTimeCounter()
+        }
+    }
+
+    func handleIterationsChange() {
+        currentTraining.iterations = iterations
+        // Add any additional logic needed when iterations change
+    }
+
+    func handleRecordingStateChange() {
+        if isRecording {
+            currentTraining.startTime = Date()
+            startTimeCounter()
+        } else {
+            currentTraining.endTime = Date()
+            stopTimeCounter()
+            // Logic for what should happen when recording stops
+            // e.g., process the recorded data
+        }
+    }
+
+    // MARK: - Timer and State Handling Methods
 
     private func startTimer() {
         timerCancellable = Timer.publish(every: 1, on: .main, in: .default)
             .autoconnect()
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { _ in
-                switch timerValue {
+            .sink(receiveValue: { [weak self] _ in
+                switch self?.timerValue {
                 case 0:
-                    timerValue = GlobalConstants.timerStartTime + 1
-                    stopTimer()
+                    self?.timerValue = GlobalConstants.timerStartTime + 1
+                    self?.stopTimer()
 
                 default:
-                    timerValue -= 1
+                    self?.timerValue -= 1
                 }
             })
     }
@@ -103,8 +135,8 @@ struct ARTrainingView : View {
         timeCounterCancellable = Timer.publish(every: 1, on: .main, in: .default)
             .autoconnect()
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { _ in
-                currentResults.currentTime = Date()
+            .sink(receiveValue: { [weak self] _ in
+                self?.currentResults.currentTime = Date()
             })
     }
 
