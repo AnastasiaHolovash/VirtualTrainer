@@ -22,45 +22,47 @@ class ARTrackingDataProcessor {
 
     // MARK: - Private Properties
 
-    private var exerciseFramesLoaded: Frames
+    private var exerciseFrames: Frames
     private var exerciseFramesCount: Int
     private var exerciseDuration: Float
 
     private var exerciseIterations: [Frames] = [[]]
     private var numberOfIterations: Int { exerciseIterations.count - 1 }
-    private var comparisonFrameValue: Frame = []
+    private var iterationStartPositionFrame: Frame = []
     private var exerciseFramesIndex = GlobalConstants.exerciseFramesFirstIndex
     private var currentNumberOfStaticFrames = 0
     private var previousValueOfStaticFrame: Float = 0.0
-    private var previous: Frame = []
+    private var previousStaticFrame: Frame = []
 
     // MARK: - Lifecycle
 
     init(exercise: Exercise) {
-        self.exerciseFramesLoaded = exercise.simdFrames
-        self.exerciseFramesCount = exerciseFramesLoaded.count
+        self.exerciseFrames = exercise.simdFrames
+        self.exerciseFramesCount = exerciseFrames.count
         self.exerciseDuration = exercise.duration ?? 2
     }
 
     // MARK: - Accessible Methods
 
-    func checkIfExerciseStarted(currentFrame: Frame) -> Bool {
-        guard !comparisonFrameValue.isEmpty else {
-            comparisonFrameValue = currentFrame
+    func checkIfIterationStarted(currentFrame: Frame) -> Bool {
+        guard !iterationStartPositionFrame.isEmpty else {
+            iterationStartPositionFrame = currentFrame
             return false
         }
 
         return currentFrame
-            .compare(to: comparisonFrameValue)
+            .compare(to: iterationStartPositionFrame)
             .isStartStopMovement
     }
 
-    func detectEndOfIteration(currentFrame: Frame) {
-        guard let last = exerciseFramesLoaded.last else {
+    func checkIfIterationEnded(currentFrame: Frame) {
+        guard let last = exerciseFrames.last else {
             return
         }
 
-        if currentFrame.compare(to: last).isCloseToEqual {
+        if currentFrame
+            .compare(to: last)
+            .isCloseToEqual {
             updateStaticFramesCount(currentFrame: currentFrame)
         }
     }
@@ -82,7 +84,7 @@ class ARTrackingDataProcessor {
     ) {
         exerciseIterations[numberOfIterations].append(currentFrame)
 
-        if exerciseFramesIndex < exerciseFramesLoaded.count - 1 {
+        if exerciseFramesIndex < exerciseFrames.count - 1 {
             exerciseFramesIndex += 1
         }
     }
@@ -103,7 +105,7 @@ class ARTrackingDataProcessor {
 
         print("--- \(exerciseDuration) / \(iterationDuration) = \(exerciseDuration / iterationDuration)")
         compareIteration(
-            target: exerciseFramesLoaded,
+            target: exerciseFrames,
             training: exerciseIterations[numberOfIterations - 1]
         ) { iterationScore in
             completion(IterationResults(
@@ -117,14 +119,15 @@ class ARTrackingDataProcessor {
     // MARK: - Private Methods
 
     private func updateStaticFramesCount(currentFrame: Frame) {
-        if previous.isEmpty {
-            previous = currentFrame
+        if previousStaticFrame.isEmpty {
+            previousStaticFrame = currentFrame
             currentNumberOfStaticFrames = 1
         } else {
-            let resultValue2 = currentFrame.compare(to: previous)
-            previous = currentFrame
+            let comparisonResult = currentFrame
+                .compare(to: previousStaticFrame)
+            previousStaticFrame = currentFrame
 
-            if resultValue2.isVeryCloseToEqual {
+            if comparisonResult.isVeryCloseToEqual {
                 currentNumberOfStaticFrames += 1
             }
         }
@@ -141,28 +144,30 @@ class ARTrackingDataProcessor {
         exerciseFramesIndex = GlobalConstants.exerciseFramesFirstIndex
         currentNumberOfStaticFrames = 0
         previousValueOfStaticFrame = 0.0
-        comparisonFrameValue = currentFrame
-        previous = []
+        iterationStartPositionFrame = currentFrame
+        previousStaticFrame = []
     }
 
     private func removeStaticFramesFromLastIteration() {
         exerciseIterations[numberOfIterations].removeLast(GlobalConstants.staticPositionIndicator - 1)
     }
 
-    private func compareIteration(target: [Frame], training: [Frame], completion: @escaping (IterationScore) -> Void) {
+    private func compareIteration(
+        target: [Frame],
+        training: [Frame],
+        completion: @escaping (IterationScore) -> Void
+    ) {
         DispatchQueue.global(qos: .userInitiated).async {
             let smoothedData = ARDataProcessingAlgorithms.applyExponentialSmoothing(frames: training)
-            let maxError = Float(min(smoothedData.count, training.count)) * GlobalConstants.maxErrorPossibleСoefficient
-            let result2 = ARDataProcessingAlgorithms.dtw(x1: smoothedData, x2: target)
-            let reducedResult2 = result2.reduce(0, +)
+            let dtwResult = ARDataProcessingAlgorithms.dtw(x1: smoothedData, x2: target)
 
-            print("------- maxError: \(maxError)")
-            print("--- DTW2: \(result2)")
-            print("--- DTW2: \(reducedResult2)      \((100 - reducedResult2 / maxError) / 100)")
+            let reducedResult = dtwResult.reduce(0, +)
+            let maxError = Float(min(smoothedData.count, training.count)) 
+                * GlobalConstants.maxErrorPossibleСoefficient
 
             let iterationScore = IterationScore(
-                total: (100 - reducedResult2 / maxError) / 100,
-                joints: result2
+                total: (100 - reducedResult / maxError) / 100,
+                joints: dtwResult
             )
 
             DispatchQueue.main.async {

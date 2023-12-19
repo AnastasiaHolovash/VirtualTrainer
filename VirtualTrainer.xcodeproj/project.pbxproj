@@ -78,7 +78,7 @@
 		5D21B8E02860B3F10061DE3C /* AR Session denys 45 training.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session denys 45 training.mov"; sourceTree = "<group>"; };
 		5D21B8E12860BE9C0061DE3C /* AR Session denys 45 training 2.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session denys 45 training 2.mov"; sourceTree = "<group>"; };
 		5D21B8E22860BF4B0061DE3C /* AR Session denys 45 record.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session denys 45 record.mov"; sourceTree = "<group>"; };
-		5D21B8E32860C1FE0061DE3C /* AR Session denys 45 training 3.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session denys 45 training 3.mov"; sourceTree = "<group>"; };
+		5D21B8E32860C1FE0061DE3C /* Test_1.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = Test_1.mov; sourceTree = "<group>"; };
 		5D23E627284421AB0003BAD3 /* VirtualTrainer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTrainer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D23E62A284421AB0003BAD3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5D23E62C284421AB0003BAD3 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -86,7 +86,7 @@
 		5D23E630284421AD0003BAD3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5D23E633284421AD0003BAD3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5D23E63B284557F20003BAD3 /* robot.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = robot.usdz; sourceTree = "<group>"; };
-		5D23E63E2846A5B20003BAD3 /* AR Session 1.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 1.mov"; sourceTree = "<group>"; };
+		5D23E63E2846A5B20003BAD3 /* Test_5.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = Test_5.mov; sourceTree = "<group>"; };
 		5D23E63F2846C4D20003BAD3 /* AR Session 2.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 2.mov"; sourceTree = "<group>"; };
 		5D23E6402846D4900003BAD3 /* UserDefaultsTemporary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTemporary.swift; sourceTree = "<group>"; };
 		5D23E642284800C40003BAD3 /* Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Frame.swift; sourceTree = "<group>"; };
@@ -130,14 +130,14 @@
 		5D23E695284EAE3A0003BAD3 /* RecordingData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingData.swift; sourceTree = "<group>"; };
 		5D23E6A1284EC2A20003BAD3 /* FirestoreClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreClient.swift; sourceTree = "<group>"; };
 		5D973ADE285FBB7D00B77010 /* AR Session 19.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 19.mov"; sourceTree = "<group>"; };
-		5D973AE0285FC03B00B77010 /* AR Session 21.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 21.mov"; sourceTree = "<group>"; };
+		5D973AE0285FC03B00B77010 /* Test_4.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = Test_4.mov; sourceTree = "<group>"; };
 		5D973AE1285FC56D00B77010 /* AR Session 22.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 22.mov"; sourceTree = "<group>"; };
 		5D973AE2285FE3C100B77010 /* AR Session 23.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 23.mov"; sourceTree = "<group>"; };
-		5D973AE3285FE53200B77010 /* AR Session 24.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 24.mov"; sourceTree = "<group>"; };
+		5D973AE3285FE53200B77010 /* Test_3.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = Test_3.mov; sourceTree = "<group>"; };
 		5D973AE4285FE78800B77010 /* AR Session 23 record 45.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 23 record 45.mov"; sourceTree = "<group>"; };
 		5D973AE5285FE81100B77010 /* AR Session 24 training 45.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session 24 training 45.mov"; sourceTree = "<group>"; };
 		5D973AE628605E7600B77010 /* AR Session nastia record 45.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session nastia record 45.mov"; sourceTree = "<group>"; };
-		5D973AE728605F4900B77010 /* AR Session nastia training 45.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "AR Session nastia training 45.mov"; sourceTree = "<group>"; };
+		5D973AE728605F4900B77010 /* Test_2.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = Test_2.mov; sourceTree = "<group>"; };
 		5D9F1AA62B2F1AAC003C83CF /* ARTrackingDataProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrackingDataProcessor.swift; sourceTree = "<group>"; };
 		5D9F1AA82B2F41CA003C83CF /* ARTrainingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARTrainingViewModel.swift; sourceTree = "<group>"; };
 		5D9F1AAA2B2F4EE4003C83CF /* ARRecordingDataProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARRecordingDataProcessor.swift; sourceTree = "<group>"; };
@@ -179,18 +179,18 @@
 		5D23E61E284421AB0003BAD3 = {
 			isa = PBXGroup;
 			children = (
-				5D21B8E32860C1FE0061DE3C /* AR Session denys 45 training 3.mov */,
+				5D21B8E32860C1FE0061DE3C /* Test_1.mov */,
 				5D21B8E22860BF4B0061DE3C /* AR Session denys 45 record.mov */,
 				5D21B8E12860BE9C0061DE3C /* AR Session denys 45 training 2.mov */,
 				5D21B8E02860B3F10061DE3C /* AR Session denys 45 training.mov */,
-				5D973AE728605F4900B77010 /* AR Session nastia training 45.mov */,
+				5D973AE728605F4900B77010 /* Test_2.mov */,
 				5D973AE628605E7600B77010 /* AR Session nastia record 45.mov */,
 				5D973AE5285FE81100B77010 /* AR Session 24 training 45.mov */,
 				5D973AE4285FE78800B77010 /* AR Session 23 record 45.mov */,
-				5D973AE3285FE53200B77010 /* AR Session 24.mov */,
+				5D973AE3285FE53200B77010 /* Test_3.mov */,
 				5D973AE2285FE3C100B77010 /* AR Session 23.mov */,
 				5D973AE1285FC56D00B77010 /* AR Session 22.mov */,
-				5D973AE0285FC03B00B77010 /* AR Session 21.mov */,
+				5D973AE0285FC03B00B77010 /* Test_4.mov */,
 				5D973ADE285FBB7D00B77010 /* AR Session 19.mov */,
 				5DB09B63285FB65200FA60CE /* AR Session 18.mov */,
 				5DB09B62285FB4A800FA60CE /* AR Session 17.mov */,
@@ -201,7 +201,7 @@
 				5D23E64D284D06970003BAD3 /* AR Session 5.mov */,
 				5D23E648284C08650003BAD3 /* AR Session 3.mov */,
 				5D23E63F2846C4D20003BAD3 /* AR Session 2.mov */,
-				5D23E63E2846A5B20003BAD3 /* AR Session 1.mov */,
+				5D23E63E2846A5B20003BAD3 /* Test_5.mov */,
 				5D23E629284421AB0003BAD3 /* VirtualTrainer */,
 				5D23E628284421AB0003BAD3 /* Products */,
 			);

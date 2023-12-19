@@ -67,7 +67,7 @@ extension ARDataProcessingAlgorithms {
         return smoothedFrames
     }
 
-    private static func jointDistance(joint1: simd_float4x4, joint2: simd_float4x4) -> Float {
+    private static func calculateJointDistance(joint1: simd_float4x4, joint2: simd_float4x4) -> Float {
         var totalDistance: Float = 0.0
 
         // Calculate translational distance
@@ -109,7 +109,7 @@ extension ARDataProcessingAlgorithms {
                 var lastValue = Float.infinity
 
                 for j in 0..<n2 {
-                    let cost = jointDistance(joint1: x1[i][jointIndex], joint2: x2[j][jointIndex])
+                    let cost = calculateJointDistance(joint1: x1[i][jointIndex], joint2: x2[j][jointIndex])
 
                     let minimum = min(min(row0[j] + cost, row0[j + 1] + cost), lastValue + cost)
                     lastValue = minimum

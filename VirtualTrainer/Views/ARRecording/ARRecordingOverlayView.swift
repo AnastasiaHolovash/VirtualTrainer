@@ -51,7 +51,7 @@ struct ARRecordingOverlayView: View {
                                     .font(.body).bold()
                             }
                             .padding()
-                            .foregroundColor(Color(hex: "281B5A").opacity(0.8))
+                            .foregroundColor(Color.white.opacity(0.8))
                             .cornerRadius(20)
                         }
                         .frame(width: 100, height: 50, alignment: .center)

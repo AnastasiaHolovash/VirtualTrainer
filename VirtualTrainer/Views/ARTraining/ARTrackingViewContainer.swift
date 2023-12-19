@@ -74,7 +74,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
                 let jointModelTransformsCurrent = trackingJointNamesRawValues.map {  transforms[$0] }
 
                 if arTrainingViewModel.isTrainingInProgress && !isRecording {
-                    isRecording = arDataProcessor.checkIfExerciseStarted(currentFrame: jointModelTransformsCurrent)
+                    isRecording = arDataProcessor.checkIfIterationStarted(currentFrame: jointModelTransformsCurrent)
                     if isRecording {
                         timerObject.start()
                     }
@@ -94,7 +94,7 @@ struct ARTrackingViewContainer: UIViewRepresentable {
         
         private func compareTrainingWithTarget(currentFrame: Frame) {
             if arDataProcessor.couldDetectEndOfIteration {
-                arDataProcessor.detectEndOfIteration(currentFrame: currentFrame)
+                arDataProcessor.checkIfIterationEnded(currentFrame: currentFrame)
             }
 
             if arDataProcessor.couldDetectStartOfIteration {

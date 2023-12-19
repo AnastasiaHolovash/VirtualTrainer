@@ -76,6 +76,7 @@ struct DoneButton: View {
         Text("Готово")
             .font(.system(size: 18, weight: .bold))
             .frame(width: 100, height: 50, alignment: .center)
+            .foregroundColor(Color.white.opacity(0.8))
             .panelStyle()
             .padding(.horizontal, 20)
     }
